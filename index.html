@@ -195,10 +195,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .tt-up{font-family:'DM Mono',monospace;font-size:8px;color:var(--green)}
 
 /* Area labels on map */
-.alabel{pointer-events:none;transform:translate(-50%,-50%);transition:opacity .25s ease}
-.alabel-inner{background:rgba(5,9,26,.82);border:1px solid rgba(255,255,255,.09);border-radius:3px;padding:2px 5px;backdrop-filter:blur(10px);text-align:center;white-space:nowrap;box-shadow:0 1px 6px rgba(0,0,0,.4)}
-.alabel-psf{font-family:'DM Mono',monospace;font-size:8px;font-weight:500;color:#EDE9E3;letter-spacing:.3px;line-height:1.4}
-.alabel-yoy{font-family:'DM Mono',monospace;font-size:7.5px;font-weight:600;line-height:1.3}
+.alabel{pointer-events:none;transform:translate(-50%,-50%);transition:opacity .3s ease}
+.alabel-inner{text-align:center;white-space:nowrap}
+.alabel-name{font-family:'DM Sans',sans-serif;font-size:8px;font-weight:600;color:rgba(237,233,227,0.6);letter-spacing:.5px;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,1),0 0 12px rgba(0,0,0,.9);line-height:1.3}
+.alabel-psf{font-family:'DM Mono',monospace;font-size:9px;font-weight:600;color:rgba(237,233,227,0.95);text-shadow:0 1px 4px rgba(0,0,0,1),0 0 12px rgba(0,0,0,.9);letter-spacing:.2px;line-height:1.4}
 [data-theme="light"] .alabel-inner{background:rgba(250,250,248,.92);border-color:rgba(0,0,0,.12)}
 [data-theme="light"] .alabel-psf{color:#18150F}
 
@@ -294,7 +294,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 #src-note{position:absolute;bottom:8px;left:12px;font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);z-index:100;opacity:.6}
 
 /* Present mode */
-body.present #lp,body.present #rp,body.present #hdr,body.present #statsbar,body.present #map-ctrl,body.present #zoom-ctrls,body.present #src-note{display:none!important}
+body.present #lp,body.present #rp,body.present #hdr,body.present #statsbar,body.present #map-ctrl,body.present #map-toolbar,body.present #zoom-ctrls,body.present #src-note{display:none!important}
 body.present #main{height:100vh}
 #exit-present{display:none;position:fixed;top:14px;right:14px;z-index:9999;background:rgba(8,13,26,.85);border:1px solid rgba(201,168,76,.4);border-radius:6px;padding:7px 14px;color:var(--gold);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;backdrop-filter:blur(8px)}
 body.present #exit-present{display:flex;align-items:center;gap:6px}
@@ -342,6 +342,122 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 .maplibregl-popup-tip{border-top-color:rgba(8,13,26,.95)!important;border-bottom-color:rgba(8,13,26,.95)!important}
 .maplibregl-popup-close-button{color:var(--t3)!important;font-size:16px!important;line-height:1!important;padding:4px 6px!important;right:2px!important;top:2px!important}
 .maplibregl-popup-close-button:hover{background:var(--surf2)!important;color:var(--t1)!important}
+/* ══════════ MAP TOOLBAR (bottom strip) ══════════ */
+#map-toolbar{
+  position:absolute;bottom:0;left:0;right:0;
+  height:52px;
+  background:rgba(8,13,26,0.88);
+  backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;
+  padding:0 16px;gap:12px;
+  z-index:200;
+}
+.mtb-layers{display:flex;align-items:center;gap:4px;flex-shrink:0}
+.mtb-pill{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 10px;border-radius:20px;
+  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.5px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.10);
+  color:var(--t3);cursor:pointer;
+  transition:all .15s ease;
+  white-space:nowrap;
+}
+.mtb-pill:hover{border-color:rgba(255,255,255,.2);color:var(--t2)}
+.mtb-pill.active{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.2);color:var(--t1)}
+.mtb-swatch{width:8px;height:4px;border-radius:2px;flex-shrink:0}
+.mtb-metro{background:linear-gradient(90deg,#E8304A 50%,#22C87A 50%);border-radius:1px;height:3px}
+.mtb-zones{background:repeating-linear-gradient(90deg,#4A9EFF 0 4px,transparent 4px 7px);height:2px;border-radius:0}
+.mtb-bldg{background:#555268;clip-path:polygon(0 40%,50% 0,100% 40%,100% 100%,0 100%)}
+.mtb-sep{width:1px;height:22px;background:rgba(255,255,255,.08);flex-shrink:0}
+
+/* Centre: heatmap mode */
+.mtb-centre{flex:0 0 auto;display:flex;align-items:center}
+.mtb-mode-wrap{
+  display:flex;background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:20px;padding:2px;gap:1px;
+}
+.mtb-mode{
+  padding:4px 10px;border-radius:16px;
+  font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:.4px;
+  background:transparent;border:none;color:var(--t3);cursor:pointer;
+  transition:all .15s ease;white-space:nowrap;
+}
+.mtb-mode:hover{color:var(--t2)}
+.mtb-mode.active{background:var(--gold-a);color:var(--gold);border:1px solid rgba(201,168,76,.3)}
+
+/* Timeline */
+.mtb-timeline{display:flex;align-items:center;gap:8px;flex:1;min-width:0;margin:0 8px}
+.mtb-play{
+  width:26px;height:26px;border-radius:50%;
+  background:rgba(201,168,76,.15);
+  border:1px solid rgba(201,168,76,.3);
+  color:var(--gold);font-size:9px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:all .15s;
+}
+.mtb-play:hover{background:rgba(201,168,76,.25)}
+.mtb-slider-wrap{flex:1;display:flex;flex-direction:column;gap:3px;min-width:0}
+.mtb-range{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:3px;border-radius:2px;
+  background:linear-gradient(to right,var(--gold) var(--fill,100%),rgba(255,255,255,.1) var(--fill,100%));
+  outline:none;cursor:pointer;
+}
+.mtb-range::-webkit-slider-thumb{-webkit-appearance:none;width:11px;height:11px;border-radius:50%;background:var(--gold);cursor:pointer;border:1.5px solid rgba(8,13,26,.8);box-shadow:0 0 6px rgba(201,168,76,.4)}
+.mtb-year-ticks{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);padding:0 1px}
+.mtb-year-ticks .active{color:var(--gold)}
+.mtb-year-badge{
+  font-family:'DM Mono',monospace;font-size:13px;font-weight:600;
+  color:var(--gold);letter-spacing:1px;flex-shrink:0;min-width:34px;text-align:right;
+}
+
+/* Legend pill */
+.mtb-legend{
+  flex-shrink:0;display:flex;flex-direction:column;justify-content:center;
+  gap:2px;padding:4px 10px;
+  background:rgba(0,0,0,.25);border-left:1px solid rgba(255,255,255,.06);
+  margin-left:4px;
+}
+.mtb-leg-bar{height:4px;width:80px;border-radius:2px;background:linear-gradient(90deg,#22C87A,#C9A84C,#F05252)}
+.mtb-leg-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);width:80px}
+.mtb-leg-unit{font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);text-align:center;letter-spacing:.5px;margin-top:1px}
+
+/* Remove old map-ctrl */
+#map-ctrl{display:none}
+
+/* Map wrap: pad bottom for toolbar */
+#map-wrap{position:relative;flex:1;overflow:hidden}
+#map{position:absolute;inset:0;bottom:52px}
+
+/* Zoom controls position */
+#zoom-ctrls{position:absolute;top:12px;right:12px;z-index:200}
+#src-note{position:absolute;bottom:58px;left:12px;z-index:100}
+
+/* Present mode — hide toolbar */
+body.present #map-toolbar{display:none!important}
+body.present #map{bottom:0!important}
+
+/* Light theme toolbar */
+[data-theme="light"] #map-toolbar{background:rgba(240,237,232,0.92);border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .mtb-pill{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.1);color:#9A9690}
+[data-theme="light"] .mtb-pill.active{background:rgba(0,0,0,.07);color:#18150F}
+
+/* ── Map popups ── */
+.maplibregl-popup-content{
+  background:rgba(8,13,26,0.92)!important;
+  border:1px solid rgba(255,255,255,.1)!important;
+  border-radius:8px!important;
+  padding:0!important;
+  box-shadow:0 8px 32px rgba(0,0,0,.6)!important;
+  backdrop-filter:blur(12px)!important;
+  font-family:'DM Sans',sans-serif!important;
+}
+.maplibregl-popup-tip{border-top-color:rgba(8,13,26,.92)!important}
+[data-theme="light"] .maplibregl-popup-content{background:rgba(250,250,248,.95)!important;border-color:rgba(0,0,0,.1)!important}
+
 </style>
 </head>
 <body>
@@ -407,58 +523,59 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
     <div id="map-wrap">
       <div id="map"></div>
 
-      <!-- Map controls — layers + signal + legend all in one panel -->
-      <div id="map-ctrl">
-        <div class="mc-panel">
-          <div class="mc-head" onclick="toggleMC()">
-            <span class="mc-label">Map Layers</span>
-            <span class="mc-toggle" id="mc-arrow">▾</span>
+      <!-- Map toolbar — bottom strip -->
+      <div id="map-toolbar">
+        <!-- Left: layer pills -->
+        <div class="mtb-layers">
+          <button class="mtb-pill active" id="lyr-areas" onclick="mtbToggle('areas',this)" title="Area heatmap">
+            <span class="mtb-swatch" style="background:var(--gold)"></span>Heatmap
+          </button>
+          <button class="mtb-pill active" id="lyr-metro" onclick="mtbToggle('metro',this)" title="Metro & Tram lines">
+            <span class="mtb-swatch mtb-metro"></span>Metro
+          </button>
+          <button class="mtb-pill" id="lyr-zones" onclick="mtbToggle('zones',this)" title="Dubai 2040 Master Plan">
+            <span class="mtb-swatch mtb-zones"></span>2040 Plan
+          </button>
+          <button class="mtb-pill active" id="lyr-proj" onclick="mtbToggle('projects',this)" title="Off-plan projects">
+            <span class="mtb-swatch" style="background:var(--green);border-radius:50%"></span>Projects
+          </button>
+          <button class="mtb-pill" id="lyr-txn" onclick="mtbToggle('txndots',this)" title="Transaction dot cloud">
+            <span class="mtb-swatch" style="background:#4A9EFF;border-radius:50%"></span>Txn Dots
+          </button>
+          <button class="mtb-pill" id="lyr-bldg" onclick="mtbToggle('buildings',this)" title="3D building extrusions">
+            <span class="mtb-swatch mtb-bldg"></span>3D
+          </button>
+        </div>
+
+        <!-- Centre: heatmap mode selector -->
+        <div class="mtb-centre">
+          <div class="mtb-mode-wrap">
+            <button class="mtb-mode active" id="hm-psf" onclick="mtbSetMode('psf',this)">Price/ft²</button>
+            <button class="mtb-mode" id="hm-yld" onclick="mtbSetMode('yld',this)">Yield</button>
+            <button class="mtb-mode" id="hm-yoy" onclick="mtbSetMode('yoy',this)">YoY</button>
+            <button class="mtb-mode" id="hm-txn" onclick="mtbSetMode('txn',this)">Volume</button>
           </div>
-          <div class="mc-body hide" id="mc-body">
-            <label class="ml"><div class="ml-swatch" style="background:var(--gold)"></div><span class="ml-lbl">Area Heatmap</span><input type="checkbox" id="ck-areas" checked onchange="toggleLayer('areas',this.checked)"></label>
-            <label class="ml"><div class="ml-swatch ml-swatch-line" style="--lc:#FF3B52"></div><span class="ml-lbl">Metro <span class="ml-sub">Red · Green</span></span><input type="checkbox" id="ck-metro" checked onchange="toggleLayer('metro',this.checked)"></label>
-            <label class="ml"><div class="ml-swatch ml-swatch-dash" style="--lc:#C9A84C"></div><span class="ml-lbl">Tram <span class="ml-sub">Gold</span></span><input type="checkbox" id="ck-metro" disabled style="opacity:0.3"></label>
-            <label class="ml"><div class="ml-swatch ml-swatch-zone" style="--lc:#4A9EFF"></div><span class="ml-lbl">2040 Zones <span class="ml-sub">Master Plan</span></span><input type="checkbox" id="ck-zones" onchange="toggleLayer('zones',this.checked)"></label>
-            <label class="ml"><div class="ml-swatch" style="background:#4A9EFF;border-radius:50%"></div><span class="ml-lbl">Txn Dots <span class="ml-sub">PSF gradient</span></span><input type="checkbox" id="ck-txn" onchange="toggleLayer('txndots',this.checked)"></label>
-            <label class="ml"><div class="ml-swatch" style="background:var(--green);border-radius:50%"></div><span class="ml-lbl">Projects</span><input type="checkbox" id="ck-proj" checked onchange="toggleLayer('projects',this.checked)"></label>
-            <label class="ml"><div class="ml-swatch ml-swatch-3d" style="--lc:#555268"></div><span class="ml-lbl">3D Buildings</span><input type="checkbox" id="ck-bldg" onchange="toggleLayer('buildings',this.checked)"></label>
-            <div class="zone-legend" id="zone-legend" style="display:none">
-              <div class="zl-row"><div class="zl-dot" style="background:#4A9EFF"></div>Urban Centre</div>
-              <div class="zl-row"><div class="zl-dot" style="background:#22C87A"></div>Urban Area</div>
-              <div class="zl-row"><div class="zl-dot" style="background:#C9A84C"></div>Growth Corridor</div>
-              <div class="zl-row"><div class="zl-dot" style="background:#555268"></div>Protected Reserve</div>
+        </div>
+
+        <!-- Right: timeline scrubber -->
+        <div class="mtb-timeline">
+          <button class="mtb-play" id="anim-play" onclick="playAnim()">▶</button>
+          <div class="mtb-slider-wrap">
+            <input type="range" class="mtb-range" id="anim-slider" min="2019" max="2025" step="1" value="2025" oninput="setAnimYear(this.value)">
+            <div class="mtb-year-ticks">
+              <span>2019</span><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span class="active">2025</span>
             </div>
           </div>
-          <div class="mc-signal">
-            <select onchange="setHeatMode(this.value)" id="sig-sel">
-              <option value="psf" selected>Heatmap: Price / ft²</option>
-              <option value="yld">Heatmap: Gross Yield %</option>
-              <option value="yoy">Heatmap: YoY Growth %</option>
-              <option value="txn">Heatmap: Transaction Volume</option>
-            </select>
+          <div class="mtb-year-badge" id="anim-year">2025</div>
+        </div>
+
+        <!-- Far right: legend pill -->
+        <div class="mtb-legend" id="mtb-legend">
+          <div class="mtb-leg-bar"></div>
+          <div class="mtb-leg-labels">
+            <span id="leg-lo">680</span><span id="leg-mid">1,683</span><span id="leg-hi">3,500+</span>
           </div>
-          <div class="mc-anim" id="mc-anim">
-            <div class="anim-top">
-              <span class="anim-lbl">Timeline</span>
-              <span class="anim-year" id="anim-year">2025</span>
-            </div>
-            <div class="anim-row">
-              <button class="anim-play" id="anim-play" onclick="playAnim()">▶ Play</button>
-              <input type="range" class="anim-range" id="anim-slider" min="2019" max="2025" step="1" value="2025" oninput="setAnimYear(this.value)">
-            </div>
-            <div class="anim-years">
-              <span>2019</span><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span>
-            </div>
-          </div>
-          <div class="mc-legend" id="mc-legend">
-            <div class="mc-leg-title" id="leg-title">Price per ft² (AED)</div>
-            <div class="mc-leg-bar" id="leg-bar" style="background:linear-gradient(90deg,#22C87A,#C9A84C,#F05252)"></div>
-            <div class="mc-leg-lbls" id="leg-lbls"><span>680</span><span>1,683</span><span>3,500+</span></div>
-            <div class="mc-leg-row"><div class="mc-leg-dot" style="background:#22C87A"></div><span id="leg-l1">Value &lt;1,200</span></div>
-            <div class="mc-leg-row"><div class="mc-leg-dot" style="background:#C9A84C"></div><span id="leg-l2">Mid 1,200–2,000</span></div>
-            <div class="mc-leg-row"><div class="mc-leg-dot" style="background:#FF8C42"></div><span id="leg-l3">Luxury 2,000–3,000</span></div>
-            <div class="mc-leg-row"><div class="mc-leg-dot" style="background:#F05252"></div><span id="leg-l4">Ultra &gt;3,000</span></div>
-          </div>
+          <div class="mtb-leg-unit" id="leg-unit">AED/ft²</div>
         </div>
       </div>
 
@@ -700,22 +817,22 @@ const AREA_POLYS={
   arabian:[[55.2618,25.0548],[55.2758,25.0478],[55.2918,25.0468],[55.3058,25.0528],[55.3138,25.0638],[55.3108,25.0758],[55.3008,25.0848],[55.2848,25.0888],[55.2678,25.0868],[55.2548,25.0778],[55.2488,25.0658],[55.2528,25.0568],[55.2618,25.0548]],
   bb:[[55.26521,25.19615],[55.26253,25.19383],[55.25948,25.19059],[55.25596,25.18671],[55.25559,25.18632],[55.25551,25.18624],[55.2551,25.18623],[55.25667,25.18577],[55.25866,25.1842],[55.25946,25.18379],[55.26042,25.18335],[55.26108,25.18316],[55.26222,25.18292],[55.26403,25.18327],[55.26504,25.18475],[55.2657,25.1859],[55.26857,25.18761],[55.27048,25.18751],[55.27432,25.18491],[55.27983,25.18358],[55.28068,25.18396],[55.28252,25.18502],[55.28366,25.18612],[55.28372,25.18626],[55.28397,25.18684],[55.28456,25.19005],[55.28551,25.19073],[55.28579,25.19086],[55.28751,25.19158],[55.29083,25.19362],[55.29051,25.19393],[55.28892,25.19467],[55.28836,25.19416],[55.28731,25.1935],[55.28631,25.19314],[55.28521,25.19278],[55.28428,25.19237],[55.28343,25.19147],[55.28242,25.1904],[55.28175,25.18956],[55.28155,25.18929],[55.27814,25.18496],[55.27797,25.18474],[55.27661,25.18599],[55.27453,25.18733],[55.2739,25.18772],[55.26984,25.19029],[55.26878,25.19125],[55.26842,25.19192],[55.26827,25.19219],[55.26817,25.19238],[55.26788,25.1931],[55.26752,25.19397],[55.26746,25.19413],[55.26716,25.1944],[55.26521,25.19615]],
   burdubai:[[55.33209,25.20527],[55.33379,25.20563],[55.33531,25.20749],[55.33594,25.21049],[55.33737,25.21339],[55.34158,25.21676],[55.34287,25.21782],[55.34463,25.21942],[55.34511,25.22149],[55.34511,25.22365],[55.34454,25.22554],[55.34255,25.22846],[55.33821,25.22613],[55.33752,25.22993],[55.33636,25.23318],[55.33505,25.23278],[55.3344,25.23329],[55.33163,25.23526],[55.32984,25.23704],[55.32915,25.23791],[55.32881,25.23832],[55.32784,25.2388],[55.32781,25.24031],[55.32697,25.24162],[55.32665,25.24326],[55.32615,25.24432],[55.32584,25.24569],[55.32488,25.24706],[55.32256,25.2492],[55.32172,25.24984],[55.31996,25.25138],[55.31487,25.25487],[55.31202,25.25743],[55.31112,25.25839],[55.31032,25.25932],[55.30944,25.26053],[55.30884,25.26169],[55.30833,25.26237],[55.30747,25.26319],[55.30602,25.264],[55.30479,25.26459],[55.30393,25.26481],[55.30337,25.26519],[55.3027,25.26535],[55.30155,25.26546],[55.29823,25.26552],[55.29394,25.26475],[55.29101,25.26517],[55.29023,25.26699],[55.29307,25.27054],[55.29442,25.2717],[55.29403,25.27454],[55.33209,25.20527]],
-  creek:[[55.3148,25.2018],[55.3308,25.1958],[55.3468,25.1948],[55.3588,25.2008],[55.3658,25.2098],[55.3638,25.2188],[55.3528,25.2268],[55.3368,25.2298],[55.3218,25.2258],[55.3108,25.2168],[55.3068,25.2068],[55.3148,25.2018]],
+  creek:[[55.3168,25.2008],[55.3328,25.1958],[55.3498,25.1958],[55.3628,25.2028],[55.3698,25.2128],[55.3668,25.2228],[55.3538,25.2298],[55.3368,25.2318],[55.3198,25.2268],[55.3068,25.2158],[55.3048,25.2058],[55.3168,25.2008]],
   damac2:[[55.2888,24.9648],[55.3048,24.9518],[55.3248,24.9478],[55.3468,24.9538],[55.3638,24.9688],[55.3668,24.9878],[55.3548,25.0018],[55.3308,25.0108],[55.3058,25.0118],[55.2818,25.0028],[55.2668,24.9878],[55.2658,24.9708],[55.2888,24.9648]],
   dh:[[55.2278,25.1008],[55.2408,25.0958],[55.2568,25.0938],[55.2718,25.0988],[55.2798,25.1068],[55.2808,25.1168],[55.2768,25.1258],[55.2688,25.1318],[55.2578,25.1358],[55.2458,25.1348],[55.2348,25.1308],[55.2258,25.1238],[55.2218,25.1148],[55.2228,25.1058],[55.2278,25.1008]],
   dh2:[[55.2368,25.0462],[55.2528,25.0398],[55.2718,25.0408],[55.2878,25.0508],[55.2968,25.0638],[55.2948,25.0778],[55.2808,25.0878],[55.2618,25.0918],[55.2428,25.0878],[55.2278,25.0778],[55.2208,25.0638],[55.2248,25.0498],[55.2368,25.0462]],
-  difc:[[55.2748,25.2118],[55.2818,25.2098],[55.2882,25.2118],[55.2908,25.2162],[55.2892,25.2212],[55.2832,25.2248],[55.2762,25.2244],[55.2712,25.2208],[55.2698,25.2158],[55.2718,25.2122],[55.2748,25.2118]],
+  difc:[[55.2718,25.2098],[55.2808,25.2068],[55.2888,25.2098],[55.2928,25.2158],[55.2908,25.2238],[55.2838,25.2278],[55.2748,25.2268],[55.2688,25.2218],[55.2678,25.2148],[55.2698,25.2108],[55.2718,25.2098]],
   dso:[[55.3748,25.1168],[55.3868,25.1118],[55.3988,25.1108],[55.4108,25.1158],[55.4168,25.1248],[55.4168,25.1368],[55.4108,25.1458],[55.3988,25.1508],[55.3858,25.1508],[55.3748,25.1448],[55.3678,25.1348],[55.3678,25.1248],[55.3748,25.1168]],
-  dsouth:[[55.0938,24.8928],[55.1248,24.8678],[55.1678,24.8578],[55.2138,24.8698],[55.2478,24.8988],[55.2458,24.9308],[55.2198,24.9568],[55.1788,24.9668],[55.1338,24.9578],[55.1038,24.9318],[55.0918,24.9028],[55.0938,24.8928]],
+  dsouth:[[55.0848,24.8858],[55.1218,24.8618],[55.1698,24.8528],[55.2198,24.8668],[55.2578,24.8998],[55.2548,24.9358],[55.2258,24.9648],[55.1808,24.9738],[55.1318,24.9638],[55.0988,24.9348],[55.0858,24.9028],[55.0848,24.8858]],
   dtn:[[55.29402,25.18315],[55.29255,25.18315],[55.28964,25.18289],[55.28809,25.18257],[55.28591,25.18179],[55.28377,25.18098],[55.28156,25.18024],[55.28019,25.1796],[55.27829,25.17839],[55.27655,25.17711],[55.2744,25.17538],[55.2731,25.17425],[55.27188,25.17316],[55.27001,25.17126],[55.26747,25.16931],[55.26665,25.16972],[55.26513,25.1702],[55.26354,25.17079],[55.26037,25.17266],[55.25275,25.17806],[55.25183,25.17869],[55.25081,25.17939],[55.24996,25.18001],[55.25018,25.1809],[55.25067,25.18143],[55.25149,25.18232],[55.25393,25.18497],[55.2551,25.18623],[55.25664,25.18789],[55.25756,25.1889],[55.25985,25.19137],[55.26129,25.19293],[55.26192,25.19362],[55.26198,25.19368],[55.26319,25.19499],[55.26381,25.19567],[55.26471,25.19664],[55.26526,25.19725],[55.26588,25.19796],[55.2663,25.19847],[55.26664,25.19888],[55.26696,25.1993],[55.26922,25.20251],[55.26976,25.20331],[55.27081,25.20485],[55.27175,25.20441],[55.27273,25.20391],[55.27516,25.20259],[55.27954,25.20018],[55.28322,25.19823],[55.28563,25.19694],[55.28793,25.19564],[55.28949,25.19481],[55.29086,25.19425],[55.29136,25.19399],[55.29208,25.19339],[55.29268,25.19256],[55.29303,25.19159],[55.29357,25.18969],[55.29378,25.18818],[55.294,25.18476],[55.29407,25.18347],[55.29402,25.18315]],
-  dubailand:[[55.3088,25.0568],[55.3368,25.0488],[55.3668,25.0538],[55.3928,25.0698],[55.4058,25.0918],[55.3988,25.1138],[55.3788,25.1288],[55.3528,25.1348],[55.3268,25.1268],[55.3048,25.1098],[55.2968,25.0878],[55.3018,25.0678],[55.3088,25.0568]],
+  dubailand:[[55.2988,25.0548],[55.3278,25.0468],[55.3618,25.0518],[55.3918,25.0688],[55.4078,25.0938],[55.3978,25.1178],[55.3748,25.1328],[55.3448,25.1378],[55.3148,25.1278],[55.2948,25.1088],[55.2858,25.0858],[55.2928,25.0648],[55.2988,25.0548]],
   intcity:[[55.4068,25.1698],[55.4198,25.1648],[55.4348,25.1668],[55.4448,25.1758],[55.4458,25.1888],[55.4368,25.1988],[55.4198,25.2028],[55.4038,25.1988],[55.3918,25.1888],[55.3918,25.1758],[55.3998,25.1688],[55.4068,25.1698]],
   jbr:[[55.1148,25.0798],[55.1218,25.0758],[55.1308,25.0748],[55.1398,25.0778],[55.1468,25.0828],[55.1498,25.0888],[55.1488,25.0948],[55.1448,25.0988],[55.1358,25.1008],[55.1268,25.0988],[55.1188,25.0948],[55.1148,25.0878],[55.1148,25.0798]],
   jlt:[[55.1318,25.0668],[55.1388,25.0628],[55.1468,25.0618],[55.1548,25.0658],[55.1598,25.0728],[55.1608,25.0808],[55.1578,25.0878],[55.1508,25.0918],[55.1418,25.0928],[55.1328,25.0898],[55.1268,25.0838],[55.1258,25.0748],[55.1318,25.0668]],
   jvc:[[55.2068,25.0718],[55.2108,25.0648],[55.2178,25.0588],[55.2268,25.0558],[55.2358,25.0568],[55.2428,25.0618],[55.2468,25.0688],[55.2478,25.0768],[55.2448,25.0848],[55.2378,25.0908],[55.2288,25.0928],[55.2198,25.0918],[55.2118,25.0878],[55.2058,25.0808],[55.2048,25.0728],[55.2068,25.0718]],
   jvc2:[[55.1848,25.0372],[55.1958,25.0318],[55.2078,25.0312],[55.2168,25.0368],[55.2208,25.0452],[55.2178,25.0538],[55.2068,25.0582],[55.1958,25.0578],[55.1858,25.0522],[55.1808,25.0432],[55.1848,25.0372]],
   marina:[[55.14498,25.0923],[55.14834,25.09462],[55.15175,25.08962],[55.1385,25.0713],[55.1287,25.06706],[55.12641,25.07084],[55.12977,25.06986],[55.13025,25.06936],[55.13073,25.06922],[55.13139,25.06898],[55.13193,25.06933],[55.13217,25.07023],[55.13425,25.07203],[55.13486,25.072],[55.1359,25.07243],[55.13646,25.07327],[55.13709,25.07517],[55.13761,25.07553],[55.13865,25.07572],[55.13922,25.07605],[55.1392,25.07705],[55.13997,25.07762],[55.14057,25.07767],[55.14075,25.07794],[55.13988,25.07853],[55.14022,25.07883],[55.14083,25.07917],[55.14175,25.07997],[55.1424,25.07963],[55.14272,25.08022],[55.14312,25.08054],[55.14347,25.08086],[55.14398,25.08103],[55.14459,25.0811],[55.14517,25.08226],[55.14583,25.08238],[55.1462,25.08241],[55.14641,25.08343],[55.14719,25.08367],[55.14775,25.08369],[55.14763,25.08412],[55.14781,25.0847],[55.14773,25.08528],[55.14751,25.08571],[55.14799,25.08602],[55.14755,25.08612],[55.14692,25.08623],[55.14643,25.08629],[55.14632,25.0869],[55.14585,25.08692],[55.1451,25.08652],[55.14226,25.08875],[55.14498,25.0923]],
-  meydan:[[55.30804,25.15729],[55.30824,25.1575],[55.3084,25.15772],[55.30851,25.15797],[55.30859,25.15823],[55.30862,25.15849],[55.30861,25.15876],[55.30855,25.15902],[55.30844,25.15927],[55.30831,25.1595],[55.30814,25.15971],[55.30794,25.15989],[55.30772,25.16004],[55.30747,25.16017],[55.3072,25.16026],[55.30693,25.16032],[55.30664,25.16033],[55.30657,25.16034],[55.30651,25.16037],[55.30647,25.16043],[55.30646,25.1605],[55.30649,25.16056],[55.30654,25.16061],[55.31087,25.16482],[55.30434,25.15896],[55.30329,25.15791],[55.30221,25.15688],[55.30112,25.15587],[55.30081,25.15557],[55.30052,25.15526],[55.30036,25.15506],[55.30023,25.15483],[55.30014,25.15459],[55.30009,25.15434],[55.30008,25.15409],[55.30011,25.15384],[55.30017,25.1536],[55.30028,25.15336],[55.30042,25.15314],[55.30059,25.15294],[55.30079,25.15277],[55.30101,25.15262],[55.30126,25.1525],[55.30152,25.15242],[55.30179,25.15237],[55.30205,25.15235],[55.30212,25.15234],[55.30218,25.15229],[55.30222,25.15223],[55.30222,25.15217],[55.30219,25.1521],[55.30214,25.15205],[55.30053,25.15046],[55.30804,25.15729]],
+  meydan:[[55.2888,25.1428],[55.3068,25.1388],[55.3218,25.1418],[55.3318,25.1528],[55.3368,25.1648],[55.3298,25.1758],[55.3148,25.1808],[55.2968,25.1778],[55.2808,25.1698],[55.2718,25.1568],[55.2748,25.1448],[55.2888,25.1428]],
   palm:[[55.1062,25.0978],[55.1148,25.0918],[55.1242,25.0888],[55.1348,25.0878],[55.1452,25.0908],[55.1532,25.0978],[55.1582,25.1068],[55.1598,25.1178],[55.1572,25.1288],[55.1518,25.1378],[55.1438,25.1438],[55.1338,25.1468],[55.1228,25.1448],[55.1132,25.1398],[55.1058,25.1318],[55.1018,25.1218],[55.1012,25.1108],[55.1042,25.1008],[55.1062,25.0978]],
   sportsct:[[55.2178,25.0248],[55.2318,25.0188],[55.2468,25.0188],[55.2578,25.0258],[55.2638,25.0378],[55.2618,25.0498],[55.2508,25.0578],[55.2348,25.0608],[55.2188,25.0558],[55.2088,25.0448],[55.2098,25.0318],[55.2178,25.0248]],
 };
@@ -1114,7 +1231,7 @@ function addHeatmapLayers(){
     id:'area-fill',type:'fill',source:'areas',
     paint:{
       'fill-color':['get','col'],
-      'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.38,0.13]
+      'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.32,0.08]
     }
   });
 
@@ -1123,7 +1240,7 @@ function addHeatmapLayers(){
     id:'area-line',type:'line',source:'areas',
     paint:{
       'line-color':['get','col'],
-      'line-width':['interpolate',['linear'],['zoom'],9,1,11,1.5,13,2.5],
+      'line-width':['interpolate',['linear'],['zoom'],9,1.5,11,2,13,3],
       'line-opacity':0.9
     }
   });
@@ -1288,15 +1405,16 @@ function toggleLayer(id,on){
   if(id==='buildings')_map&&_map.setLayoutProperty('3d-buildings','visibility',vis);
   if(id==='areas'){['area-fill','area-line'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});_markers.forEach(m=>{try{m.getElement().style.display=on?'':'none';}catch(e){}});}
   if(id==='projects'){['proj-dots-fill','proj-dots-stroke'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});}
-  if(id==='metro')['metro-line-glow','metro-line-red','tram-line','metro-rings','metro-stations-outer','metro-stations','metro-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
-  if(id==='zones'){['zones-fill','zones-line','zones-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});const zl=document.getElementById('zone-legend');if(zl)zl.style.display=on?'flex':'none';if(zl)zl.style.flexDirection='column';}
+  if(id==='metro')['metro-glow','metro-red','metro-green','metro-tram','metro-rings','metro-station-halo','metro-station-dot','metro-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
+  if(id==='zones'){['zones-fill','zones-line','zones-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}}); }
   if(id==='txndots'){if(on&&_map)buildTxnLayer();else try{if(_map&&_map.getLayer('txn-dots'))_map.setLayoutProperty('txn-dots','visibility','none');}catch(e){}}
 }
 
 /* ══════════════════════════════════════════════
    MAP CONTROLS ACCORDION
 ══════════════════════════════════════════════ */
-function toggleMC(){
+function toggleMC(){return;// toolbar replaces accordion
+  
   const body=document.getElementById('mc-body');
   const arrow=document.getElementById('mc-arrow');
   body.classList.toggle('hide');
@@ -2004,182 +2122,146 @@ function updateStatsBar(){
 ══════════════════════════════════════════════ */
 function buildMetroLayer(){
   if(!_map) return;
-  const CLEANUP=['metro-line-glow','metro-line-red','tram-line',
-    'metro-rings','metro-stations-outer','metro-stations','metro-labels',
-    'metro-line-green','tram-stops'];
-  CLEANUP.forEach(id=>{try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}});
-  ['metro-lines-src','metro-stations-src'].forEach(id=>{
-    try{if(_map.getSource(id))_map.removeSource(id);}catch(e){}
-  });
-  const vis=_layers.metro?'visible':'none';
+  const VIS=_layers.metro?'visible':'none';
+  // Clean up
+  ['metro-glow','metro-red','metro-green','metro-tram',
+   'metro-station-halo','metro-station-dot','metro-labels','metro-rings'
+  ].forEach(id=>{try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}});
+  ['metro-lines','metro-pts'].forEach(id=>{try{if(_map.getSource(id))_map.removeSource(id);}catch(e){}});
 
-  // ── Precise RTA Metro line coordinates ──────────────────
-  // Red Line: Expo2020 → GGICO (west→east spine of Dubai)
-  const RED=[
-    [55.0028,24.9988],[55.0218,25.0138],[55.0458,25.0268],[55.0628,25.0318],
-    [55.0808,25.0378],[55.1028,25.0448],// UAE Exchange
-    [55.1198,25.0608],// Discovery Gardens
-    [55.1288,25.0668],// Al Furjan
-    [55.1488,25.0538],// Ibn Battuta
-    [55.1368,25.0768],// Dubai Marina
-    [55.1468,25.0758],// DMCC
-    [55.1638,25.0978],// Media City
-    [55.1728,25.1008],// Knowledge Village
-    [55.1818,25.1068],// Internet City
-    [55.2008,25.1178],// Mall of the Emirates
-    [55.2098,25.1238],// First Abu Dhabi Bank
-    [55.2238,25.1348],// Sobha Realty
-    [55.2578,25.1868],// Business Bay
-    [55.2748,25.1978],// Burj Khalifa/Dubai Mall
-    [55.2838,25.2128],// Financial Centre
-    [55.3008,25.2368],// Emirates
-    [55.3128,25.2648],// Union ← interchange
-    [55.3018,25.2518],// BurJuman
-    [55.3308,25.2518],// Deira City Centre
-    [55.3618,25.2528],// Airport Terminal 1
-    [55.3748,25.2538],// Airport Terminal 3
-    [55.3888,25.2588] // GGICO
-  ];
-  // Green Line: Al Jadaf → Al Qiyadah
-  const GREEN=[
-    [55.3388,25.2228],// Al Jadaf
-    [55.3258,25.2298],// Creek
-    [55.3168,25.2368],// Healthcare City
-    [55.3018,25.2518],// BurJuman ← interchange
-    [55.3128,25.2648],// Union ← interchange
-    [55.3118,25.2728],// BaniYas Square
-    [55.3378,25.2878],// Abu Hail
-    [55.3648,25.2638],// Etisalat
-    [55.3778,25.2748],// Al Qusais
-    [55.3748,25.3088] // Al Qiyadah
-  ];
-  // Dubai Tram: Sobha Realty → Al Sufouh
-  const TRAM=[
-    [55.2108,25.0998],// Sobha Realty (interchange w/red)
-    [55.1798,25.1028],// Al Sufouh 1
-    [55.1698,25.0998],// Knowledge Village
-    [55.1628,25.0968],// Media City
-    [55.1498,25.0808],// Dubai Marina Mall
-    [55.1428,25.0778],// Dubai Marina
-    [55.1378,25.0748],// JLT
-    [55.1318,25.0768] // DAMAC Properties
-  ];
+  /* ── Real RTA line geometry (ordered by geography) ── */
+  const RED=[[55.1028,25.0448],[55.1198,25.0608],[55.1288,25.0668],
+    [55.1468,25.0758],[55.1368,25.0768],[55.1638,25.0978],
+    [55.1728,25.1008],[55.1818,25.1068],[55.2008,25.1178],
+    [55.2098,25.1238],[55.2238,25.1348],[55.2578,25.1868],
+    [55.2748,25.1978],[55.2838,25.2128],[55.3008,25.2368],
+    [55.3018,25.2518],[55.3308,25.2518],[55.3618,25.2528],
+    [55.3748,25.2538],[55.3888,25.2588]];
 
-  // ── Sources ──────────────────────────────────────────────
-  _map.addSource('metro-lines-src',{type:'geojson',data:{
-    type:'FeatureCollection',features:[
-      {type:'Feature',properties:{t:'red', col:'#FF3B52'},
-       geometry:{type:'LineString',coordinates:RED}},
-      {type:'Feature',properties:{t:'green',col:'#00C875'},
-       geometry:{type:'LineString',coordinates:GREEN}},
-      {type:'Feature',properties:{t:'tram', col:'#C9A84C'},
-       geometry:{type:'LineString',coordinates:TRAM}},
-    ]
-  }});
+  const GREEN=[[55.3018,25.2518],[55.3128,25.2648],
+    [55.3118,25.2728],[55.3168,25.2368],
+    [55.3258,25.2298],[55.3388,25.2228],
+    [55.3378,25.2878],[55.3648,25.2638],
+    [55.3778,25.2748],[55.3748,25.3088]];
 
-  _map.addSource('metro-stations-src',{type:'geojson',data:{
-    type:'FeatureCollection',features:[
-      ...METRO_STATIONS.map(s=>({type:'Feature',
-        properties:{name:s.name,line:s.line,
-          col:s.line==='red'?'#FF3B52':'#00C875',t:'metro'},
-        geometry:{type:'Point',coordinates:[s.lng,s.lat]}})),
-      ...TRAM_STOPS.map(s=>({type:'Feature',
-        properties:{name:s.name,line:'tram',col:'#C9A84C',t:'tram'},
-        geometry:{type:'Point',coordinates:[s.lng,s.lat]}})),
-    ]
-  }});
+  const TRAM=[[55.2108,25.0998],[55.1798,25.1028],
+    [55.1698,25.0998],[55.1628,25.0968],
+    [55.1498,25.0808],[55.1428,25.0778],
+    [55.1378,25.0748],[55.1318,25.0768]];
 
-  // ── Line glow (subtle halo for legibility) ───────────────
-  _map.addLayer({id:'metro-line-glow',type:'line',source:'metro-lines-src',
+  _map.addSource('metro-lines',{type:'geojson',data:{type:'FeatureCollection',features:[
+    {type:'Feature',properties:{t:'red'},  geometry:{type:'LineString',coordinates:RED}},
+    {type:'Feature',properties:{t:'green'},geometry:{type:'LineString',coordinates:GREEN}},
+    {type:'Feature',properties:{t:'tram'}, geometry:{type:'LineString',coordinates:TRAM}},
+  ]}});
+
+  /* ── Glow layer (wide, blurred, 20% opacity) ── */
+  _map.addLayer({id:'metro-glow',type:'line',source:'metro-lines',
     filter:['!=',['get','t'],'tram'],
     paint:{
-      'line-color':['get','col'],
-      'line-width':['interpolate',['linear'],['zoom'],9,8,13,18],
-      'line-opacity':0.12,'line-blur':6,
-    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+      'line-color':['match',['get','t'],'red','#FF3B52','#22C87A'],
+      'line-width':['interpolate',['linear'],['zoom'],9,10,13,22],
+      'line-opacity':0.15,'line-blur':8,
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
   });
 
-  // ── Metro lines (solid, sharp) ───────────────────────────
-  _map.addLayer({id:'metro-line-red',type:'line',source:'metro-lines-src',
-    filter:['!=',['get','t'],'tram'],
+  /* ── Red Line ── */
+  _map.addLayer({id:'metro-red',type:'line',source:'metro-lines',
+    filter:['==',['get','t'],'red'],
     paint:{
-      'line-color':['get','col'],
-      'line-width':['interpolate',['linear'],['zoom'],9,1.8,11,2.5,13,4,15,6],
-      'line-opacity':['interpolate',['linear'],['zoom'],9,0.7,11,0.9],
-    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+      'line-color':'#FF3B52',
+      'line-width':['interpolate',['linear'],['zoom'],9,2,11,3,13,4.5,15,6],
+      'line-opacity':0.92,
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
   });
 
-  // ── Tram line (gold dashed) ──────────────────────────────
-  _map.addLayer({id:'tram-line',type:'line',source:'metro-lines-src',
+  /* ── Green Line ── */
+  _map.addLayer({id:'metro-green',type:'line',source:'metro-lines',
+    filter:['==',['get','t'],'green'],
+    paint:{
+      'line-color':'#22C87A',
+      'line-width':['interpolate',['linear'],['zoom'],9,2,11,3,13,4.5,15,6],
+      'line-opacity':0.92,
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
+  });
+
+  /* ── Tram (gold dashed) ── */
+  _map.addLayer({id:'metro-tram',type:'line',source:'metro-lines',
     filter:['==',['get','t'],'tram'],
     paint:{
       'line-color':'#C9A84C',
-      'line-width':['interpolate',['linear'],['zoom'],9,1,11,1.5,13,2.5],
-      'line-opacity':0.7,
-      'line-dasharray':[5,4],
-    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+      'line-width':['interpolate',['linear'],['zoom'],9,1.5,12,2.5,15,4],
+      'line-opacity':0.8,'line-dasharray':[4,3],
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
   });
 
-  // ── Walkability rings — ONLY zoom 11.5+ (not at overview) ─
-  _map.addLayer({id:'metro-rings',type:'circle',source:'metro-stations-src',
-    minzoom:11.5,filter:['==',['get','t'],'metro'],
+  /* ── Station points ── */
+  _map.addSource('metro-pts',{type:'geojson',data:{type:'FeatureCollection',features:[
+    ...METRO_STATIONS.map(s=>({type:'Feature',
+      properties:{n:s.name,l:s.line,c:s.line==='red'?'#FF3B52':'#22C87A'},
+      geometry:{type:'Point',coordinates:[s.lng,s.lat]}})),
+    ...TRAM_STOPS.map(s=>({type:'Feature',
+      properties:{n:s.name,l:'tram',c:'#C9A84C'},
+      geometry:{type:'Point',coordinates:[s.lng,s.lat]}})),
+  ]}});
+
+  /* ── Walkability rings: 500m, only at zoom ≥ 11 ── */
+  _map.addLayer({id:'metro-rings',type:'circle',source:'metro-pts',
+    minzoom:11,
     paint:{
-      // 500m radius ~ 28px at z12
-      'circle-radius':['interpolate',['linear'],['zoom'],11.5,14,13,34,15,70],
-      'circle-color':['get','col'],
-      'circle-opacity':['interpolate',['linear'],['zoom'],11.5,0,12,0.05,14,0.08],
-      'circle-stroke-width':1,'circle-stroke-color':['get','col'],
-      'circle-stroke-opacity':['interpolate',['linear'],['zoom'],11.5,0,12,0.18,14,0.3],
-    },layout:{visibility:vis}
+      'circle-radius':['interpolate',['linear'],['zoom'],11,16,13,38,15,78],
+      'circle-color':['get','c'],'circle-opacity':0.04,
+      'circle-stroke-width':1,'circle-stroke-color':['get','c'],'circle-stroke-opacity':0.18,
+    },layout:{visibility:VIS}
   });
 
-  // ── Station dots ─────────────────────────────────────────
-  // White border ring
-  _map.addLayer({id:'metro-stations-outer',type:'circle',source:'metro-stations-src',
+  /* ── Station halo ── */
+  _map.addLayer({id:'metro-station-halo',type:'circle',source:'metro-pts',
     paint:{
-      'circle-radius':['interpolate',['linear'],['zoom'],9,3.5,12,5.5,15,9],
-      'circle-color':'#ffffff','circle-opacity':0.9,
-    },layout:{visibility:vis}
-  });
-  // Coloured fill
-  _map.addLayer({id:'metro-stations',type:'circle',source:'metro-stations-src',
-    paint:{
-      'circle-radius':['interpolate',['linear'],['zoom'],9,2.5,12,4,15,7],
-      'circle-color':['get','col'],'circle-opacity':1,
-    },layout:{visibility:vis}
+      'circle-radius':['interpolate',['linear'],['zoom'],9,5,12,8,15,13],
+      'circle-color':['get','c'],'circle-opacity':0.20,
+    },layout:{visibility:VIS}
   });
 
-  // ── Station name labels (zoom 12.5+) ─────────────────────
-  _map.addLayer({id:'metro-labels',type:'symbol',source:'metro-stations-src',
-    minzoom:12.5,
+  /* ── Station dot ── */
+  _map.addLayer({id:'metro-station-dot',type:'circle',source:'metro-pts',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,2.5,12,4.5,15,7],
+      'circle-color':['get','c'],
+      'circle-stroke-width':1.5,'circle-stroke-color':'rgba(255,255,255,.85)',
+      'circle-opacity':1,
+    },layout:{visibility:VIS}
+  });
+
+  /* ── Labels at zoom 12+ ── */
+  _map.addLayer({id:'metro-labels',type:'symbol',source:'metro-pts',
+    minzoom:12,
     layout:{
-      'text-field':['get','name'],'text-size':9,
+      'text-field':['get','n'],'text-size':9,
       'text-offset':[0,1.3],'text-anchor':'top',
       'text-font':['Noto Sans Regular'],
-      'text-max-width':8,
-      visibility:vis
+      visibility:VIS
     },
     paint:{
-      'text-color':'#EDE9E3',
-      'text-halo-color':'rgba(5,9,26,0.9)','text-halo-width':1.5,
-      'text-opacity':['interpolate',['linear'],['zoom'],12.5,0,13.5,1],
+      'text-color':'rgba(237,233,227,0.9)',
+      'text-halo-color':'rgba(5,9,26,0.9)','text-halo-width':2,
+      'text-opacity':['interpolate',['linear'],['zoom'],12,0,12.5,1],
     }
   });
 
-  // ── Hover tooltip ────────────────────────────────────────
-  const mPop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:10});
-  _map.on('mouseenter','metro-stations',e=>{
+  /* ── Hover tooltip ── */
+  const pop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:10,maxWidth:'180px'});
+  _map.on('mouseenter','metro-station-dot',e=>{
     _map.getCanvas().style.cursor='pointer';
     const p=e.features[0].properties;
-    const lineLabel=p.line==='red'?'Red Line ·Metro':p.line==='green'?'Green Line · Metro':'Dubai Tram';
-    mPop.setLngLat(e.lngLat).setHTML(
-      `<div style="padding:7px 10px">
-        <div style="font-size:12px;font-weight:600;color:#EDE9E3;margin-bottom:3px">${p.name}</div>
-        <div style="font-size:10px;color:${p.col}">${lineLabel}</div>
-      </div>`
-    ).addTo(_map);
+    const lineNames={red:'Red Line',green:'Green Line',tram:'Dubai Tram'};
+    pop.setLngLat(e.lngLat).setHTML(
+      `<div style="padding:8px 10px">
+        <div style="font-size:12px;font-weight:600;color:#EDE9E3;margin-bottom:2px">${p.n}</div>
+        <div style="font-size:10px;color:${p.c};letter-spacing:.5px">${lineNames[p.l]||p.l}</div>
+      </div>`).addTo(_map);
   });
-  _map.on('mouseleave','metro-stations',()=>{_map.getCanvas().style.cursor='';mPop.remove();});
+  _map.on('mouseleave','metro-station-dot',()=>{_map.getCanvas().style.cursor='';pop.remove();});
 }
 
 
@@ -2382,6 +2464,43 @@ function playAnim(){
     if(_animYear>=2025){clearInterval(_animTimer);_animPlaying=false;document.getElementById('anim-play').textContent='▶ Play';return;}
     setAnimYear(_animYear+1);
   },900);
+}
+
+
+/* ══════════════════════════════════════════════
+   TOOLBAR CONTROLS
+══════════════════════════════════════════════ */
+function mtbToggle(id, btn){
+  const on = !btn.classList.contains('active');
+  btn.classList.toggle('active', on);
+  toggleLayer(id, on);
+}
+
+function mtbSetMode(mode, btn){
+  document.querySelectorAll('.mtb-mode').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  setHeatMode(mode);
+  // Update legend unit label
+  const units={psf:'AED/ft²',yld:'Gross Yield',yoy:'YoY Growth',txn:'Transactions'};
+  const lo={psf:'680',yld:'4.5%',yoy:'5%',txn:'Low'};
+  const mid={psf:'1,683',yld:'7%',yoy:'15%',txn:'Med'};
+  const hi={psf:'3,500+',yld:'9.5%+',yoy:'30%+',txn:'High'};
+  const lu=document.getElementById('leg-unit');
+  const ll=document.getElementById('leg-lo');
+  const lm=document.getElementById('leg-mid');
+  const lh=document.getElementById('leg-hi');
+  if(lu)lu.textContent=units[mode];
+  if(ll)ll.textContent=lo[mode];
+  if(lm)lm.textContent=mid[mode];
+  if(lh)lh.textContent=hi[mode];
+}
+
+/* ── Override initAnimSlider for toolbar range ── */
+function initAnimSlider(){
+  const el=document.getElementById('anim-slider');
+  if(!el)return;
+  const pct=((+el.value-2019)/(2025-2019)*100).toFixed(1)+'%';
+  el.style.setProperty('--fill',pct);
 }
 
 /* ══════════════════════════════════════════════
