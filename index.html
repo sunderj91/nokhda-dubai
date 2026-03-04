@@ -698,39 +698,44 @@ function initGlobe(){
   sg.setAttribute('position',new THREE.Float32BufferAttribute(sv,3));
   scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.7})));
 
-  // Earth — load real texture via CORS proxy (propvr.tech has no CORS headers)
-  const TEXTURE_URL='https://view.propvr.tech/assets/globe/earthTexture.jpg';
-  const PROXY_URL='https://corsproxy.io/?url='+encodeURIComponent(TEXTURE_URL);
+  // Earth — attempt multiple texture sources, each with CORS support
+  // Primary: NASA visible earth (CORS enabled CDN)
+  // Backup 1: propvr.tech via corsproxy
+  // Backup 2: high-quality procedural
+  const TEXTURE_URLS=[
+    'https://unpkg.com/three-globe/example/img/earth-day.jpg',
+    'https://corsproxy.io/?url='+encodeURIComponent('https://view.propvr.tech/assets/globe/earthTexture.jpg'),
+    null // triggers procedural
+  ];
 
   const earthGeo=new THREE.SphereGeometry(1,72,72);
   const earthMat=new THREE.MeshPhongMaterial({
-    color:0x2266aa,  // deep ocean blue until texture loads
+    color:0x1a4a8a,
     specular:new THREE.Color(0x224466),
-    shininess:12
+    shininess:15
   });
   const earth=new THREE.Mesh(earthGeo,earthMat);
   earth.rotation.x=0.2;
   earth.rotation.y=-0.95;
   scene.add(earth);
 
-  // Load texture via proxy — THREE.TextureLoader handles everything
-  const tloader=new THREE.TextureLoader();
-  tloader.crossOrigin='anonymous';
-  tloader.load(
-    PROXY_URL,
-    tex=>{
-      tex.flipY=true;
-      earthMat.map=tex;
-      earthMat.color=new THREE.Color(0xffffff); // let texture show true color
-      earthMat.needsUpdate=true;
-    },
-    undefined,
-    ()=>{
-      // Proxy failed — try direct (may work if browser sends CORS)
-      tloader.load(TEXTURE_URL,
-        tex=>{tex.flipY=true;earthMat.map=tex;earthMat.color=new THREE.Color(0xffffff);earthMat.needsUpdate=true;},
-        undefined,
-        ()=>{
+  function applyTexture(url){
+    if(!url){ buildProceduralTex(); return; }
+    const tloader=new THREE.TextureLoader();
+    tloader.crossOrigin='anonymous';
+    tloader.load(url,
+      tex=>{
+        earthMat.map=tex;
+        earthMat.color=new THREE.Color(0xffffff);
+        earthMat.needsUpdate=true;
+      },
+      undefined,
+      ()=>{ applyTexture(TEXTURE_URLS[TEXTURE_URLS.indexOf(url)+1]); }
+    );
+  }
+  applyTexture(TEXTURE_URLS[0]);
+
+  function buildProceduralTex(){
           // Both failed — build a high-quality procedural texture
           const cv=document.createElement('canvas');cv.width=4096;cv.height=2048;
           const c=cv.getContext('2d');
@@ -754,7 +759,7 @@ function initGlobe(){
             c.closePath();c.fill();c.stroke();
           }
           // Africa — detailed
-          landShape([[37,10],[32,-5],[30,-17],[22,-34],[15,-30],[-5,-36],[-18,-30],[-22,-20],[-22,-10],[-16,5],[-5,8],[2,7],[5,10],[10,12],[15,11],[22,10],[30,4],[33,-2],[36,5],[37,10]],'#1a4015');
+          landShape([[37,10],[34,2],[32,-5],[28,-12],[28,-22],[22,-34],[15,-30],[8,-36],[0,-36],[-5,-36],[-18,-30],[-22,-20],[-22,-10],[-16,5],[-10,4],[-5,8],[2,7],[5,10],[10,12],[15,11],[22,10],[28,4],[32,-2],[36,5],[37,10]],'#1a4015');
           landShape([[30,4],[32,32],[22,37],[18,38],[12,44],[8,44],[5,36],[5,5],[10,12],[15,11],[22,10],[30,4]],'#1a4015'); // NE Africa  
           // Europe
           landShape([[36,36],[42,26],[46,12],[48,0],[44,-8],[38,-8],[36,0],[36,12],[38,24],[36,36]],'#1a4015');
@@ -784,12 +789,9 @@ function initGlobe(){
           const dg=c.createRadialGradient(dx,dy,0,dx,dy,80);
           dg.addColorStop(0,'rgba(201,168,76,0.5)');dg.addColorStop(1,'rgba(201,168,76,0)');
           c.fillStyle=dg;c.fillRect(dx-80,dy-80,160,160);
-          const ft=new THREE.CanvasTexture(cv);
-          earthMat.map=ft;earthMat.color=new THREE.Color(0xffffff);earthMat.needsUpdate=true;
-        }
-      );
-    }
-  );
+    const ft=new THREE.CanvasTexture(cv);
+    earthMat.map=ft;earthMat.color=new THREE.Color(0xffffff);earthMat.needsUpdate=true;
+  }
 
   // Atmosphere
   const atmGeo=new THREE.SphereGeometry(1.03,32,32);
@@ -842,7 +844,10 @@ function enterMap(){
   gw.classList.add('hide');
   setTimeout(()=>gw.style.display='none',700);
   document.getElementById('shell').style.display='flex';
-  if(!_map){setTimeout(initMap,50);}
+  if(!_map){
+    // Give browser one frame to render the shell at full size before MapLibre measures container
+    requestAnimationFrame(()=>requestAnimationFrame(initMap));
+  }
 }
 function exitGlobe(){
   const gw=document.getElementById('globe-wrap');
@@ -898,36 +903,38 @@ function initMap(){
     });
   }
 
-  _map.on('load',()=>{
+  let _mapBooted=false;
+  function bootMap(){
+    if(_mapBooted)return;
+    _mapBooted=true;
     initDeck();
     try{
-      _map.addLayer({id:'3d-buildings',type:'fill-extrusion','source-layer':'building',source:'composite',filter:['==','extrude','true'],minzoom:15,paint:{'fill-extrusion-color':'#1a2a44','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.6}});
-      _map.setLayoutProperty('3d-buildings','visibility','none');
+      if(!_map.getLayer('3d-buildings')){
+        _map.addLayer({id:'3d-buildings',type:'fill-extrusion','source-layer':'building',source:'composite',filter:['==','extrude','true'],minzoom:15,paint:{'fill-extrusion-color':'#1a2a44','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.6}});
+        _map.setLayoutProperty('3d-buildings','visibility','none');
+      }
     }catch(e){}
-    // Small delay ensures tile styles fully applied before adding sources
-    setTimeout(()=>{
-      drawHeatmap();
-      buildDeck();
-      buildTicker();
-      renderPanel();
-      renderRightDefault();
-      document.getElementById('zoom-ctrls').style.opacity='1';
-    },150);
-  });
-  // Fallback: if load already fired
-  if(_map.isStyleLoaded()){
-    initDeck();
-    setTimeout(()=>{drawHeatmap();buildDeck();buildTicker();renderPanel();renderRightDefault();},200);
+    drawHeatmap();
+    buildDeck();
+    buildTicker();
+    renderPanel();
+    renderRightDefault();
+    document.getElementById('zoom-ctrls').style.opacity='1';
   }
+
+  _map.on('load', bootMap);
+  _map.once('styledata', ()=>{ setTimeout(()=>{ if(_map.isStyleLoaded()) bootMap(); }, 100); });
+  setTimeout(()=>{ if(!_mapBooted && _map){ _mapBooted=false; bootMap(); } }, 8000);
 }
 
 /* ══════════════════════════════════════════════
    HEATMAP — fills districts, NO dots
 ══════════════════════════════════════════════ */
 function drawHeatmap(){
+  if(!_map || !_map.isStyleLoaded()) return;
   // Remove old layers
   ['area-fill','area-line','area-hover'].forEach(id=>{try{_map.removeLayer(id);}catch(e){}});
-  ['area-src'].forEach(id=>{try{_map.removeSource(id);}catch(e){}});
+  try{_map.removeSource('area-src');}catch(e){}
   _markers.forEach(m=>m.remove());_markers=[];
 
   const features=AREAS.map(a=>{
