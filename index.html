@@ -872,15 +872,15 @@ function drawBoundaries(){
   _map.addLayer({
     id:'area-fills', type:'fill', source:'area-fills-src',
     paint:{
-      'fill-color':['rgba',['get','r'],['get','g'],['get','b'],0.18],
+      'fill-color':['rgba',['get','r'],['get','g'],['get','b'],0.22],
       'fill-opacity':1
     }
   });
   _map.addLayer({
     id:'area-outlines', type:'line', source:'area-fills-src',
     paint:{
-      'line-color':['rgba',['get','r'],['get','g'],['get','b'],0.85],
-      'line-width':1.5,'line-dasharray':[2,1]
+      'line-color':['rgba',['get','r'],['get','g'],['get','b'],1.0],
+      'line-width':2.0
     }
   });
 
@@ -909,10 +909,14 @@ function drawBoundaries(){
     if(area){flyTo(area.lng,area.lat,13.5);showAreaDetail(area);}
   });
 
-  // Area labels
+  // Area labels — positioned at polygon centroid
   AREAS.forEach(area=>{
     const poly=AREA_POLYS[area.id];
     if(!poly)return;
+    // Compute centroid from polygon vertices
+    let cx=0,cy=0,n=poly.length;
+    poly.forEach(p=>{cx+=p[0];cy+=p[1];});
+    cx/=n; cy/=n;
     const [r,g,b]=heatColor(area,_heatMode);
     const el=document.createElement('div');
     el.className='area-label';
@@ -926,7 +930,7 @@ function drawBoundaries(){
     el.style.cssText=`background:${bgCol};border:1px solid ${bdCol};border-radius:5px;padding:4px 9px;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 3px 12px rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;gap:1px;min-width:70px`;
     el.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;color:${txtCol};white-space:nowrap;letter-spacing:0.3px">${psfVal}</div><div style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:${yoyCol};white-space:nowrap">${yoySign}${Math.abs(area.yoy)}% YoY</div>`;
     el.onclick=()=>{flyTo(area.lng,area.lat,13.5);showAreaDetail(area);};
-    const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([area.lng,area.lat]).addTo(_map);
+    const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cx||area.lng,cy||area.lat]).addTo(_map);
     _markers.push(m);
   });
 
@@ -982,8 +986,8 @@ function buildDeck(){
       id:'bubbles',data:AREAS,
       getPosition:d=>[d.lng,d.lat],
       getRadius:d=>Math.sqrt(d.txn)*18,
-      getFillColor:d=>[...heatColor(d,_heatMode),12],
-      getLineColor:d=>[...heatColor(d,_heatMode),110],
+      getFillColor:d=>[...heatColor(d,_heatMode),8],
+      getLineColor:d=>[...heatColor(d,_heatMode),130],
       lineWidthMinPixels:1,radiusMinPixels:6,
       pickable:true,
       onHover:({object,x,y})=>{},
@@ -1002,16 +1006,8 @@ function buildDeck(){
       pickable:true,
       onClick:({object})=>{if(object){flyTo(object.lng,object.lat,14,()=>showProjectDetail(object));}}
     }));
-    layers.push(new deck.TextLayer({
-      id:'proj-labels',data:proj,
-      getPosition:d=>[d.lng,d.lat+0.004],
-      getText:d=>d.name,
-      getSize:10,getColor:[240,237,232,200],
-      getTextAnchor:'middle',getAlignmentBaseline:'bottom',
-      fontFamily:'JetBrains Mono,monospace',
-      background:true,backgroundPadding:[3,2],
-      getBorderColor:[0,0,0,100],getBorderWidth:.5,
-    }));
+    // Project name labels removed — names shown in panel only
+    // (TextLayer white-box bug removed)
   }
   return layers;
 }
