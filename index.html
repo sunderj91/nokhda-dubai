@@ -88,7 +88,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .lp-filters{padding:7px 10px;display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--bord);flex-shrink:0}
 .chip{font-family:'DM Mono',monospace;font-size:8px;padding:3px 8px;border-radius:12px;border:1px solid var(--bord);color:var(--t3);cursor:pointer;transition:all .14s;letter-spacing:.3px}
 .chip.on{border-color:var(--gold);color:var(--gold);background:var(--gold-a)}
-#lp-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px}
+#lp-body{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 6px 60px}
 #lp-body::-webkit-scrollbar{width:3px}
 #lp-body::-webkit-scrollbar-thumb{background:var(--bord2);border-radius:2px}
 
@@ -97,7 +97,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .pc:hover,.pc.sel{border-color:var(--gold-a)}
 .pc-row{display:flex;justify-content:space-between;align-items:flex-start;gap:6px}
 .pc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
-.pc-name{font-size:12px;font-weight:500;color:var(--t1);line-height:1.3}
+.pc-name{font-size:12px;font-weight:500;color:var(--t1);line-height:1.3;display:block;min-height:16px}
 .pc-sub{font-size:10px;color:var(--t3);margin:2px 0 6px}
 .pc-psf{font-family:'DM Mono',monospace;font-size:12px;color:var(--gold);white-space:nowrap;text-align:right}
 .pc-yoy{font-family:'DM Mono',monospace;font-size:9px;color:var(--green);white-space:nowrap;text-align:right}
@@ -289,7 +289,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 /* Present mode */
 body.present #lp,body.present #rp,body.present #hdr,body.present #statsbar,body.present #map-ctrl,body.present #zoom-ctrls,body.present #src-note{display:none!important}
 body.present #main{height:100vh}
+#exit-present{display:none;position:fixed;top:14px;right:14px;z-index:9999;background:rgba(8,13,26,.85);border:1px solid rgba(201,168,76,.4);border-radius:6px;padding:7px 14px;color:var(--gold);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;backdrop-filter:blur(8px)}
+body.present #exit-present{display:flex;align-items:center;gap:6px}
 
+/* Selection marker */
+.sel-marker{pointer-events:none}
+.sel-ring{width:36px;height:36px;border-radius:50%;border:2px solid var(--gold);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:ring-pulse 1.8s ease-out infinite}
+.sel-ring2{width:52px;height:52px;border-radius:50%;border:1px solid rgba(201,168,76,.35);position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);animation:ring-pulse 1.8s ease-out .4s infinite}
+.sel-dot{width:10px;height:10px;border-radius:50%;background:var(--gold);border:2px solid #fff;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(201,168,76,.8)}
+.proj-marker{pointer-events:none}
+.proj-pin{background:var(--surf);border:1.5px solid rgba(201,168,76,.7);border-radius:6px;padding:3px 7px;backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(0,0,0,.5);white-space:nowrap;position:relative}
+.proj-pin::after{content:"";position:absolute;bottom:-5px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(201,168,76,.7)}
+.proj-pin-name{font-family:"DM Mono",monospace;font-size:8px;color:var(--gold);letter-spacing:.3px}
+.proj-pin-psf{font-family:"DM Mono",monospace;font-size:7px;color:var(--t2)}
+@keyframes ring-pulse{0%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-50%) scale(2.2)}}
 /* Maplibre popup override */
 .maplibregl-popup-content{background:var(--surf)!important;border:1px solid var(--bord2)!important;border-radius:var(--r)!important;padding:0!important;box-shadow:var(--s2)!important;color:var(--t1)!important;font-family:'DM Sans',sans-serif!important}
 .maplibregl-popup-tip{border-top-color:var(--surf)!important;border-bottom-color:var(--surf)!important}
@@ -457,6 +470,7 @@ body.present #main{height:100vh}
   </div>
 
 </div><!-- /shell -->
+<button id="exit-present" onclick="togglePresent()">⊞ EXIT PRESENT</button>
 
 <!-- PORTFOLIO MODAL -->
 <div id="port-modal" onclick="if(event.target===this)this.classList.remove('show')">
@@ -621,7 +635,7 @@ const AREA_POLYS={
    STATE
 ══════════════════════════════════════════════ */
 let _map=null, _deck=null, _heatMode='psf', _gRaf=null;
-let _markers=[], _selArea=null, _selProj=null;
+let _markers=[], _selArea=null, _selProj=null, _selMarker=null, _projMarkers=[];
 let _tab='proj', _listMode='buy', _search='';
 let _filters=new Set(['all']);
 let _lpOpen=true, _rpOpen=true;
@@ -655,19 +669,48 @@ function initGlobe(){
   scene.add(new THREE.Points(sg,new THREE.PointsMaterial({color:0xffffff,size:0.06,transparent:true,opacity:0.7})));
 
   // Earth with real texture
-  const loader=new THREE.TextureLoader();
-  loader.crossOrigin='anonymous';
+  // Build procedural Earth texture as canvas
+  const texCv=document.createElement('canvas');texCv.width=2048;texCv.height=1024;
+  const tc=texCv.getContext('2d');
+  // Ocean
+  const og=tc.createLinearGradient(0,0,0,1024);
+  og.addColorStop(0,'#071425');og.addColorStop(.35,'#0a1e36');og.addColorStop(.65,'#0a1e36');og.addColorStop(1,'#071425');
+  tc.fillStyle=og;tc.fillRect(0,0,2048,1024);
+  // Ocean shimmer
+  for(let i=0;i<600;i++){tc.fillStyle=`rgba(${30+Math.random()*20},${80+Math.random()*40},${140+Math.random()*40},${.04+Math.random()*.04})`;tc.fillRect(Math.random()*2048,Math.random()*1024,Math.random()*80+10,Math.random()*4+1);}
+  function ll2xy(lat,lon){return[(lon+180)/360*2048,(90-lat)/180*1024];}
+  function land(pts,col){tc.fillStyle=col;tc.strokeStyle='rgba(100,160,80,.2)';tc.lineWidth=1;tc.beginPath();let[sx,sy]=ll2xy(pts[0][0],pts[0][1]);tc.moveTo(sx,sy);for(let i=1;i<pts.length;i++){let[x,y]=ll2xy(pts[i][0],pts[i][1]);tc.lineTo(x,y);}tc.closePath();tc.fill();tc.stroke();}
+  // Africa
+  land([[38,12],[30,-10],[5,-36],[-18,-30],[-17,15],[-5,5],[5,10],[15,12],[25,11],[33,5],[38,12]],'#1e4a18');
+  // Europe
+  land([[36,36],[28,42],[22,46],[12,48],[0,48],[-8,44],[-5,36],[5,36],[15,38],[28,40],[36,36]],'#1e4a18');
+  // Asia
+  land([[30,72],[42,66],[60,68],[80,55],[100,58],[120,52],[135,48],[140,43],[135,34],[120,25],[100,12],[85,10],[70,22],[55,25],[42,38],[35,42],[30,50],[28,58],[30,65],[30,72]],'#1e5018');
+  // Arabian Peninsula  
+  land([[28,29],[35,29],[42,26],[58,24],[62,20],[56,12],[45,12],[38,15],[33,19],[28,25],[28,29]],'#2d5a1a');
+  // N America
+  land([[72,-140],[65,-128],[52,-128],[45,-124],[38,-122],[32,-118],[25,-98],[20,-90],[18,-88],[20,-80],[28,-80],[35,-78],[42,-74],[48,-68],[55,-62],[62,-66],[70,-82],[72,-100],[72,-120],[72,-140]],'#1e4a18');
+  // S America
+  land([[12,-72],[10,-62],[4,-52],[0,-50],[-10,-38],[-20,-40],[-35,-54],[-52,-68],[-55,-68],[-48,-75],[-38,-73],[-28,-71],[-15,-76],[-5,-81],[0,-78],[8,-77],[12,-72]],'#1e4a18');
+  // Australia
+  land([[-15,131],[-14,144],[-24,150],[-38,147],[-38,140],[-33,124],[-22,114],[-18,122],[-15,131]],'#1e4a18');
+  // Grid lines
+  tc.strokeStyle='rgba(100,150,255,.04)';tc.lineWidth=1;
+  for(let lat=-60;lat<=60;lat+=30){let[,y]=ll2xy(lat,0);tc.beginPath();tc.moveTo(0,y);tc.lineTo(2048,y);tc.stroke();}
+  for(let lon=-150;lon<=150;lon+=30){let[x]=ll2xy(0,lon);tc.beginPath();tc.moveTo(x,0);tc.lineTo(x,1024);tc.stroke();}
+  const fallbackTex=new THREE.CanvasTexture(texCv);
+
   const earthGeo=new THREE.SphereGeometry(1,64,64);
-  const earthMat=new THREE.MeshPhongMaterial({color:0x226622,specular:new THREE.Color(0x112233),shininess:6});
+  const earthMat=new THREE.MeshPhongMaterial({map:fallbackTex,specular:new THREE.Color(0x112233),shininess:8});
   const earth=new THREE.Mesh(earthGeo,earthMat);
-  earth.rotation.x=0.2; // Tilt to show Middle East better
-  earth.rotation.y=-0.95; // Start with Dubai facing viewer
+  earth.rotation.x=0.2;
+  earth.rotation.y=-0.95;
   scene.add(earth);
 
-  loader.load('https://view.propvr.tech/assets/globe/earthTexture.jpg',
-    tex=>{earthMat.map=tex;earthMat.color=new THREE.Color(0xffffff);earthMat.needsUpdate=true;},
-    undefined, ()=>{console.log('Using fallback globe texture');}
-  );
+  // Try to load real texture — replace if CORS allows
+  const img=new Image();img.crossOrigin='anonymous';
+  img.onload=()=>{const t=new THREE.Texture(img);t.needsUpdate=true;earthMat.map=t;earthMat.needsUpdate=true;};
+  img.src='https://view.propvr.tech/assets/globe/earthTexture.jpg';
 
   // Atmosphere
   const atmGeo=new THREE.SphereGeometry(1.03,32,32);
@@ -798,17 +841,17 @@ function drawHeatmap(){
       geometry:{type:'Polygon',coordinates:[ring]}};
   }).filter(Boolean);
 
-  _map.addSource('area-src',{type:'geojson',data:{type:'FeatureCollection',features}});
+  _map.addSource('area-src',{type:'geojson',data:{type:'FeatureCollection',features},generateId:true});
 
   // Fill — colored by heatmap signal
   _map.addLayer({id:'area-fill',type:'fill',source:'area-src',paint:{
-    'fill-color':['rgba',['get','r'],['get','g'],['get','b'],0.28],
+    'fill-color':['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.28],
     'fill-opacity':['case',['boolean',['feature-state','hover'],false],1,1]
   }});
 
   // Outline
   _map.addLayer({id:'area-line',type:'line',source:'area-src',paint:{
-    'line-color':['rgba',['get','r'],['get','g'],['get','b'],0.9],
+    'line-color':['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.9],
     'line-width':1.8
   }});
 
@@ -825,14 +868,14 @@ function drawHeatmap(){
     _map.setFeatureState({source:'area-src',id:hovId},{hover:true});
     // Brighten fill on hover
     _map.setPaintProperty('area-fill','fill-color',['case',['==',['get','id'],f.properties.id],
-      ['rgba',['get','r'],['get','g'],['get','b'],0.45],
-      ['rgba',['get','r'],['get','g'],['get','b'],0.28]
+      ['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.48],
+      ['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.28]
     ]);
     popup.setLngLat(e.lngLat).setHTML(`<div class="map-tt"><div class="tt-name">${a.name}</div><div class="tt-row"><span class="tt-k">Price/ft²</span><span class="tt-v">AED ${a.psf.toLocaleString()}</span></div><div class="tt-row"><span class="tt-k">YoY</span><span class="tt-up">↑${a.yoy}%</span></div><div class="tt-row"><span class="tt-k">Yield</span><span class="tt-v">${a.yld}%</span></div><div class="tt-row"><span class="tt-k">Transactions</span><span class="tt-v">${a.txn.toLocaleString()}</span></div></div>`).addTo(_map);
   });
   _map.on('mouseleave','area-fill',()=>{
     _map.getCanvas().style.cursor='';popup.remove();
-    _map.setPaintProperty('area-fill','fill-color',['rgba',['get','r'],['get','g'],['get','b'],0.28]);
+    _map.setPaintProperty('area-fill','fill-color',['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.28]);
   });
   _map.on('click','area-fill',e=>{
     if(!e.features.length)return;
@@ -896,9 +939,35 @@ function toggleMC(){
 /* ══════════════════════════════════════════════
    SELECTION
 ══════════════════════════════════════════════ */
+function clearSelMarker(){if(_selMarker){_selMarker.remove();_selMarker=null;}}
+
+function placeAreaMarker(a){
+  clearSelMarker();
+  const poly=AREA_POLYS[a.id];
+  let cx=a.lng,cy=a.lat;
+  if(poly){let sx=0,sy=0;poly.forEach(p=>{sx+=p[0];sy+=p[1];});cx=sx/poly.length;cy=sy/poly.length;}
+  const el=document.createElement('div');
+  el.className='sel-marker';
+  el.style.cssText='width:60px;height:60px;position:relative';
+  el.innerHTML='<div class="sel-ring2"></div><div class="sel-ring"></div><div class="sel-dot"></div>';
+  _selMarker=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cx,cy]).addTo(_map);
+}
+
+function placeProjectMarker(p){
+  clearSelMarker();
+  const el=document.createElement('div');
+  el.className='proj-marker';
+  el.innerHTML=`<div class="proj-pin"><div class="proj-pin-name">${p.name}</div><div class="proj-pin-psf">AED ${p.psf>=1000?(p.psf/1000).toFixed(1)+'K':p.psf}/ft² · ${p.comp}</div></div>`;
+  _selMarker=new maplibregl.Marker({element:el,anchor:'bottom'}).setLngLat([p.lng,p.lat]).addTo(_map);
+}
+
 function selectArea(a){
   _selArea=a;_selProj=null;
-  _map.flyTo({center:[a.lng,a.lat],zoom:13.5,pitch:35,bearing:0,duration:1000});
+  const poly=AREA_POLYS[a.id];
+  let cx=a.lng,cy=a.lat;
+  if(poly){let sx=0,sy=0;poly.forEach(p=>{sx+=p[0];sy+=p[1];});cx=sx/poly.length;cy=sy/poly.length;}
+  _map.flyTo({center:[cx,cy],zoom:13.5,pitch:35,bearing:0,duration:1000});
+  placeAreaMarker(a);
   showAreaDetail(a);
   // Highlight in left panel
   document.querySelectorAll('.ac').forEach(el=>el.classList.remove('sel'));
@@ -909,6 +978,7 @@ function selectArea(a){
 function selectProject(p){
   _selProj=p;_selArea=AMAP[p.areaId];
   _map.flyTo({center:[p.lng,p.lat],zoom:15,pitch:45,duration:1000});
+  placeProjectMarker(p);
   showProjectDetail(p);
   document.querySelectorAll('.pc').forEach(el=>el.classList.remove('sel'));
   const el=document.getElementById('pc-'+p.id);
@@ -917,6 +987,7 @@ function selectProject(p){
 
 function clearSelection(){
   _selArea=null;_selProj=null;
+  clearSelMarker();
   renderRightDefault();
 }
 
