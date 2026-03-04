@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nokhda · Dubai Property Intelligence</title>
+<title>Raqam · Dubai Real Estate Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
@@ -278,7 +278,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .port-input{background:var(--bg2);border:1px solid var(--bord);color:var(--t1);padding:7px 10px;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:100%}
 .port-input:focus{border-color:var(--gold-a)}
 .port-select{background:var(--bg2);border:1px solid var(--bord);color:var(--t1);padding:7px 10px;border-radius:var(--r);font-family:'DM Mono',monospace;font-size:11px;outline:none;width:100%;cursor:pointer}
-.port-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.port-kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:12px}
 .port-kpi{background:var(--bg2);border-radius:var(--r);padding:10px 12px;text-align:center}
 .port-kpi-v{font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--gold)}
 .port-kpi-l{font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
@@ -312,8 +312,8 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 
 <!-- GLOBE INTRO -->
 <div id="globe-wrap">
-  <div class="g-title">Nokhda</div>
-  <div class="g-sub">Dubai Property Intelligence</div>
+  <div class="g-title">Raqam</div>
+  <div class="g-sub">Dubai Real Estate Intelligence</div>
   <div id="globe-3d"></div>
   <div class="g-hint">Click to enter Dubai market</div>
 </div>
@@ -323,7 +323,7 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 
   <!-- HEADER -->
   <div id="hdr">
-    <div class="hdr-brand">Nokhda</div>
+    <div class="hdr-brand">Raqam</div>
     <div class="hdr-loc">Dubai · 2025</div>
     <div class="hdr-stats">
       <div class="hs"><div class="hs-v">226,000</div><div class="hs-l">Transactions</div></div>
@@ -637,7 +637,7 @@ const AREA_POLYS={
 let _map=null, _deck=null, _heatMode='psf', _gRaf=null;
 let _markers=[], _selArea=null, _selProj=null, _selMarker=null, _projMarkers=[];
 let _tab='proj', _listMode='buy', _search='';
-let _filters=new Set(['all']);
+let _filters=new Set(['all']), _areaFilter='all';
 let _lpOpen=true, _rpOpen=true;
 const AMAP={};
 AREAS.forEach(a=>AMAP[a.id]=a);
@@ -810,9 +810,11 @@ function initMap(){
   });
 
   _map.on('load',()=>{
-    // 3D buildings (off by default)
-    _map.addLayer({id:'3d-buildings',source:'carto',type:'fill-extrusion','source-layer':'building',filter:['==','extrude','true'],minzoom:15,paint:{'fill-extrusion-color':'#1a2a44','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.6}});
-    _map.setLayoutProperty('3d-buildings','visibility','none');
+    // 3D buildings (off by default) — wrap in try/catch to not abort load
+    try{
+      _map.addLayer({id:'3d-buildings',type:'fill-extrusion','source-layer':'building',source:'composite',filter:['==','extrude','true'],minzoom:15,paint:{'fill-extrusion-color':'#1a2a44','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.6}});
+      _map.setLayoutProperty('3d-buildings','visibility','none');
+    }catch(e){}
     drawHeatmap();
     buildDeck();
     buildTicker();
@@ -837,7 +839,9 @@ function drawHeatmap(){
     const ring=[...poly];
     if(ring[0][0]!==ring[ring.length-1][0])ring.push(ring[0]);
     const [r,g,b]=heatColor(a,_heatMode);
-    return {type:'Feature',properties:{id:a.id,r,g,b,name:a.name,psf:a.psf,yoy:a.yoy,yld:a.yld,txn:a.txn},
+    const toHex=v=>v.toString(16).padStart(2,'0');
+    const col='#'+toHex(r)+toHex(g)+toHex(b);
+    return {type:'Feature',properties:{id:a.id,col,name:a.name,psf:a.psf,yoy:a.yoy,yld:a.yld,txn:a.txn},
       geometry:{type:'Polygon',coordinates:[ring]}};
   }).filter(Boolean);
 
@@ -845,14 +849,15 @@ function drawHeatmap(){
 
   // Fill — colored by heatmap signal
   _map.addLayer({id:'area-fill',type:'fill',source:'area-src',paint:{
-    'fill-color':['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.28],
-    'fill-opacity':['case',['boolean',['feature-state','hover'],false],1,1]
+    'fill-color':['get','col'],
+    'fill-opacity':0.30
   }});
 
   // Outline
   _map.addLayer({id:'area-line',type:'line',source:'area-src',paint:{
-    'line-color':['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.9],
-    'line-width':1.8
+    'line-color':['get','col'],
+    'line-width':2,
+    'line-opacity':0.85
   }});
 
   // Hover state
@@ -867,15 +872,12 @@ function drawHeatmap(){
     hovId=f.id;
     _map.setFeatureState({source:'area-src',id:hovId},{hover:true});
     // Brighten fill on hover
-    _map.setPaintProperty('area-fill','fill-color',['case',['==',['get','id'],f.properties.id],
-      ['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.48],
-      ['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.28]
-    ]);
+    _map.setPaintProperty('area-fill','fill-opacity',['case',['==',['get','id'],f.properties.id],0.52,0.30]);
     popup.setLngLat(e.lngLat).setHTML(`<div class="map-tt"><div class="tt-name">${a.name}</div><div class="tt-row"><span class="tt-k">Price/ft²</span><span class="tt-v">AED ${a.psf.toLocaleString()}</span></div><div class="tt-row"><span class="tt-k">YoY</span><span class="tt-up">↑${a.yoy}%</span></div><div class="tt-row"><span class="tt-k">Yield</span><span class="tt-v">${a.yld}%</span></div><div class="tt-row"><span class="tt-k">Transactions</span><span class="tt-v">${a.txn.toLocaleString()}</span></div></div>`).addTo(_map);
   });
   _map.on('mouseleave','area-fill',()=>{
     _map.getCanvas().style.cursor='';popup.remove();
-    _map.setPaintProperty('area-fill','fill-color',['rgba',['to-number',['get','r']],['to-number',['get','g']],['to-number',['get','b']],0.28]);
+    _map.setPaintProperty('area-fill','fill-opacity',0.30);
   });
   _map.on('click','area-fill',e=>{
     if(!e.features.length)return;
@@ -1159,7 +1161,7 @@ function renderPanel(){
 }
 
 function switchTab(t){
-  _tab=t;
+  _tab=t;_areaFilter='all';
   ['proj','area','list','txn'].forEach(id=>{
     document.getElementById('tab-'+id).classList.toggle('active',id===t);
   });
@@ -1184,10 +1186,13 @@ function renderBody(){
     let projs=PROJECTS.filter(p=>{
       if(s&&!p.name.toLowerCase().includes(s)&&!p.area.toLowerCase().includes(s)&&!p.dev.toLowerCase().includes(s))return false;
       if(_filters.has('all'))return true;
-      if(_filters.has('visa')&&!p.visa)return false;
-      if(_filters.has('off')&&p.status!=='off')return false;
-      if(_filters.has('const')&&p.status!=='const')return false;
-      if(_filters.has('ready')&&p.status!=='ready')return false;
+      // OR logic: show if matches any active filter
+      const statusMatch=(_filters.has('off')&&p.status==='off')||(_filters.has('const')&&p.status==='const')||(_filters.has('ready')&&p.status==='ready');
+      const visaOnly=_filters.has('visa');
+      const hasStatusFilter=_filters.has('off')||_filters.has('const')||_filters.has('ready');
+      if(hasStatusFilter&&visaOnly)return statusMatch&&p.visa;
+      if(hasStatusFilter)return statusMatch;
+      if(visaOnly)return p.visa;
       return true;
     });
     body.innerHTML=projs.map(p=>`
@@ -1208,6 +1213,7 @@ function renderBody(){
   } else if(_tab==='area'){
     const maxTxn=Math.max(...AREAS.map(a=>a.txn));
     let areas=[...AREAS].sort((a,b)=>b.val-a.val);
+    if(_areaFilter!=='all')areas=areas.filter(a=>a.tier===_areaFilter);
     if(s)areas=areas.filter(a=>a.name.toLowerCase().includes(s));
     body.innerHTML=areas.map(a=>{
       const [r,g,b]=heatColor(a,_heatMode);
@@ -1281,6 +1287,7 @@ function toggleFilter(el,f){
 function toggleAreaFilter(el,f){
   document.querySelectorAll('#lp-filters .chip').forEach(c=>c.classList.remove('on'));
   el.classList.add('on');
+  _areaFilter=f;
   renderBody();
 }
 
@@ -1383,33 +1390,84 @@ function buildTicker(){
 ══════════════════════════════════════════════ */
 function calcPortfolio(){
   const val=+document.getElementById('port-val').value||2000000;
-  const dp=+document.getElementById('port-dp').value||25;
+  const dp=Math.max(20,+document.getElementById('port-dp').value||25);
   const rate=+document.getElementById('port-rate').value||4.5;
-  const hold=+document.getElementById('port-hold').value||5;
+  const hold=Math.max(1,+document.getElementById('port-hold').value||5);
   const rent=+document.getElementById('port-rent').value||8500;
   const areaId=document.getElementById('port-area').value;
   const area=AMAP[areaId]||AMAP['bb'];
 
   const equity=val*dp/100;
   const loan=val-equity;
-  const monthly_rate=rate/100/12;
-  const months=25*12;
-  const mortgage_payment=loan*(monthly_rate*Math.pow(1+monthly_rate,months))/(Math.pow(1+monthly_rate,months)-1);
+  const mr=rate/100/12;
+  const n=25*12; // 25yr mortgage
+  const monthly_mtg=mr>0?loan*(mr*Math.pow(1+mr,n))/(Math.pow(1+mr,n)-1):loan/n;
   const annual_rent=rent*12;
-  const annual_expense=annual_rent*0.15;
-  const net_rent=annual_rent-annual_expense-mortgage_payment*12;
-  const coc=net_rent/equity*100;
-  const exit_base=val*Math.pow(1+area.yoy/100,hold);
-  const irr=(Math.pow(exit_base/equity,1/hold)-1)*100;
+  const service_charge=val*0.015; // 1.5% service charge annually
+  const mgmt_fee=annual_rent*0.08;
+  const vacancy=annual_rent*0.05;
+  const net_annual=annual_rent-service_charge-mgmt_fee-vacancy-monthly_mtg*12;
+  const gross_yield=(annual_rent/val*100).toFixed(1);
+  const net_yield=(net_annual/val*100);
+  const coc=(net_annual/equity*100);
+  // Use area's conservative growth (half of peak YoY)
+  const growth_rate=area.yoy*0.55/100;
+  const exit_val=val*Math.pow(1+growth_rate,hold);
+  const capital_gain=exit_val-val;
+  // Total return: capital gain + cumulative net cashflow
+  const total_return=capital_gain+(net_annual*hold);
+  const total_irr=(Math.pow((equity+total_return)/equity,1/hold)-1)*100;
+  const breakeven_yr=net_annual>=0?0:Math.ceil(-equity/net_annual);
 
   document.getElementById('port-results').innerHTML=`
-    <div class="port-kpi"><div class="port-kpi-v">AED ${(equity/1e6).toFixed(2)}M</div><div class="port-kpi-l">Equity / Down</div></div>
-    <div class="port-kpi"><div class="port-kpi-v">AED ${Math.round(mortgage_payment).toLocaleString()}</div><div class="port-kpi-l">Monthly Mortgage</div></div>
-    <div class="port-kpi"><div class="port-kpi-v" style="color:${net_rent>0?'var(--green)':'var(--red)'}">${net_rent>0?'+':''}AED ${Math.round(net_rent/12).toLocaleString()}/mo</div><div class="port-kpi-l">Net Cashflow</div></div>
-    <div class="port-kpi"><div class="port-kpi-v">${coc.toFixed(1)}%</div><div class="port-kpi-l">Cash-on-Cash</div></div>
-    <div class="port-kpi"><div class="port-kpi-v" style="color:var(--gold)">AED ${(exit_base/1e6).toFixed(1)}M</div><div class="port-kpi-l">Exit Value (Base)</div></div>
-    <div class="port-kpi"><div class="port-kpi-v" style="color:var(--green)">${irr.toFixed(1)}%</div><div class="port-kpi-l">Est. IRR</div></div>
+    <div class="port-kpi"><div class="port-kpi-v" style="color:var(--gold)">AED ${(equity/1e6).toFixed(2)}M</div><div class="port-kpi-l">Down Payment</div></div>
+    <div class="port-kpi"><div class="port-kpi-v">AED ${Math.round(monthly_mtg).toLocaleString()}</div><div class="port-kpi-l">Monthly Mortgage</div></div>
+    <div class="port-kpi"><div class="port-kpi-v" style="color:${net_annual>=0?'var(--green)':'var(--red)'}">${net_annual>=0?'+':''}AED ${Math.round(net_annual/12).toLocaleString()}/mo</div><div class="port-kpi-l">Net Cashflow</div></div>
+    <div class="port-kpi"><div class="port-kpi-v">${gross_yield}% / ${net_yield.toFixed(1)}%</div><div class="port-kpi-l">Gross / Net Yield</div></div>
+    <div class="port-kpi"><div class="port-kpi-v" style="color:var(--green)">AED ${(exit_val/1e6).toFixed(2)}M</div><div class="port-kpi-l">Exit Value (${hold}yr)</div></div>
+    <div class="port-kpi"><div class="port-kpi-v" style="color:${total_irr>0?'var(--green)':'var(--red)'}'">${total_irr.toFixed(1)}%</div><div class="port-kpi-l">Total IRR</div></div>
+    <div class="port-kpi"><div class="port-kpi-v">AED ${(capital_gain/1e6).toFixed(2)}M</div><div class="port-kpi-l">Capital Gain</div></div>
+    <div class="port-kpi"><div class="port-kpi-v" style="color:var(--gold)">${coc.toFixed(1)}%</div><div class="port-kpi-l">Cash-on-Cash</div></div>
+    <div class="port-kpi"><div class="port-kpi-v">${breakeven_yr>0?breakeven_yr+'yr':'Positive'}</div><div class="port-kpi-l">Cashflow Breakeven</div></div>
   `;
+  drawPortfolioChart(val,equity,net_annual,exit_val,hold,growth_rate);
+}
+
+function drawPortfolioChart(val,equity,net_annual,exit_val,hold,growth_rate){
+  const cv=document.getElementById('port-chart');
+  if(!cv)return;
+  cv.width=cv.offsetWidth||500;cv.height=160;
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const W=cv.width,H=cv.height,PAD=40;
+  // Build data: property value + cumulative cashflow each year
+  const yrs=Array.from({length:hold+1},(_,i)=>i);
+  const propVals=yrs.map(y=>val*Math.pow(1+growth_rate,y));
+  const equity_vals=yrs.map(y=>equity+(net_annual*y)+(propVals[y]-val));
+  const minV=Math.min(...equity_vals)*0.9,maxV=Math.max(...equity_vals,exit_val)*1.05;
+  const px=i=>(i/hold)*(W-PAD*2)+PAD;
+  const py=v=>H-PAD-((v-minV)/(maxV-minV))*(H-PAD*1.5);
+  // Grid
+  ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){const y=PAD+(H-PAD*2.5)*i/4;ctx.beginPath();ctx.moveTo(PAD,y);ctx.lineTo(W-10,y);ctx.stroke();}
+  // Property value line
+  ctx.strokeStyle='rgba(201,168,76,.3)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();propVals.forEach((v,i)=>i?ctx.lineTo(px(i),py(v)):ctx.moveTo(px(i),py(v)));ctx.stroke();ctx.setLineDash([]);
+  // Equity/total return line (solid gold)
+  const eg=ctx.createLinearGradient(0,0,0,H);eg.addColorStop(0,'rgba(201,168,76,.3)');eg.addColorStop(1,'rgba(201,168,76,0)');
+  ctx.fillStyle=eg;ctx.beginPath();
+  ctx.moveTo(px(0),H-PAD);
+  equity_vals.forEach((v,i)=>ctx.lineTo(px(i),py(v)));
+  ctx.lineTo(px(hold),H-PAD);ctx.closePath();ctx.fill();
+  ctx.strokeStyle='#C9A84C';ctx.lineWidth=2;
+  ctx.beginPath();equity_vals.forEach((v,i)=>i?ctx.lineTo(px(i),py(v)):ctx.moveTo(px(i),py(v)));ctx.stroke();
+  // Labels
+  ctx.fillStyle='rgba(168,164,160,.6)';ctx.font='8px DM Mono,monospace';ctx.textAlign='center';
+  yrs.forEach(i=>{ctx.fillText('Yr '+i,px(i),H-8);});
+  ctx.textAlign='left';ctx.fillStyle='rgba(201,168,76,.7)';ctx.font='7px DM Mono,monospace';
+  ctx.fillText('Total Return (incl. capital gain)',PAD+4,PAD-4);
+  ctx.fillStyle='rgba(201,168,76,.35)';
+  ctx.fillText('Property Value',PAD+4,PAD+8);
 }
 
 /* ══════════════════════════════════════════════
