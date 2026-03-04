@@ -510,6 +510,23 @@ body.present #map{bottom:0!important}
 }
 .zc-btn:hover{background:rgba(255,255,255,.1);color:var(--t1)}
 
+/* ── Road legend popup ── */
+#roads-legend-pop{
+  position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
+  background:rgba(8,13,26,0.9);border:1px solid rgba(255,255,255,.1);
+  border-radius:8px;padding:10px 14px;
+  backdrop-filter:blur(12px);
+  display:none;z-index:300;
+  gap:6px;flex-direction:column;
+  box-shadow:0 4px 24px rgba(0,0,0,.5);
+  pointer-events:none;
+}
+#roads-legend-pop.show{display:flex}
+.rl-row{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.rl-line{width:24px;height:3px;border-radius:2px;flex-shrink:0}
+.rl-name{font-family:'DM Mono',monospace;font-size:8px;color:#A8A4A0;letter-spacing:.3px}
+.rl-short{font-family:'DM Mono',monospace;font-size:8px;color:#EDE9E3;letter-spacing:.5px;margin-right:4px}
+
 </style>
 </head>
 <body>
@@ -575,12 +592,24 @@ body.present #map{bottom:0!important}
     <div id="map-wrap">
       <div id="map"></div>
 
+      <!-- Roads legend (shows on hover of Roads pill) -->
+      <div id="roads-legend-pop">
+        <div class="rl-row"><div class="rl-line" style="background:#C8B86A"></div><span class="rl-short">E11</span><span class="rl-name">Sheikh Zayed Road</span></div>
+        <div class="rl-row"><div class="rl-line" style="background:#6A8EC8"></div><span class="rl-short">E311</span><span class="rl-name">Sheikh Mohammed Bin Zayed</span></div>
+        <div class="rl-row"><div class="rl-line" style="background:#6AC8A0"></div><span class="rl-short">E44</span><span class="rl-name">Al Khail Road</span></div>
+        <div class="rl-row"><div class="rl-line" style="background:#C87A6A"></div><span class="rl-short">E66</span><span class="rl-name">Dubai–Al Ain Road</span></div>
+        <div class="rl-row"><div class="rl-line" style="background:#A06AC8"></div><span class="rl-short">E611</span><span class="rl-name">Emirates Road</span></div>
+      </div>
+
       <!-- Map toolbar — bottom strip -->
       <div id="map-toolbar">
         <!-- Left: layer pills -->
         <div class="mtb-layers">
           <button class="mtb-pill active" id="lyr-areas" onclick="mtbToggle('areas',this)" title="Area heatmap">
             <span class="mtb-swatch" style="background:var(--gold)"></span>Heatmap
+          </button>
+          <button class="mtb-pill active" id="lyr-roads" onclick="mtbToggle('roads',this)" title="Key arterial roads">
+            <span class="mtb-swatch" style="background:linear-gradient(135deg,#C8B86A,#6A8EC8,#6AC8A0);height:3px;border-radius:1px"></span>Roads
           </button>
           <button class="mtb-pill active" id="lyr-metro" onclick="mtbToggle('metro',this)" title="Metro & Tram lines">
             <span class="mtb-swatch mtb-metro"></span>Metro
@@ -590,6 +619,9 @@ body.present #map{bottom:0!important}
           </button>
           <button class="mtb-pill active" id="lyr-proj" onclick="mtbToggle('projects',this)" title="Off-plan projects">
             <span class="mtb-swatch" style="background:var(--green);border-radius:50%"></span>Projects
+          </button>
+          <button class="mtb-pill" id="lyr-yield" onclick="mtbToggle('yield',this)" title="High-yield 7.5%+ districts">
+            <span class="mtb-swatch" style="background:linear-gradient(90deg,#22C87A,#C9A84C);border-radius:2px;height:4px"></span>Yield +
           </button>
           <button class="mtb-pill" id="lyr-txn" onclick="mtbToggle('txndots',this)" title="Transaction dot cloud">
             <span class="mtb-swatch" style="background:#4A9EFF;border-radius:50%"></span>Txn Dots
@@ -963,6 +995,60 @@ const FUTURE_CAT_COLS={
   mixed:'#22C87A',
   infra:'#AA88FF',
 };
+
+/* ══════════════════════════════════════════════
+   KEY ROADS — Dubai Major Arterials
+══════════════════════════════════════════════ */
+const KEY_ROADS=[
+  {
+    id:'szr', name:'Sheikh Zayed Road', short:'E11',
+    col:'#C8B86A', // warm gold — the prestige spine
+    coords:[
+      [55.0528,25.0068],[55.0748,25.0148],[55.0988,25.0248],[55.1198,25.0368],
+      [55.1468,25.0528],[55.1648,25.0678],[55.1818,25.0848],[55.1988,25.1008],
+      [55.2148,25.1138],[55.2308,25.1258],[55.2478,25.1388],[55.2648,25.1538],
+      [55.2818,25.1698],[55.2988,25.1888],[55.3118,25.2088],[55.3218,25.2248],
+      [55.3308,25.2368],[55.3388,25.2478]
+    ]
+  },
+  {
+    id:'smbz', name:'Sheikh Mohammed Bin Zayed', short:'E311',
+    col:'#6A8EC8', // blue — the ring road
+    coords:[
+      [55.1038,24.9768],[55.1238,24.9888],[55.1528,25.0068],[55.1858,25.0248],
+      [55.2228,25.0428],[55.2598,25.0618],[55.2968,25.0828],[55.3278,25.1068],
+      [55.3548,25.1318],[55.3778,25.1578],[55.3948,25.1858],[55.4088,25.2138],
+      [55.4178,25.2428],[55.4228,25.2728]
+    ]
+  },
+  {
+    id:'alkhail', name:'Al Khail Road', short:'E44',
+    col:'#6AC8A0', // teal — new dubai parallel
+    coords:[
+      [55.1688,24.9988],[55.1868,25.0168],[55.2028,25.0348],[55.2188,25.0538],
+      [55.2338,25.0738],[55.2468,25.0968],[55.2578,25.1218],[55.2668,25.1468],
+      [55.2748,25.1718],[55.2828,25.1978],[55.2928,25.2258],[55.3028,25.2498]
+    ]
+  },
+  {
+    id:'e66', name:'Dubai–Al Ain Road', short:'E66',
+    col:'#C87A6A', // coral — southeastern corridor
+    coords:[
+      [55.3148,25.2288],[55.3368,25.1948],[55.3528,25.1638],[55.3668,25.1358],
+      [55.3818,25.1068],[55.3988,25.0808],[55.4158,25.0538],[55.4328,25.0268],
+      [55.4498,24.9988],[55.4658,24.9718]
+    ]
+  },
+  {
+    id:'e611', name:'Emirates Road', short:'E611',
+    col:'#A06AC8', // purple — outer ring
+    coords:[
+      [55.2398,24.9538],[55.2778,24.9678],[55.3178,24.9888],[55.3558,25.0148],
+      [55.3898,25.0448],[55.4178,25.0778],[55.4408,25.1148],[55.4578,25.1538],
+      [55.4698,25.1948],[55.4778,25.2368],[55.4818,25.2788]
+    ]
+  },
+];
 /* ══════════════════════════════════════════════
    DUBAI 2040 MASTER PLAN ZONES
 ══════════════════════════════════════════════ */
@@ -1256,6 +1342,8 @@ function initMap(){dbg('initMap called');
   _map.on('load',()=>{
     dbg('map LOAD ✅ style='+_map.isStyleLoaded()+' areas='+Object.keys(AREA_POLYS).length);
     addHeatmapLayers();
+    buildRoadsLayer();
+    buildYieldLayer();
     buildDeck();
     buildMetroLayer();
     build2040Layer();
@@ -1487,16 +1575,18 @@ function buildDeck(){
   _map.on('mouseleave','proj-dots-fill',()=>{_map.getCanvas().style.cursor='';});
 }
 
-const _layers={areas:true,projects:true,buildings:false,metro:true,zones:false,txndots:false,future:false};
+const _layers={areas:true,projects:true,buildings:false,metro:true,zones:false,txndots:false,future:false,roads:true,yield:false};
 function toggleLayer(id,on){
   _layers[id]=on;
   const vis=on?'visible':'none';
   if(id==='buildings')_map&&_map.setLayoutProperty('3d-buildings','visibility',vis);
   if(id==='areas'){['area-fill','area-line','area-line-hi'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});_markers.forEach(m=>{try{m.getElement().style.display=on?'':'none';}catch(e){}});}
   if(id==='projects'){['proj-dots-fill','proj-dots-stroke'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});}
-  if(id==='metro')['metro-glow','metro-red','metro-green','metro-tram','metro-rings','metro-station-halo','metro-station-dot','metro-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
+  if(id==='metro'){['metro-glow','metro-red','metro-green','metro-tram','metro-anim-red','metro-anim-green','metro-anim-tram','metro-rings','metro-station-halo','metro-station-dot','metro-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});if(!on&&window._metroAnimTimer){clearInterval(window._metroAnimTimer);window._metroAnimTimer=null;}}
   if(id==='zones'){['zones-fill','zones-line','zones-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}}); }
   if(id==='txndots'){if(on&&_map)buildTxnLayer();else try{if(_map&&_map.getLayer('txn-dots'))_map.setLayoutProperty('txn-dots','visibility','none');}catch(e){}}
+  if(id==='yield'){['yield-glow','yield-line','yield-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});}
+  if(id==='roads')['roads-glow','roads-casing','roads-fill','roads-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
   if(id==='future')['future-halo','future-dot','future-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
 }
 
@@ -2380,6 +2470,58 @@ function buildMetroLayer(){
     }
   });
 
+  /* ── Animated flow layers (pulse travelling along line) ── */
+  // Each animated layer is a dash pattern that shifts position every frame
+  // creating the illusion of movement along the track
+
+  _map.addLayer({id:'metro-anim-red',type:'line',source:'metro-lines',
+    filter:['==',['get','t'],'red'],
+    paint:{
+      'line-color':'rgba(255,200,200,0.7)',
+      'line-width':['interpolate',['linear'],['zoom'],9,3,12,5,15,8],
+      'line-dasharray':[0,4,3,30], // [gap, dash, gap, long-gap]
+      'line-opacity':0.85,
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
+  });
+
+  _map.addLayer({id:'metro-anim-green',type:'line',source:'metro-lines',
+    filter:['==',['get','t'],'green'],
+    paint:{
+      'line-color':'rgba(180,255,220,0.7)',
+      'line-width':['interpolate',['linear'],['zoom'],9,3,12,5,15,8],
+      'line-dasharray':[0,4,3,30],
+      'line-opacity':0.85,
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
+  });
+
+  _map.addLayer({id:'metro-anim-tram',type:'line',source:'metro-lines',
+    filter:['==',['get','t'],'tram'],
+    paint:{
+      'line-color':'rgba(255,235,160,0.7)',
+      'line-width':['interpolate',['linear'],['zoom'],9,2,12,3.5,15,6],
+      'line-dasharray':[0,3,2,20],
+      'line-opacity':0.8,
+    },layout:{visibility:VIS,'line-cap':'round','line-join':'round'}
+  });
+
+  // Animate the dash offset by incrementing the first value
+  let _metroAnimStep=0;
+  function _metroAnimFrame(){
+    if(!_map||!_layers.metro)return;
+    _metroAnimStep=(_metroAnimStep+0.15)%37;
+    const s=_metroAnimStep;
+    // Shift the dasharray offset — creates flowing pulse
+    const redArr=[s%37, 4, 3, 30];
+    const tramArr=[s%25, 3, 2, 20];
+    try{
+      if(_map.getLayer('metro-anim-red'))  _map.setPaintProperty('metro-anim-red',  'line-dasharray', redArr);
+      if(_map.getLayer('metro-anim-green'))_map.setPaintProperty('metro-anim-green','line-dasharray', redArr);
+      if(_map.getLayer('metro-anim-tram')) _map.setPaintProperty('metro-anim-tram', 'line-dasharray', tramArr);
+    }catch(e){}
+  }
+  if(window._metroAnimTimer) clearInterval(window._metroAnimTimer);
+  window._metroAnimTimer=setInterval(_metroAnimFrame, 35); // ~28fps smooth
+
   /* Hover popup */
   const pop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:12,maxWidth:'200px'});
   _map.on('mouseenter','metro-station-dot',e=>{
@@ -2714,6 +2856,168 @@ function buildFutureProjectsLayer(){
     ).addTo(_map);
   });
   _map.on('mouseleave','future-dot',()=>{_map.getCanvas().style.cursor='';pop.remove();});
+}
+
+
+/* ══════════════════════════════════════════════
+   KEY ROADS LAYER
+══════════════════════════════════════════════ */
+function buildRoadsLayer(){
+  if(!_map) return;
+  ['roads-glow','roads-casing','roads-fill','roads-labels'].forEach(id=>{
+    try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
+  });
+  try{if(_map.getSource('roads-src'))_map.removeSource('roads-src');}catch(e){}
+
+  const vis=_layers.roads?'visible':'none';
+  const features=KEY_ROADS.map(r=>({
+    type:'Feature',
+    properties:{id:r.id,name:r.name,short:r.short,col:r.col},
+    geometry:{type:'LineString',coordinates:r.coords}
+  }));
+  _map.addSource('roads-src',{type:'geojson',data:{type:'FeatureCollection',features}});
+
+  /* Soft glow behind each road */
+  _map.addLayer({id:'roads-glow',type:'line',source:'roads-src',
+    paint:{
+      'line-color':['get','col'],
+      'line-width':['interpolate',['linear'],['zoom'],9,8,13,16],
+      'line-opacity':0.08,'line-blur':6,
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+  });
+
+  /* Dark casing (border) */
+  _map.addLayer({id:'roads-casing',type:'line',source:'roads-src',
+    paint:{
+      'line-color':'rgba(0,0,0,0.5)',
+      'line-width':['interpolate',['linear'],['zoom'],9,3.5,12,5,15,8],
+      'line-opacity':0.6,
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+  });
+
+  /* Main coloured road fill */
+  _map.addLayer({id:'roads-fill',type:'line',source:'roads-src',
+    paint:{
+      'line-color':['get','col'],
+      'line-width':['interpolate',['linear'],['zoom'],9,2,12,3.5,15,6],
+      'line-opacity':0.75,
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+  });
+
+  /* Road name labels along line at zoom 11+ */
+  _map.addLayer({id:'roads-labels',type:'symbol',source:'roads-src',
+    minzoom:11,
+    layout:{
+      'symbol-placement':'line',
+      'text-field':['concat',['get','short'],' · ',['get','name']],
+      'text-size':9,
+      'text-font':['Noto Sans Bold'],
+      'text-offset':[0,-1],
+      'symbol-spacing':280,
+      visibility:vis
+    },
+    paint:{
+      'text-color':['get','col'],
+      'text-halo-color':'rgba(5,9,26,0.9)',
+      'text-halo-width':2,
+      'text-opacity':['interpolate',['linear'],['zoom'],11,0,11.5,1],
+    }
+  });
+
+  /* Hover tooltip */
+  const pop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:6,maxWidth:'180px'});
+  _map.on('mouseenter','roads-fill',e=>{
+    _map.getCanvas().style.cursor='default';
+    const p=e.features[0].properties;
+    pop.setLngLat(e.lngLat).setHTML(
+      `<div style="padding:8px 12px">
+        <div style="font-size:10px;letter-spacing:.8px;text-transform:uppercase;color:${p.col};margin-bottom:2px">${p.short}</div>
+        <div style="font-size:12px;font-weight:600;color:#EDE9E3">${p.name}</div>
+      </div>`
+    ).addTo(_map);
+  });
+  _map.on('mouseleave','roads-fill',()=>pop.remove());
+}
+
+
+/* ── Roads legend show/hide ── */
+document.addEventListener('DOMContentLoaded',()=>{
+  const pill=document.getElementById('lyr-roads');
+  const leg=document.getElementById('roads-legend-pop');
+  if(pill&&leg){
+    pill.addEventListener('mouseenter',()=>leg.classList.add('show'));
+    pill.addEventListener('mouseleave',()=>leg.classList.remove('show'));
+  }
+});
+
+
+/* ══════════════════════════════════════════════
+   RENTAL YIELD HIGHLIGHT LAYER
+   Shows 8%+ yield districts with bright highlight
+══════════════════════════════════════════════ */
+function buildYieldLayer(){
+  if(!_map) return;
+  ['yield-glow','yield-line','yield-labels'].forEach(id=>{
+    try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
+  });
+  try{if(_map.getSource('yield-src'))_map.removeSource('yield-src');}catch(e){}
+
+  const vis=_layers.yield?'visible':'none';
+  // Only include districts with yield >= 7.5%
+  const THRESHOLD=7.5;
+  const features=[];
+  AREAS.forEach(a=>{
+    if(a.yld < THRESHOLD) return;
+    const coords=AREA_POLYS[a.id]; if(!coords||coords.length<3)return;
+    const ring=[...coords];
+    if(ring[0][0]!==ring[ring.length-1][0])ring.push(ring[0]);
+    // Colour: 7.5% = cyan, 9%+ = gold
+    const t=Math.min(1,(a.yld-THRESHOLD)/(9.5-THRESHOLD));
+    const r=Math.round(34+(201-34)*t);
+    const g=Math.round(200+(168-200)*t);
+    const b=Math.round(200+(76-200)*t);
+    features.push({
+      type:'Feature',
+      properties:{id:a.id,name:a.name,yld:a.yld,
+        col:`rgb(${r},${g},${b})`},
+      geometry:{type:'Polygon',coordinates:[ring]}
+    });
+  });
+
+  if(!features.length) return;
+  _map.addSource('yield-src',{type:'geojson',data:{type:'FeatureCollection',features}});
+
+  /* Outer glow ring */
+  _map.addLayer({id:'yield-glow',type:'line',source:'yield-src',
+    paint:{
+      'line-color':['get','col'],
+      'line-width':['interpolate',['linear'],['zoom'],9,8,13,16],
+      'line-opacity':0.2,'line-blur':8,
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+  });
+
+  /* Crisp inner line */
+  _map.addLayer({id:'yield-line',type:'line',source:'yield-src',
+    paint:{
+      'line-color':['get','col'],
+      'line-width':['interpolate',['linear'],['zoom'],9,2,12,3,15,4.5],
+      'line-opacity':0.9,'line-dasharray':[6,3],
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
+  });
+
+  /* Yield % labels at zone centroid */
+  _map.addLayer({id:'yield-labels',type:'symbol',source:'yield-src',
+    minzoom:10,
+    layout:{
+      'text-field':['concat',['to-string',['get','yld']],'% yield'],
+      'text-size':10,'text-font':['Noto Sans Bold'],
+      'text-anchor':'center',visibility:vis
+    },
+    paint:{
+      'text-color':['get','col'],
+      'text-halo-color':'rgba(5,9,26,0.9)','text-halo-width':2,
+    }
+  });
 }
 
 /* ══════════════════════════════════════════════
