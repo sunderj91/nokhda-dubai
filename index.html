@@ -314,6 +314,23 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 .ps-range::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid rgba(255,255,255,.2);box-shadow:0 0 8px rgba(201,168,76,.5)}
 .ps-range::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid rgba(255,255,255,.2);box-shadow:0 0 8px rgba(201,168,76,.5)}
 .ps-range:focus{outline:none}
+/* ── New layer panel styles ── */
+.mc-section-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);padding:2px 0 1px;font-family:'DM Mono',monospace}
+/* ── Time animation bar ── */
+.mc-anim{padding:8px 0 4px;border-top:1px solid var(--bord)}
+.anim-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.anim-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3);font-family:'DM Mono',monospace}
+.anim-year{font-family:'DM Mono',monospace;font-size:16px;font-weight:600;color:var(--gold);letter-spacing:2px}
+.anim-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.anim-play{background:transparent;border:1px solid var(--bord2);color:var(--gold);font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:3px;cursor:pointer;font-family:'DM Mono',monospace;white-space:nowrap}
+.anim-play:hover{background:var(--gold-a)}
+.anim-range{flex:1;-webkit-appearance:none;appearance:none;height:3px;border-radius:2px;background:linear-gradient(to right,var(--gold) var(--fill,100%),rgba(255,255,255,.12) var(--fill,100%));outline:none;cursor:pointer}
+.anim-range::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--gold);cursor:pointer;border:1.5px solid rgba(255,255,255,.25)}
+.anim-years{display:flex;justify-content:space-between;font-size:8px;color:var(--t3);font-family:'DM Mono',monospace;padding:0 2px}
+/* ── 2040 zone legend ── */
+.zone-legend{display:flex;flex-direction:column;gap:3px;margin-top:4px;padding:6px 0;border-top:1px solid var(--bord)}
+.zl-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--t2)}
+.zl-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
 </style>
 </head>
 <body>
@@ -387,9 +404,21 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
             <span class="mc-toggle open" id="mc-arrow">▾</span>
           </div>
           <div class="mc-body" id="mc-body">
-            <label class="ml"><div class="ml-dot" style="background:var(--gold)"></div><span class="ml-lbl">Area Outlines</span><input type="checkbox" id="ck-areas" checked onchange="toggleLayer('areas',this.checked)"></label>
+            <div class="mc-section-lbl">Districts</div>
+            <label class="ml"><div class="ml-dot" style="background:var(--gold)"></div><span class="ml-lbl">Area Heatmap</span><input type="checkbox" id="ck-areas" checked onchange="toggleLayer('areas',this.checked)"></label>
+            <label class="ml"><div class="ml-dot" style="background:#4A9EFF"></div><span class="ml-lbl">Transaction Dots</span><input type="checkbox" id="ck-txn" onchange="toggleLayer('txndots',this.checked)"></label>
+            <div class="mc-section-lbl" style="margin-top:6px">Infrastructure</div>
+            <label class="ml"><div class="ml-dot" style="background:#E8304A"></div><span class="ml-lbl">Metro + Tram</span><input type="checkbox" id="ck-metro" checked onchange="toggleLayer('metro',this.checked)"></label>
+            <label class="ml"><div class="ml-dot" style="background:#C9A84C"></div><span class="ml-lbl">2040 Master Plan</span><input type="checkbox" id="ck-zones" onchange="toggleLayer('zones',this.checked)"></label>
+            <div class="mc-section-lbl" style="margin-top:6px">3D</div>
             <label class="ml"><div class="ml-dot" style="background:var(--green)"></div><span class="ml-lbl">Projects</span><input type="checkbox" id="ck-proj" checked onchange="toggleLayer('projects',this.checked)"></label>
-            <label class="ml"><div class="ml-dot" style="background:#666"></div><span class="ml-lbl">3D Buildings</span><input type="checkbox" id="ck-bldg" onchange="toggleLayer('buildings',this.checked)"></label>
+            <label class="ml"><div class="ml-dot" style="background:#555268"></div><span class="ml-lbl">3D Buildings</span><input type="checkbox" id="ck-bldg" onchange="toggleLayer('buildings',this.checked)"></label>
+            <div class="zone-legend" id="zone-legend" style="display:none">
+              <div class="zl-row"><div class="zl-dot" style="background:#4A9EFF"></div>Urban Centre (max density)</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#22C87A"></div>Urban Area (medium density)</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#C9A84C"></div>Growth Corridor (future)</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#555268"></div>Nature / Protected</div>
+            </div>
           </div>
           <div class="mc-signal">
             <select onchange="setHeatMode(this.value)" id="sig-sel">
@@ -398,6 +427,19 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
               <option value="yoy">Heatmap: YoY Growth %</option>
               <option value="txn">Heatmap: Transaction Volume</option>
             </select>
+          </div>
+          <div class="mc-anim" id="mc-anim">
+            <div class="anim-top">
+              <span class="anim-lbl">Timeline</span>
+              <span class="anim-year" id="anim-year">2025</span>
+            </div>
+            <div class="anim-row">
+              <button class="anim-play" id="anim-play" onclick="playAnim()">▶ Play</button>
+              <input type="range" class="anim-range" id="anim-slider" min="2019" max="2025" step="1" value="2025" oninput="setAnimYear(this.value)">
+            </div>
+            <div class="anim-years">
+              ${['2019','2020','2021','2022','2023','2024','2025'].map(y=>`<span>${y}</span>`).join('')}
+            </div>
           </div>
           <div class="mc-legend" id="mc-legend">
             <div class="mc-leg-title" id="leg-title">Price per ft² (AED)</div>
@@ -670,6 +712,111 @@ const AREA_POLYS={
 };
 
 /* ══════════════════════════════════════════════
+   METRO / TRAM DATA
+══════════════════════════════════════════════ */
+const METRO_STATIONS=[
+  // Red Line
+  {id:'uaq',name:'UAE Exchange',line:'red',lng:55.1028,lat:25.0448},
+  {id:'disc',name:'Discovery Gardens',line:'red',lng:55.1198,lat:25.0608},
+  {id:'alfu_m',name:'Al Furjan',line:'red',lng:55.1288,lat:25.0668},
+  {id:'ibn',name:'Ibn Battuta',line:'red',lng:55.1488,lat:25.0538},
+  {id:'jlt_m',name:'DMCC',line:'red',lng:55.1468,lat:25.0758},
+  {id:'mar_m',name:'Dubai Marina',line:'red',lng:55.1368,lat:25.0768},
+  {id:'med',name:'Media City',line:'red',lng:55.1638,lat:25.0978},
+  {id:'kv',name:'Knowledge Village',line:'red',lng:55.1728,lat:25.1008},
+  {id:'ic',name:'Internet City',line:'red',lng:55.1818,lat:25.1068},
+  {id:'mal',name:'Mall of the Emirates',line:'red',lng:55.2008,lat:25.1178},
+  {id:'fnb',name:'First Abu Dhabi Bank',line:'red',lng:55.2098,lat:25.1238},
+  {id:'sob',name:'Sobha Realty',line:'red',lng:55.2238,lat:25.1348},
+  {id:'biz',name:'Business Bay',line:'red',lng:55.2578,lat:25.1868},
+  {id:'bkk',name:'Burj Khalifa / Dubai Mall',line:'red',lng:55.2748,lat:25.1978},
+  {id:'fc',name:'Financial Centre',line:'red',lng:55.2838,lat:25.2128},
+  {id:'emr',name:'Emirates',line:'red',lng:55.3008,lat:25.2368},
+  {id:'air1',name:'Airport Terminal 1',line:'red',lng:55.3618,lat:25.2528},
+  {id:'air3',name:'Airport Terminal 3',line:'red',lng:55.3748,lat:25.2538},
+  {id:'ggico',name:'GGICO',line:'red',lng:55.3888,lat:25.2588},
+  {id:'dcc',name:'Deira City Centre',line:'red',lng:55.3308,lat:25.2518},
+  {id:'unio',name:'Union',line:'red',lng:55.3128,lat:25.2648},
+  {id:'bnk',name:'BurJuman',line:'red',lng:55.3018,lat:25.2518},
+  // Green Line
+  {id:'cer',name:'Creek',line:'green',lng:55.3258,lat:25.2298},
+  {id:'ald',name:'Al Jadaf',line:'green',lng:55.3388,lat:25.2228},
+  {id:'wafi',name:'Healthcare City',line:'green',lng:55.3168,lat:25.2368},
+  {id:'bys',name:'BaniYas Square',line:'green',lng:55.3118,lat:25.2728},
+  {id:'abuh',name:'Abu Hail',line:'green',lng:55.3378,lat:25.2878},
+  {id:'etid',name:'Etisalat',line:'green',lng:55.3648,lat:25.2638},
+  {id:'alq',name:'Al Qusais',line:'green',lng:55.3778,lat:25.2748},
+  {id:'qiy',name:'Al Qiyadah',line:'green',lng:55.3748,lat:25.3088},
+];
+const TRAM_STOPS=[
+  {id:'t1',name:'Sobha Realty Tram',lng:55.2108,lat:25.0998},
+  {id:'t2',name:'Dubai Marina Mall',lng:55.1498,lat:25.0808},
+  {id:'t3',name:'Dubai Marina Tram',lng:55.1428,lat:25.0778},
+  {id:'t4',name:'Jumeirah Lakes Towers',lng:55.1378,lat:25.0748},
+  {id:'t5',name:'DAMAC Properties Tram',lng:55.1318,lat:25.0768},
+  {id:'t6',name:'Al Sufouh 1',lng:55.1798,lat:25.1028},
+  {id:'t7',name:'Knowledge Village Tram',lng:55.1698,lat:25.0998},
+  {id:'t8',name:'Media City Tram',lng:55.1628,lat:25.0968},
+];
+
+/* ══════════════════════════════════════════════
+   DUBAI 2040 MASTER PLAN ZONES
+══════════════════════════════════════════════ */
+const ZONES_2040=[
+  {id:'z_dtn',name:'Downtown Urban Centre',type:'urban_centre',desc:'Highest density. Max FAR. Burj Khalifa district.',
+   ring:[[55.250,25.174],[55.298,25.174],[55.298,25.212],[55.250,25.212],[55.250,25.174]]},
+  {id:'z_dfc',name:'Zabeel / Frame Centre',type:'urban_centre',desc:'Mixed-use urban core. Strong commercial rights.',
+   ring:[[55.295,25.212],[55.345,25.212],[55.345,25.255],[55.295,25.255],[55.295,25.212]]},
+  {id:'z_dcc',name:'Deira-Bur Dubai Centre',type:'urban_centre',desc:'Heritage urban core. Redevelopment incentives.',
+   ring:[[55.285,25.248],[55.360,25.248],[55.360,25.310],[55.285,25.310],[55.285,25.248]]},
+  {id:'z_mar',name:'Marina Urban Area',type:'urban_area',desc:'Established residential. Limited new supply.',
+   ring:[[55.118,25.058],[55.168,25.058],[55.168,25.108],[55.118,25.108],[55.118,25.058]]},
+  {id:'z_jvc_z',name:'JVC / Sports City Area',type:'urban_area',desc:'Mid-market growth zone. Active off-plan pipeline.',
+   ring:[[55.190,25.018],[55.268,25.018],[55.268,25.098],[55.190,25.098],[55.190,25.018]]},
+  {id:'z_mrd',name:'Meydan / Ras Al Khor Area',type:'urban_area',desc:'MBR City expansion. Infrastructure maturing.',
+   ring:[[55.295,25.145],[55.375,25.145],[55.375,25.205],[55.295,25.205],[55.295,25.145]]},
+  {id:'z_ds',name:'Dubai South Growth Corridor',type:'growth',desc:'Expo legacy zone. Al Maktoum Airport expansion. 38% YoY.',
+   ring:[[55.078,24.855],[55.258,24.855],[55.258,24.968],[55.078,24.968],[55.078,24.855]]},
+  {id:'z_crh',name:'Creek Harbour Corridor',type:'growth',desc:'Master-planned waterfront. Future urban centre designation.',
+   ring:[[55.295,25.188],[55.378,25.188],[55.378,25.245],[55.295,25.245],[55.295,25.188]]},
+  {id:'z_dld',name:'Dubailand Growth Area',type:'growth',desc:'Entertainment / residential mix. Long runway for growth.',
+   ring:[[55.295,25.048],[55.415,25.048],[55.415,25.145],[55.295,25.145],[55.295,25.048]]},
+  {id:'z_nat',name:'Al Marmoom Desert Reserve',type:'nature',desc:'Protected. Zero new supply. Bounds eastern expansion.',
+   ring:[[55.440,24.820],[55.620,24.820],[55.620,25.060],[55.440,25.060],[55.440,24.820]]},
+  {id:'z_nat2',name:'Dubai Creek Mangroves',type:'nature',desc:'Protected coastline. Bounds Creek Harbour density.',
+   ring:[[55.355,25.185],[55.435,25.185],[55.435,25.245],[55.355,25.245],[55.355,25.185]]},
+];
+
+/* ══════════════════════════════════════════════
+   HISTORICAL PSF (2019-2025)
+══════════════════════════════════════════════ */
+const HISTORY_YEARS=[2019,2020,2021,2022,2023,2024,2025];
+const AREA_HISTORY={
+  bb:      [1380,1290,1420,1680,1920,2050,2150],
+  dtn:     [1980,1840,2010,2280,2520,2680,2820],
+  marina:  [1420,1310,1450,1640,1780,1870,1920],
+  palm:    [2100,1980,2350,2820,3080,3280,3450],
+  jvc:     [680, 640, 700, 780, 880, 960, 1020],
+  dh:      [940, 890, 980,1120,1280,1380,1480],
+  jlt:     [780, 720, 800, 920,1020,1080,1150],
+  dso:     [620, 590, 640, 720, 820, 880, 940],
+  arabian: [820, 760, 860,1020,1180,1260,1320],
+  jbr:     [1680,1540,1720,1980,2180,2320,2420],
+  burdubai:[980, 920,1020,1180,1360,1480,1580],
+  meydan:  [1280,1180,1320,1580,1820,2020,2180],
+  intcity: [440, 410, 450, 520, 620, 700, 760],
+  alfurjan:[680, 640, 700, 800, 920,1020,1080],
+  dsouth:  [580, 540, 600, 720, 900,1120,1380],
+  creek:   [1480,1380,1580,1880,2020,2140,2180],
+  difc:    [2680,2520,2780,3020,3120,3080,3100],
+  damac2:  [480, 450, 510, 620, 780, 940,1120],
+  dh2:     [680, 640, 720, 860,1120,1280,1480],
+  sportsct:[640, 600, 660, 760, 860, 940, 980],
+  dubailand:[520,490, 550, 680, 820, 940,1050],
+  jvc2:    [580, 540, 600, 700, 780, 840, 880],
+};
+
+/* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
 let _map=null, _heatMode='psf', _gRaf=null;
@@ -906,6 +1053,8 @@ function initMap(){dbg('initMap called');
     dbg('map LOAD ✅ style='+_map.isStyleLoaded()+' areas='+Object.keys(AREA_POLYS).length);
     addHeatmapLayers();
     buildDeck();
+    buildMetroLayer();
+    build2040Layer();
     buildTicker();
     renderPanel();
     renderRightDefault();
@@ -1115,12 +1264,16 @@ function buildDeck(){
   _map.on('mouseleave','proj-dots-fill',()=>{_map.getCanvas().style.cursor='';});
 }
 
-const _layers={areas:true,projects:true,buildings:false};
+const _layers={areas:true,projects:true,buildings:false,metro:true,zones:false,txndots:false};
 function toggleLayer(id,on){
   _layers[id]=on;
-  if(id==='buildings')_map&&_map.setLayoutProperty('3d-buildings','visibility',on?'visible':'none');
-  if(id==='areas')['area-fill','area-line'].forEach(l=>{try{if(_map.getLayer(l))_map.setLayoutProperty(l,'visibility',on?'visible':'none');}catch(e){}});
-  if(id==='projects'){['proj-dots-fill','proj-dots-stroke'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',on?'visible':'none');}catch(e){}});}
+  const vis=on?'visible':'none';
+  if(id==='buildings')_map&&_map.setLayoutProperty('3d-buildings','visibility',vis);
+  if(id==='areas'){['area-fill','area-line'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});_markers.forEach(m=>{try{m.getElement().style.display=on?'':'none';}catch(e){}});}
+  if(id==='projects'){['proj-dots-fill','proj-dots-stroke'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});}
+  if(id==='metro')['metro-rings-500','metro-rings-1k','metro-stations','metro-labels','tram-stops'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
+  if(id==='zones'){['zones-fill','zones-line','zones-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});const zl=document.getElementById('zone-legend');if(zl)zl.style.display=on?'flex':'none';if(zl)zl.style.flexDirection='column';}
+  if(id==='txndots'){if(on&&_map)buildTxnLayer();else try{if(_map&&_map.getLayer('txn-dots'))_map.setLayoutProperty('txn-dots','visibility','none');}catch(e){}}
 }
 
 /* ══════════════════════════════════════════════
@@ -1828,6 +1981,323 @@ function updateStatsBar(){
   }
 }
 
+
+/* ══════════════════════════════════════════════
+   LAYER 1: METRO + TRAM
+══════════════════════════════════════════════ */
+function buildMetroLayer(){
+  if(!_map) return;
+  ['metro-rings-500','metro-rings-1k','metro-stations','tram-stops'].forEach(id=>{
+    try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
+  });
+  ['metro-src','tram-src'].forEach(id=>{
+    try{if(_map.getSource(id))_map.removeSource(id);}catch(e){}
+  });
+
+  // Station GeoJSON
+  const stGJ={type:'FeatureCollection',features:METRO_STATIONS.map(s=>({
+    type:'Feature',
+    properties:{id:s.id,name:s.name,line:s.line,col:s.line==='red'?'#E8304A':'#22C87A'},
+    geometry:{type:'Point',coordinates:[s.lng,s.lat]}
+  }))};
+  _map.addSource('metro-src',{type:'geojson',data:stGJ});
+
+  // 500m walkability rings (filled circles)
+  _map.addLayer({id:'metro-rings-500',type:'circle',source:'metro-src',
+    paint:{
+      'circle-radius':['interpolate',['exponential',2],['zoom'],
+        9, ['/', 500, ['cos',['*',['get','lat'],['/',Math.PI,180]]]],
+        // Approximate metres-to-pixels at each zoom
+        // Use fixed pixel sizes scaled by zoom instead:
+        9,14, 11,28, 13,56, 15,112
+      ],
+      'circle-color':['get','col'],
+      'circle-opacity':0.07,
+      'circle-stroke-width':1,
+      'circle-stroke-color':['get','col'],
+      'circle-stroke-opacity':0.25,
+    },
+    layout:{visibility:_layers.metro?'visible':'none'}
+  });
+
+  // 1km rings (outer)
+  _map.addLayer({id:'metro-rings-1k',type:'circle',source:'metro-src',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,22,11,44,13,88,15,176],
+      'circle-color':['get','col'],
+      'circle-opacity':0.03,
+      'circle-stroke-width':1,
+      'circle-stroke-color':['get','col'],
+      'circle-stroke-opacity':0.12,
+    },
+    layout:{visibility:_layers.metro?'visible':'none'}
+  });
+
+  // Station dots
+  _map.addLayer({id:'metro-stations',type:'circle',source:'metro-src',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,3,12,5,15,8],
+      'circle-color':['get','col'],
+      'circle-stroke-width':1.5,
+      'circle-stroke-color':'rgba(255,255,255,0.7)',
+      'circle-opacity':0.95,
+    },
+    layout:{visibility:_layers.metro?'visible':'none'}
+  });
+
+  // Metro labels (show at zoom 12+)
+  _map.addLayer({id:'metro-labels',type:'symbol',source:'metro-src',
+    minzoom:12,
+    layout:{
+      'text-field':['get','name'],
+      'text-size':10,
+      'text-offset':[0,1.2],
+      'text-anchor':'top',
+      'text-font':['Noto Sans Regular'],
+      visibility:_layers.metro?'visible':'none'
+    },
+    paint:{
+      'text-color':'#EDE9E3',
+      'text-halo-color':'rgba(5,9,26,0.8)',
+      'text-halo-width':1.5,
+    }
+  });
+
+  // Tram stops
+  const tramGJ={type:'FeatureCollection',features:TRAM_STOPS.map(s=>({
+    type:'Feature',
+    properties:{id:s.id,name:s.name},
+    geometry:{type:'Point',coordinates:[s.lng,s.lat]}
+  }))};
+  _map.addSource('tram-src',{type:'geojson',data:tramGJ});
+  _map.addLayer({id:'tram-stops',type:'circle',source:'tram-src',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,2,12,4,15,6],
+      'circle-color':'#C9A84C',
+      'circle-stroke-width':1,
+      'circle-stroke-color':'rgba(255,255,255,0.5)',
+      'circle-opacity':0.9,
+    },
+    layout:{visibility:_layers.metro?'visible':'none'}
+  });
+
+  // Metro hover tooltip
+  const mPop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:8});
+  _map.on('mouseenter','metro-stations',e=>{
+    _map.getCanvas().style.cursor='pointer';
+    const p=e.features[0].properties;
+    mPop.setLngLat(e.lngLat).setHTML(
+      `<div style="padding:8px 10px">
+        <div style="font-size:11px;font-weight:600;color:#EDE9E3;margin-bottom:2px">${p.name}</div>
+        <div style="font-size:10px;color:${p.col}">${p.line==='red'?'Red Line':'Green Line'} · Metro</div>
+        <div style="font-size:10px;color:#8a9bb0;margin-top:4px">500m · 1km walkability shown</div>
+      </div>`
+    ).addTo(_map);
+  });
+  _map.on('mouseleave','metro-stations',()=>{_map.getCanvas().style.cursor='';mPop.remove();});
+}
+
+/* ══════════════════════════════════════════════
+   LAYER 2: DUBAI 2040 MASTER PLAN ZONES
+══════════════════════════════════════════════ */
+const ZONE_COLORS={
+  urban_centre:{fill:'#4A9EFF',label:'Urban Centre',desc:'Max density · highest development rights'},
+  urban_area:  {fill:'#22C87A',label:'Urban Area',desc:'Medium density · mixed residential'},
+  growth:      {fill:'#C9A84C',label:'Growth Corridor',desc:'Future development · appreciation upside'},
+  nature:      {fill:'#555268',label:'Nature Reserve',desc:'Protected · limits supply expansion'},
+};
+
+function build2040Layer(){
+  if(!_map) return;
+  ['zones-fill','zones-line','zones-labels'].forEach(id=>{
+    try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
+  });
+  try{if(_map.getSource('zones-src'))_map.removeSource('zones-src');}catch(e){}
+
+  const features=ZONES_2040.map(z=>({
+    type:'Feature',
+    properties:{id:z.id,name:z.name,type:z.type,desc:z.desc,
+                col:ZONE_COLORS[z.type].fill,label:ZONE_COLORS[z.type].label},
+    geometry:{type:'Polygon',coordinates:[z.ring]}
+  }));
+
+  _map.addSource('zones-src',{type:'geojson',data:{type:'FeatureCollection',features}});
+
+  _map.addLayer({id:'zones-fill',type:'fill',source:'zones-src',
+    paint:{'fill-color':['get','col'],'fill-opacity':0.10},
+    layout:{visibility:_layers.zones?'visible':'none'}
+  });
+
+  _map.addLayer({id:'zones-line',type:'line',source:'zones-src',
+    paint:{
+      'line-color':['get','col'],
+      'line-width':1.5,
+      'line-opacity':0.6,
+      'line-dasharray':[4,3]
+    },
+    layout:{visibility:_layers.zones?'visible':'none'}
+  });
+
+  _map.addLayer({id:'zones-labels',type:'symbol',source:'zones-src',
+    minzoom:10,
+    layout:{
+      'text-field':['get','label'],
+      'text-size':9,
+      'text-font':['Noto Sans Bold'],
+      'text-anchor':'center',
+      visibility:_layers.zones?'visible':'none'
+    },
+    paint:{
+      'text-color':['get','col'],
+      'text-halo-color':'rgba(5,9,26,0.9)',
+      'text-halo-width':1.5,
+    }
+  });
+
+  // Zone hover
+  const zPop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:6});
+  _map.on('mousemove','zones-fill',e=>{
+    if(!e.features.length)return;
+    const p=e.features[0].properties;
+    const cfg=ZONE_COLORS[p.type];
+    zPop.setLngLat(e.lngLat).setHTML(
+      `<div style="padding:8px 10px;max-width:200px">
+        <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:${p.col};margin-bottom:4px">${cfg.label}</div>
+        <div style="font-size:12px;font-weight:600;color:#EDE9E3;margin-bottom:4px">${p.name}</div>
+        <div style="font-size:10px;color:#8a9bb0;line-height:1.5">${p.desc}</div>
+      </div>`
+    ).addTo(_map);
+  });
+  _map.on('mouseleave','zones-fill',()=>zPop.remove());
+}
+
+/* ══════════════════════════════════════════════
+   LAYER 3: TRANSACTION DOT CLOUD
+══════════════════════════════════════════════ */
+function generateTransactionDots(){
+  const dots=[];
+  const rng=(s)=>{let x=Math.sin(s)*10000;return x-Math.floor(x);};
+  AREAS.forEach((a,ai)=>{
+    const poly=AREA_POLYS[a.id];if(!poly)return;
+    const lngs=poly.map(p=>p[0]),lats=poly.map(p=>p[1]);
+    const mnLng=Math.min(...lngs),mxLng=Math.max(...lngs);
+    const mnLat=Math.min(...lats),mxLat=Math.max(...lats);
+    const count=Math.min(Math.round(a.txn/22),220);
+    let added=0,tries=0;
+    while(added<count&&tries<count*5){
+      tries++;
+      const lng=mnLng+(mxLng-mnLng)*rng(ai*1777+tries*13);
+      const lat=mnLat+(mxLat-mnLat)*rng(ai*3111+tries*7);
+      const psfV=Math.round(a.psf*(0.82+rng(ai*500+tries)*0.36));
+      dots.push({lng,lat,psf:psfV,area:a.id,yr:2019+Math.floor(rng(tries*ai+1)*6)});
+      added++;
+    }
+  });
+  return dots;
+}
+let _txnDots=null;
+
+function buildTxnLayer(){
+  if(!_map) return;
+  if(!_txnDots) _txnDots=generateTransactionDots();
+  ['txn-dots'].forEach(id=>{try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}});
+  try{if(_map.getSource('txn-src'))_map.removeSource('txn-src');}catch(e){}
+
+  const yr=_animYear||2025;
+  const dots=_txnDots.filter(d=>d.yr<=yr);
+  const gj={type:'FeatureCollection',features:dots.map(d=>{
+    // PSF → colour
+    const t=Math.max(0,Math.min(1,(d.psf-600)/2800));
+    let r,g,b;
+    if(t<0.5){const u=t*2;r=Math.round(34+(201-34)*u);g=Math.round(200+(168-200)*u);b=Math.round(122+(76-122)*u);}
+    else{const u=(t-0.5)*2;r=Math.round(201+(240-201)*u);g=Math.round(168+(82-168)*u);b=Math.round(76+(82-76)*u);}
+    return{type:'Feature',
+      properties:{psf:d.psf,col:`rgb(${r},${g},${b})`,area:d.area},
+      geometry:{type:'Point',coordinates:[d.lng,d.lat]}
+    };
+  })};
+
+  _map.addSource('txn-src',{type:'geojson',data:gj});
+  _map.addLayer({id:'txn-dots',type:'circle',source:'txn-src',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,2,12,4,15,7],
+      'circle-color':['get','col'],
+      'circle-opacity':['interpolate',['linear'],['zoom'],9,0.5,12,0.7,15,0.85],
+      'circle-stroke-width':0.5,
+      'circle-stroke-color':'rgba(0,0,0,0.3)',
+    },
+    layout:{visibility:_layers.txndots?'visible':'none'}
+  });
+
+  // Dot tooltip
+  const dPop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:6});
+  _map.on('mouseenter','txn-dots',e=>{
+    const p=e.features[0].properties;
+    const a=AMAP[p.area];
+    dPop.setLngLat(e.lngLat).setHTML(
+      `<div style="padding:6px 8px">
+        <div style="font-size:10px;color:#8a9bb0">${a?a.name:p.area}</div>
+        <div style="font-size:12px;font-weight:600;color:${p.col};font-family:'DM Mono',monospace">AED ${p.psf.toLocaleString()}/ft²</div>
+      </div>`
+    ).addTo(_map);
+  });
+  _map.on('mouseleave','txn-dots',()=>dPop.remove());
+}
+
+/* ══════════════════════════════════════════════
+   LAYER 4: TIME-SERIES ANIMATION
+══════════════════════════════════════════════ */
+let _animYear=2025,_animPlaying=false,_animTimer=null;
+
+function initAnimSlider(){
+  const el=document.getElementById('anim-slider');
+  if(!el)return;
+  const pct=((+el.value-2019)/(2025-2019)*100).toFixed(1)+'%';
+  el.style.setProperty('--fill',pct);
+}
+function setAnimYear(yr){
+  // Update slider fill track
+  const pct=((+yr-2019)/(2025-2019)*100).toFixed(1)+'%';
+  const sl=document.getElementById('anim-slider');
+  if(sl)sl.style.setProperty('--fill',pct);
+  _animYear=+yr;
+  document.getElementById('anim-year').textContent=yr;
+  document.getElementById('anim-slider').value=yr;
+  // Update district heatmap to show historical PSF
+  if(!_map||!_map.getSource('areas'))return;
+  const features=[];
+  AREAS.forEach(a=>{
+    const coords=AREA_POLYS[a.id];if(!coords||coords.length<3)return;
+    const ring=[...coords];if(ring[0][0]!==ring[ring.length-1][0])ring.push(ring[0]);
+    const hi=AREA_HISTORY[a.id];
+    const yIdx=HISTORY_YEARS.indexOf(+yr);
+    const psf=hi&&yIdx>=0?hi[yIdx]:a.psf;
+    const fakea={...a,psf};
+    const col=heatHex(fakea,_heatMode==='psf'?'psf':_heatMode);
+    features.push({type:'Feature',id:features.length,
+      properties:{id:a.id,col,name:a.name,psf,yoy:a.yoy,yld:a.yld,txn:a.txn},
+      geometry:{type:'Polygon',coordinates:[ring]}});
+  });
+  _map.getSource('areas').setData({type:'FeatureCollection',features});
+  // Rebuild txn dots filtered to year
+  if(_layers.txndots) buildTxnLayer();
+}
+
+function playAnim(){
+  if(_animPlaying){
+    clearInterval(_animTimer);_animPlaying=false;
+    document.getElementById('anim-play').textContent='▶ Play';
+    return;
+  }
+  _animPlaying=true;
+  document.getElementById('anim-play').textContent='⏸ Pause';
+  if(_animYear>=2025) setAnimYear(2019);
+  _animTimer=setInterval(()=>{
+    if(_animYear>=2025){clearInterval(_animTimer);_animPlaying=false;document.getElementById('anim-play').textContent='▶ Play';return;}
+    setAnimYear(_animYear+1);
+  },900);
+}
+
 /* ══════════════════════════════════════════════
    BOOT
 ══════════════════════════════════════════════ */
@@ -1848,6 +2318,7 @@ window.addEventListener('load',()=>{
   setTimeout(()=>document.getElementById('zoom-ctrls').style.opacity='1',3000);
   calcPortfolio();
   initSliders();
+  initAnimSlider();
   // Phase 1: attempt live DLD data fetch
   setTimeout(fetchLiveDLD, 2000);
 });
