@@ -157,12 +157,18 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .mc-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--t3)}
 .mc-toggle{font-size:9px;color:var(--t3);transition:transform .2s}
 .mc-toggle.open{transform:rotate(180deg)}
-.mc-body{padding:6px 8px;display:flex;flex-direction:column;gap:2px}
+.mc-body{padding:4px 8px 6px;display:flex;flex-direction:column;gap:0}
 .mc-body.hide{display:none}
-.ml{display:flex;align-items:center;gap:7px;padding:4px 6px;border-radius:4px;cursor:pointer;transition:background .13s}
+.ml{display:flex;align-items:center;gap:7px;padding:3px 6px;border-radius:3px;cursor:pointer;transition:background .13s}
 .ml:hover{background:var(--surf2)}
 .ml-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.ml-lbl{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--t2);letter-spacing:.3px}
+.ml-swatch{width:16px;height:5px;border-radius:2px;flex-shrink:0}
+.ml-swatch-line{height:3px;border-radius:1px;background:linear-gradient(90deg,var(--lc) 0%,rgba(255,59,82,0.4) 100%)}
+.ml-swatch-dash{height:2px;background:repeating-linear-gradient(90deg,var(--lc) 0 4px,transparent 4px 7px);border-radius:0}
+.ml-swatch-zone{height:5px;border-radius:2px;background:var(--lc);opacity:.6;border:1px dashed var(--lc)}
+.ml-swatch-3d{height:5px;width:12px;border-radius:1px;transform:perspective(10px) rotateX(10deg);background:var(--lc)}
+.ml-lbl{font-family:'DM Mono',monospace;font-size:8.5px;color:var(--t2);letter-spacing:.3px;flex:1}
+.ml-sub{color:var(--t3);font-size:7.5px;margin-left:4px}
 .ml input[type=checkbox]{accent-color:var(--gold);cursor:pointer;width:11px;height:11px;margin-left:auto}
 /* Signal selector */
 .mc-signal{padding:6px 8px;border-top:1px solid var(--bord)}
@@ -189,10 +195,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .tt-up{font-family:'DM Mono',monospace;font-size:8px;color:var(--green)}
 
 /* Area labels on map */
-.alabel{pointer-events:none;transform:translate(-50%,-50%)}
-.alabel-inner{background:rgba(8,13,26,.85);border:1px solid rgba(201,168,76,.2);border-radius:4px;padding:3px 7px;backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(0,0,0,.5);text-align:center}
-.alabel-psf{font-family:'DM Mono',monospace;font-size:8.5px;font-weight:500;color:#EDE9E3;white-space:nowrap}
-.alabel-yoy{font-family:'DM Mono',monospace;font-size:7.5px;font-weight:600;white-space:nowrap}
+.alabel{pointer-events:none;transform:translate(-50%,-50%);transition:opacity .25s ease}
+.alabel-inner{background:rgba(5,9,26,.82);border:1px solid rgba(255,255,255,.09);border-radius:3px;padding:2px 5px;backdrop-filter:blur(10px);text-align:center;white-space:nowrap;box-shadow:0 1px 6px rgba(0,0,0,.4)}
+.alabel-psf{font-family:'DM Mono',monospace;font-size:8px;font-weight:500;color:#EDE9E3;letter-spacing:.3px;line-height:1.4}
+.alabel-yoy{font-family:'DM Mono',monospace;font-size:7.5px;font-weight:600;line-height:1.3}
 [data-theme="light"] .alabel-inner{background:rgba(250,250,248,.92);border-color:rgba(0,0,0,.12)}
 [data-theme="light"] .alabel-psf{color:#18150F}
 
@@ -331,6 +337,11 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 .zone-legend{display:flex;flex-direction:column;gap:3px;margin-top:4px;padding:6px 0;border-top:1px solid var(--bord)}
 .zl-row{display:flex;align-items:center;gap:6px;font-size:10px;color:var(--t2)}
 .zl-dot{width:8px;height:8px;border-radius:1px;flex-shrink:0}
+/* Map tooltip popups */
+.maplibregl-popup-content{background:rgba(8,13,26,.95)!important;border:1px solid rgba(255,255,255,.1)!important;border-radius:6px!important;padding:0!important;box-shadow:0 4px 20px rgba(0,0,0,.6)!important;font-family:'DM Sans',sans-serif!important}
+.maplibregl-popup-tip{border-top-color:rgba(8,13,26,.95)!important;border-bottom-color:rgba(8,13,26,.95)!important}
+.maplibregl-popup-close-button{color:var(--t3)!important;font-size:16px!important;line-height:1!important;padding:4px 6px!important;right:2px!important;top:2px!important}
+.maplibregl-popup-close-button:hover{background:var(--surf2)!important;color:var(--t1)!important}
 </style>
 </head>
 <body>
@@ -401,23 +412,21 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
         <div class="mc-panel">
           <div class="mc-head" onclick="toggleMC()">
             <span class="mc-label">Map Layers</span>
-            <span class="mc-toggle open" id="mc-arrow">▾</span>
+            <span class="mc-toggle" id="mc-arrow">▾</span>
           </div>
-          <div class="mc-body" id="mc-body">
-            <div class="mc-section-lbl">Districts</div>
-            <label class="ml"><div class="ml-dot" style="background:var(--gold)"></div><span class="ml-lbl">Area Heatmap</span><input type="checkbox" id="ck-areas" checked onchange="toggleLayer('areas',this.checked)"></label>
-            <label class="ml"><div class="ml-dot" style="background:#4A9EFF"></div><span class="ml-lbl">Transaction Dots</span><input type="checkbox" id="ck-txn" onchange="toggleLayer('txndots',this.checked)"></label>
-            <div class="mc-section-lbl" style="margin-top:6px">Infrastructure</div>
-            <label class="ml"><div class="ml-dot" style="background:#E8304A"></div><span class="ml-lbl">Metro + Tram</span><input type="checkbox" id="ck-metro" checked onchange="toggleLayer('metro',this.checked)"></label>
-            <label class="ml"><div class="ml-dot" style="background:#C9A84C"></div><span class="ml-lbl">2040 Master Plan</span><input type="checkbox" id="ck-zones" onchange="toggleLayer('zones',this.checked)"></label>
-            <div class="mc-section-lbl" style="margin-top:6px">3D</div>
-            <label class="ml"><div class="ml-dot" style="background:var(--green)"></div><span class="ml-lbl">Projects</span><input type="checkbox" id="ck-proj" checked onchange="toggleLayer('projects',this.checked)"></label>
-            <label class="ml"><div class="ml-dot" style="background:#555268"></div><span class="ml-lbl">3D Buildings</span><input type="checkbox" id="ck-bldg" onchange="toggleLayer('buildings',this.checked)"></label>
+          <div class="mc-body hide" id="mc-body">
+            <label class="ml"><div class="ml-swatch" style="background:var(--gold)"></div><span class="ml-lbl">Area Heatmap</span><input type="checkbox" id="ck-areas" checked onchange="toggleLayer('areas',this.checked)"></label>
+            <label class="ml"><div class="ml-swatch ml-swatch-line" style="--lc:#FF3B52"></div><span class="ml-lbl">Metro <span class="ml-sub">Red · Green</span></span><input type="checkbox" id="ck-metro" checked onchange="toggleLayer('metro',this.checked)"></label>
+            <label class="ml"><div class="ml-swatch ml-swatch-dash" style="--lc:#C9A84C"></div><span class="ml-lbl">Tram <span class="ml-sub">Gold</span></span><input type="checkbox" id="ck-metro" disabled style="opacity:0.3"></label>
+            <label class="ml"><div class="ml-swatch ml-swatch-zone" style="--lc:#4A9EFF"></div><span class="ml-lbl">2040 Zones <span class="ml-sub">Master Plan</span></span><input type="checkbox" id="ck-zones" onchange="toggleLayer('zones',this.checked)"></label>
+            <label class="ml"><div class="ml-swatch" style="background:#4A9EFF;border-radius:50%"></div><span class="ml-lbl">Txn Dots <span class="ml-sub">PSF gradient</span></span><input type="checkbox" id="ck-txn" onchange="toggleLayer('txndots',this.checked)"></label>
+            <label class="ml"><div class="ml-swatch" style="background:var(--green);border-radius:50%"></div><span class="ml-lbl">Projects</span><input type="checkbox" id="ck-proj" checked onchange="toggleLayer('projects',this.checked)"></label>
+            <label class="ml"><div class="ml-swatch ml-swatch-3d" style="--lc:#555268"></div><span class="ml-lbl">3D Buildings</span><input type="checkbox" id="ck-bldg" onchange="toggleLayer('buildings',this.checked)"></label>
             <div class="zone-legend" id="zone-legend" style="display:none">
-              <div class="zl-row"><div class="zl-dot" style="background:#4A9EFF"></div>Urban Centre (max density)</div>
-              <div class="zl-row"><div class="zl-dot" style="background:#22C87A"></div>Urban Area (medium density)</div>
-              <div class="zl-row"><div class="zl-dot" style="background:#C9A84C"></div>Growth Corridor (future)</div>
-              <div class="zl-row"><div class="zl-dot" style="background:#555268"></div>Nature / Protected</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#4A9EFF"></div>Urban Centre</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#22C87A"></div>Urban Area</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#C9A84C"></div>Growth Corridor</div>
+              <div class="zl-row"><div class="zl-dot" style="background:#555268"></div>Protected Reserve</div>
             </div>
           </div>
           <div class="mc-signal">
@@ -438,7 +447,7 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
               <input type="range" class="anim-range" id="anim-slider" min="2019" max="2025" step="1" value="2025" oninput="setAnimYear(this.value)">
             </div>
             <div class="anim-years">
-              ${['2019','2020','2021','2022','2023','2024','2025'].map(y=>`<span>${y}</span>`).join('')}
+              <span>2019</span><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span>
             </div>
           </div>
           <div class="mc-legend" id="mc-legend">
@@ -533,7 +542,7 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
         <div class="ps-field">
           <div class="ps-top"><span class="port-label">Area / District</span></div>
           <select class="port-select" id="port-area" onchange="calcPortfolio()">
-            ${AREAS.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}
+            <option value="bb">Business Bay</option><option value="dtn">Downtown Dubai</option><option value="marina">Dubai Marina</option><option value="palm">Palm Jumeirah</option><option value="jbr">JBR</option><option value="dh">Dubai Hills Estate</option><option value="jvc">JVC</option><option value="jlt">JLT</option><option value="arabian">Arabian Ranches</option><option value="meydan">Meydan / MBR City</option><option value="creek">Creek Harbour</option><option value="difc">DIFC</option><option value="dsouth">Dubai South</option><option value="damac2">DAMAC Hills 2</option><option value="dso">Silicon Oasis</option><option value="alfurjan">Al Furjan</option><option value="burdubai">Bur Dubai</option><option value="intcity">International City</option>
           </select>
         </div>
         <div class="ps-field">
@@ -687,27 +696,27 @@ const DLD_TXN=[
 ];
 
 const AREA_POLYS={
-  alfurjan:[[55.1138,25.0188],[55.1248,25.0118],[55.1378,25.0088],[55.1508,25.0118],[55.1598,25.0198],[55.1618,25.0318],[55.1558,25.0428],[55.1428,25.0498],[55.1288,25.0508],[55.1158,25.0458],[55.1068,25.0348],[55.1078,25.0238],[55.1138,25.0188]],
-  arabian:[[55.2588,25.0528],[55.2738,25.0458],[55.2908,25.0448],[55.3058,25.0508],[55.3148,25.0628],[55.3118,25.0758],[55.3008,25.0858],[55.2838,25.0908],[55.2658,25.0888],[55.2518,25.0798],[55.2448,25.0668],[55.2488,25.0568],[55.2588,25.0528]],
+  alfurjan:[[55.1148,25.0198],[55.1258,25.0128],[55.1378,25.0098],[55.1498,25.0128],[55.1588,25.0208],[55.1608,25.0318],[55.1548,25.0428],[55.1418,25.0498],[55.1288,25.0508],[55.1158,25.0458],[55.1078,25.0348],[55.1088,25.0248],[55.1148,25.0198]],
+  arabian:[[55.2618,25.0548],[55.2758,25.0478],[55.2918,25.0468],[55.3058,25.0528],[55.3138,25.0638],[55.3108,25.0758],[55.3008,25.0848],[55.2848,25.0888],[55.2678,25.0868],[55.2548,25.0778],[55.2488,25.0658],[55.2528,25.0568],[55.2618,25.0548]],
   bb:[[55.26521,25.19615],[55.26253,25.19383],[55.25948,25.19059],[55.25596,25.18671],[55.25559,25.18632],[55.25551,25.18624],[55.2551,25.18623],[55.25667,25.18577],[55.25866,25.1842],[55.25946,25.18379],[55.26042,25.18335],[55.26108,25.18316],[55.26222,25.18292],[55.26403,25.18327],[55.26504,25.18475],[55.2657,25.1859],[55.26857,25.18761],[55.27048,25.18751],[55.27432,25.18491],[55.27983,25.18358],[55.28068,25.18396],[55.28252,25.18502],[55.28366,25.18612],[55.28372,25.18626],[55.28397,25.18684],[55.28456,25.19005],[55.28551,25.19073],[55.28579,25.19086],[55.28751,25.19158],[55.29083,25.19362],[55.29051,25.19393],[55.28892,25.19467],[55.28836,25.19416],[55.28731,25.1935],[55.28631,25.19314],[55.28521,25.19278],[55.28428,25.19237],[55.28343,25.19147],[55.28242,25.1904],[55.28175,25.18956],[55.28155,25.18929],[55.27814,25.18496],[55.27797,25.18474],[55.27661,25.18599],[55.27453,25.18733],[55.2739,25.18772],[55.26984,25.19029],[55.26878,25.19125],[55.26842,25.19192],[55.26827,25.19219],[55.26817,25.19238],[55.26788,25.1931],[55.26752,25.19397],[55.26746,25.19413],[55.26716,25.1944],[55.26521,25.19615]],
   burdubai:[[55.33209,25.20527],[55.33379,25.20563],[55.33531,25.20749],[55.33594,25.21049],[55.33737,25.21339],[55.34158,25.21676],[55.34287,25.21782],[55.34463,25.21942],[55.34511,25.22149],[55.34511,25.22365],[55.34454,25.22554],[55.34255,25.22846],[55.33821,25.22613],[55.33752,25.22993],[55.33636,25.23318],[55.33505,25.23278],[55.3344,25.23329],[55.33163,25.23526],[55.32984,25.23704],[55.32915,25.23791],[55.32881,25.23832],[55.32784,25.2388],[55.32781,25.24031],[55.32697,25.24162],[55.32665,25.24326],[55.32615,25.24432],[55.32584,25.24569],[55.32488,25.24706],[55.32256,25.2492],[55.32172,25.24984],[55.31996,25.25138],[55.31487,25.25487],[55.31202,25.25743],[55.31112,25.25839],[55.31032,25.25932],[55.30944,25.26053],[55.30884,25.26169],[55.30833,25.26237],[55.30747,25.26319],[55.30602,25.264],[55.30479,25.26459],[55.30393,25.26481],[55.30337,25.26519],[55.3027,25.26535],[55.30155,25.26546],[55.29823,25.26552],[55.29394,25.26475],[55.29101,25.26517],[55.29023,25.26699],[55.29307,25.27054],[55.29442,25.2717],[55.29403,25.27454],[55.33209,25.20527]],
-  creek:[[55.3128,25.1998],[55.3288,25.1938],[55.3458,25.1928],[55.3598,25.1988],[55.3678,25.2088],[55.3658,25.2198],[55.3548,25.2278],[55.3388,25.2308],[55.3228,25.2268],[55.3098,25.2168],[55.3058,25.2058],[55.3128,25.1998]],
+  creek:[[55.3148,25.2018],[55.3308,25.1958],[55.3468,25.1948],[55.3588,25.2008],[55.3658,25.2098],[55.3638,25.2188],[55.3528,25.2268],[55.3368,25.2298],[55.3218,25.2258],[55.3108,25.2168],[55.3068,25.2068],[55.3148,25.2018]],
   damac2:[[55.2888,24.9648],[55.3048,24.9518],[55.3248,24.9478],[55.3468,24.9538],[55.3638,24.9688],[55.3668,24.9878],[55.3548,25.0018],[55.3308,25.0108],[55.3058,25.0118],[55.2818,25.0028],[55.2668,24.9878],[55.2658,24.9708],[55.2888,24.9648]],
-  dh:[[55.2248,25.1012],[55.2378,25.0948],[55.2538,25.0918],[55.2698,25.0978],[55.2788,25.1068],[55.2798,25.1178],[55.2748,25.1268],[55.2668,25.1338],[55.2558,25.1378],[55.2438,25.1368],[55.2328,25.1318],[55.2238,25.1238],[55.2188,25.1138],[55.2198,25.1042],[55.2248,25.1012]],
+  dh:[[55.2278,25.1008],[55.2408,25.0958],[55.2568,25.0938],[55.2718,25.0988],[55.2798,25.1068],[55.2808,25.1168],[55.2768,25.1258],[55.2688,25.1318],[55.2578,25.1358],[55.2458,25.1348],[55.2348,25.1308],[55.2258,25.1238],[55.2218,25.1148],[55.2228,25.1058],[55.2278,25.1008]],
   dh2:[[55.2368,25.0462],[55.2528,25.0398],[55.2718,25.0408],[55.2878,25.0508],[55.2968,25.0638],[55.2948,25.0778],[55.2808,25.0878],[55.2618,25.0918],[55.2428,25.0878],[55.2278,25.0778],[55.2208,25.0638],[55.2248,25.0498],[55.2368,25.0462]],
-  difc:[[55.2738,25.2108],[55.2818,25.2088],[55.2878,25.2108],[55.2912,25.2158],[55.2898,25.2218],[55.2838,25.2252],[55.2762,25.2248],[55.2712,25.2212],[55.2698,25.2158],[55.2712,25.2118],[55.2738,25.2108]],
+  difc:[[55.2748,25.2118],[55.2818,25.2098],[55.2882,25.2118],[55.2908,25.2162],[55.2892,25.2212],[55.2832,25.2248],[55.2762,25.2244],[55.2712,25.2208],[55.2698,25.2158],[55.2718,25.2122],[55.2748,25.2118]],
   dso:[[55.3748,25.1168],[55.3868,25.1118],[55.3988,25.1108],[55.4108,25.1158],[55.4168,25.1248],[55.4168,25.1368],[55.4108,25.1458],[55.3988,25.1508],[55.3858,25.1508],[55.3748,25.1448],[55.3678,25.1348],[55.3678,25.1248],[55.3748,25.1168]],
   dsouth:[[55.0938,24.8928],[55.1248,24.8678],[55.1678,24.8578],[55.2138,24.8698],[55.2478,24.8988],[55.2458,24.9308],[55.2198,24.9568],[55.1788,24.9668],[55.1338,24.9578],[55.1038,24.9318],[55.0918,24.9028],[55.0938,24.8928]],
   dtn:[[55.29402,25.18315],[55.29255,25.18315],[55.28964,25.18289],[55.28809,25.18257],[55.28591,25.18179],[55.28377,25.18098],[55.28156,25.18024],[55.28019,25.1796],[55.27829,25.17839],[55.27655,25.17711],[55.2744,25.17538],[55.2731,25.17425],[55.27188,25.17316],[55.27001,25.17126],[55.26747,25.16931],[55.26665,25.16972],[55.26513,25.1702],[55.26354,25.17079],[55.26037,25.17266],[55.25275,25.17806],[55.25183,25.17869],[55.25081,25.17939],[55.24996,25.18001],[55.25018,25.1809],[55.25067,25.18143],[55.25149,25.18232],[55.25393,25.18497],[55.2551,25.18623],[55.25664,25.18789],[55.25756,25.1889],[55.25985,25.19137],[55.26129,25.19293],[55.26192,25.19362],[55.26198,25.19368],[55.26319,25.19499],[55.26381,25.19567],[55.26471,25.19664],[55.26526,25.19725],[55.26588,25.19796],[55.2663,25.19847],[55.26664,25.19888],[55.26696,25.1993],[55.26922,25.20251],[55.26976,25.20331],[55.27081,25.20485],[55.27175,25.20441],[55.27273,25.20391],[55.27516,25.20259],[55.27954,25.20018],[55.28322,25.19823],[55.28563,25.19694],[55.28793,25.19564],[55.28949,25.19481],[55.29086,25.19425],[55.29136,25.19399],[55.29208,25.19339],[55.29268,25.19256],[55.29303,25.19159],[55.29357,25.18969],[55.29378,25.18818],[55.294,25.18476],[55.29407,25.18347],[55.29402,25.18315]],
   dubailand:[[55.3088,25.0568],[55.3368,25.0488],[55.3668,25.0538],[55.3928,25.0698],[55.4058,25.0918],[55.3988,25.1138],[55.3788,25.1288],[55.3528,25.1348],[55.3268,25.1268],[55.3048,25.1098],[55.2968,25.0878],[55.3018,25.0678],[55.3088,25.0568]],
   intcity:[[55.4068,25.1698],[55.4198,25.1648],[55.4348,25.1668],[55.4448,25.1758],[55.4458,25.1888],[55.4368,25.1988],[55.4198,25.2028],[55.4038,25.1988],[55.3918,25.1888],[55.3918,25.1758],[55.3998,25.1688],[55.4068,25.1698]],
-  jbr:[[55.1148,25.0788],[55.1228,25.0748],[55.1328,25.0738],[55.1428,25.0778],[55.1498,25.0828],[55.1528,25.0898],[55.1518,25.0968],[55.1468,25.1018],[55.1368,25.1038],[55.1268,25.1008],[55.1188,25.0958],[55.1138,25.0878],[55.1148,25.0788]],
-  jlt:[[55.1308,25.0668],[55.1378,25.0618],[55.1468,25.0608],[55.1548,25.0648],[55.1598,25.0718],[55.1608,25.0798],[55.1578,25.0868],[55.1508,25.0908],[55.1418,25.0918],[55.1328,25.0888],[55.1268,25.0828],[55.1258,25.0748],[55.1308,25.0668]],
-  jvc:[[55.2058,25.0712],[55.2098,25.0638],[55.2168,25.0578],[55.2258,25.0548],[55.2358,25.0558],[55.2438,25.0608],[55.2488,25.0678],[55.2498,25.0768],[55.2468,25.0858],[55.2398,25.0918],[55.2298,25.0948],[55.2198,25.0938],[55.2108,25.0898],[55.2048,25.0828],[55.2028,25.0748],[55.2058,25.0712]],
+  jbr:[[55.1148,25.0798],[55.1218,25.0758],[55.1308,25.0748],[55.1398,25.0778],[55.1468,25.0828],[55.1498,25.0888],[55.1488,25.0948],[55.1448,25.0988],[55.1358,25.1008],[55.1268,25.0988],[55.1188,25.0948],[55.1148,25.0878],[55.1148,25.0798]],
+  jlt:[[55.1318,25.0668],[55.1388,25.0628],[55.1468,25.0618],[55.1548,25.0658],[55.1598,25.0728],[55.1608,25.0808],[55.1578,25.0878],[55.1508,25.0918],[55.1418,25.0928],[55.1328,25.0898],[55.1268,25.0838],[55.1258,25.0748],[55.1318,25.0668]],
+  jvc:[[55.2068,25.0718],[55.2108,25.0648],[55.2178,25.0588],[55.2268,25.0558],[55.2358,25.0568],[55.2428,25.0618],[55.2468,25.0688],[55.2478,25.0768],[55.2448,25.0848],[55.2378,25.0908],[55.2288,25.0928],[55.2198,25.0918],[55.2118,25.0878],[55.2058,25.0808],[55.2048,25.0728],[55.2068,25.0718]],
   jvc2:[[55.1848,25.0372],[55.1958,25.0318],[55.2078,25.0312],[55.2168,25.0368],[55.2208,25.0452],[55.2178,25.0538],[55.2068,25.0582],[55.1958,25.0578],[55.1858,25.0522],[55.1808,25.0432],[55.1848,25.0372]],
   marina:[[55.14498,25.0923],[55.14834,25.09462],[55.15175,25.08962],[55.1385,25.0713],[55.1287,25.06706],[55.12641,25.07084],[55.12977,25.06986],[55.13025,25.06936],[55.13073,25.06922],[55.13139,25.06898],[55.13193,25.06933],[55.13217,25.07023],[55.13425,25.07203],[55.13486,25.072],[55.1359,25.07243],[55.13646,25.07327],[55.13709,25.07517],[55.13761,25.07553],[55.13865,25.07572],[55.13922,25.07605],[55.1392,25.07705],[55.13997,25.07762],[55.14057,25.07767],[55.14075,25.07794],[55.13988,25.07853],[55.14022,25.07883],[55.14083,25.07917],[55.14175,25.07997],[55.1424,25.07963],[55.14272,25.08022],[55.14312,25.08054],[55.14347,25.08086],[55.14398,25.08103],[55.14459,25.0811],[55.14517,25.08226],[55.14583,25.08238],[55.1462,25.08241],[55.14641,25.08343],[55.14719,25.08367],[55.14775,25.08369],[55.14763,25.08412],[55.14781,25.0847],[55.14773,25.08528],[55.14751,25.08571],[55.14799,25.08602],[55.14755,25.08612],[55.14692,25.08623],[55.14643,25.08629],[55.14632,25.0869],[55.14585,25.08692],[55.1451,25.08652],[55.14226,25.08875],[55.14498,25.0923]],
   meydan:[[55.30804,25.15729],[55.30824,25.1575],[55.3084,25.15772],[55.30851,25.15797],[55.30859,25.15823],[55.30862,25.15849],[55.30861,25.15876],[55.30855,25.15902],[55.30844,25.15927],[55.30831,25.1595],[55.30814,25.15971],[55.30794,25.15989],[55.30772,25.16004],[55.30747,25.16017],[55.3072,25.16026],[55.30693,25.16032],[55.30664,25.16033],[55.30657,25.16034],[55.30651,25.16037],[55.30647,25.16043],[55.30646,25.1605],[55.30649,25.16056],[55.30654,25.16061],[55.31087,25.16482],[55.30434,25.15896],[55.30329,25.15791],[55.30221,25.15688],[55.30112,25.15587],[55.30081,25.15557],[55.30052,25.15526],[55.30036,25.15506],[55.30023,25.15483],[55.30014,25.15459],[55.30009,25.15434],[55.30008,25.15409],[55.30011,25.15384],[55.30017,25.1536],[55.30028,25.15336],[55.30042,25.15314],[55.30059,25.15294],[55.30079,25.15277],[55.30101,25.15262],[55.30126,25.1525],[55.30152,25.15242],[55.30179,25.15237],[55.30205,25.15235],[55.30212,25.15234],[55.30218,25.15229],[55.30222,25.15223],[55.30222,25.15217],[55.30219,25.1521],[55.30214,25.15205],[55.30053,25.15046],[55.30804,25.15729]],
-  palm:[[55.1038,25.1018],[55.1088,25.0958],[55.1158,25.0908],[55.1248,25.0878],[55.1348,25.0868],[55.1448,25.0898],[55.1528,25.0968],[55.1578,25.1068],[55.1598,25.1178],[55.1568,25.1288],[55.1508,25.1388],[55.1418,25.1458],[55.1308,25.1488],[55.1198,25.1468],[55.1108,25.1418],[55.1038,25.1338],[55.0988,25.1228],[55.0988,25.1118],[55.1038,25.1018]],
+  palm:[[55.1062,25.0978],[55.1148,25.0918],[55.1242,25.0888],[55.1348,25.0878],[55.1452,25.0908],[55.1532,25.0978],[55.1582,25.1068],[55.1598,25.1178],[55.1572,25.1288],[55.1518,25.1378],[55.1438,25.1438],[55.1338,25.1468],[55.1228,25.1448],[55.1132,25.1398],[55.1058,25.1318],[55.1018,25.1218],[55.1012,25.1108],[55.1042,25.1008],[55.1062,25.0978]],
   sportsct:[[55.2178,25.0248],[55.2318,25.0188],[55.2468,25.0188],[55.2578,25.0258],[55.2638,25.0378],[55.2618,25.0498],[55.2508,25.0578],[55.2348,25.0608],[55.2188,25.0558],[55.2088,25.0448],[55.2098,25.0318],[55.2178,25.0248]],
 };
 
@@ -1059,6 +1068,11 @@ function initMap(){dbg('initMap called');
     renderPanel();
     renderRightDefault();
     document.getElementById('zoom-ctrls').style.opacity='1';
+    // Show/hide district labels based on zoom
+    _map.on('zoom',()=>{
+      const z=_map.getZoom();
+      _markers.forEach(m=>{const el=m.getElement();if(el)el.style.opacity=z>=10.8?'1':'0';});
+    });
   });
 }
 
@@ -1100,7 +1114,7 @@ function addHeatmapLayers(){
     id:'area-fill',type:'fill',source:'areas',
     paint:{
       'fill-color':['get','col'],
-      'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.55,0.28]
+      'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.38,0.13]
     }
   });
 
@@ -1109,7 +1123,7 @@ function addHeatmapLayers(){
     id:'area-line',type:'line',source:'areas',
     paint:{
       'line-color':['get','col'],
-      'line-width':['interpolate',['linear'],['zoom'],9,1.5,13,3],
+      'line-width':['interpolate',['linear'],['zoom'],9,1,11,1.5,13,2.5],
       'line-opacity':0.9
     }
   });
@@ -1168,7 +1182,10 @@ function rebuildAreaLabels(){
       <div class="alabel-psf">AED ${a.psf>=1000?(a.psf/1000).toFixed(1)+'K':a.psf}</div>
       <div class="alabel-yoy" style="color:${col}">${a.yoy>0?'↑':'↓'}${Math.abs(a.yoy)}%</div>
     </div>`;
+    // Only show labels at zoom 11+
     const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([cx,cy]).addTo(_map);
+    el.style.opacity='0';
+    el.style.transition='opacity 0.25s ease';
     _markers.push(m);
   });
 }
@@ -1271,7 +1288,7 @@ function toggleLayer(id,on){
   if(id==='buildings')_map&&_map.setLayoutProperty('3d-buildings','visibility',vis);
   if(id==='areas'){['area-fill','area-line'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});_markers.forEach(m=>{try{m.getElement().style.display=on?'':'none';}catch(e){}});}
   if(id==='projects'){['proj-dots-fill','proj-dots-stroke'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});}
-  if(id==='metro')['metro-rings-500','metro-rings-1k','metro-stations','metro-labels','tram-stops'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
+  if(id==='metro')['metro-line-glow','metro-line-red','tram-line','metro-rings','metro-stations-outer','metro-stations','metro-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
   if(id==='zones'){['zones-fill','zones-line','zones-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});const zl=document.getElementById('zone-legend');if(zl)zl.style.display=on?'flex':'none';if(zl)zl.style.flexDirection='column';}
   if(id==='txndots'){if(on&&_map)buildTxnLayer();else try{if(_map&&_map.getLayer('txn-dots'))_map.setLayoutProperty('txn-dots','visibility','none');}catch(e){}}
 }
@@ -1987,115 +2004,184 @@ function updateStatsBar(){
 ══════════════════════════════════════════════ */
 function buildMetroLayer(){
   if(!_map) return;
-  ['metro-rings-500','metro-rings-1k','metro-stations','tram-stops'].forEach(id=>{
-    try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
-  });
-  ['metro-src','tram-src'].forEach(id=>{
+  const CLEANUP=['metro-line-glow','metro-line-red','tram-line',
+    'metro-rings','metro-stations-outer','metro-stations','metro-labels',
+    'metro-line-green','tram-stops'];
+  CLEANUP.forEach(id=>{try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}});
+  ['metro-lines-src','metro-stations-src'].forEach(id=>{
     try{if(_map.getSource(id))_map.removeSource(id);}catch(e){}
   });
+  const vis=_layers.metro?'visible':'none';
 
-  // Station GeoJSON
-  const stGJ={type:'FeatureCollection',features:METRO_STATIONS.map(s=>({
-    type:'Feature',
-    properties:{id:s.id,name:s.name,line:s.line,col:s.line==='red'?'#E8304A':'#22C87A'},
-    geometry:{type:'Point',coordinates:[s.lng,s.lat]}
-  }))};
-  _map.addSource('metro-src',{type:'geojson',data:stGJ});
+  // ── Precise RTA Metro line coordinates ──────────────────
+  // Red Line: Expo2020 → GGICO (west→east spine of Dubai)
+  const RED=[
+    [55.0028,24.9988],[55.0218,25.0138],[55.0458,25.0268],[55.0628,25.0318],
+    [55.0808,25.0378],[55.1028,25.0448],// UAE Exchange
+    [55.1198,25.0608],// Discovery Gardens
+    [55.1288,25.0668],// Al Furjan
+    [55.1488,25.0538],// Ibn Battuta
+    [55.1368,25.0768],// Dubai Marina
+    [55.1468,25.0758],// DMCC
+    [55.1638,25.0978],// Media City
+    [55.1728,25.1008],// Knowledge Village
+    [55.1818,25.1068],// Internet City
+    [55.2008,25.1178],// Mall of the Emirates
+    [55.2098,25.1238],// First Abu Dhabi Bank
+    [55.2238,25.1348],// Sobha Realty
+    [55.2578,25.1868],// Business Bay
+    [55.2748,25.1978],// Burj Khalifa/Dubai Mall
+    [55.2838,25.2128],// Financial Centre
+    [55.3008,25.2368],// Emirates
+    [55.3128,25.2648],// Union ← interchange
+    [55.3018,25.2518],// BurJuman
+    [55.3308,25.2518],// Deira City Centre
+    [55.3618,25.2528],// Airport Terminal 1
+    [55.3748,25.2538],// Airport Terminal 3
+    [55.3888,25.2588] // GGICO
+  ];
+  // Green Line: Al Jadaf → Al Qiyadah
+  const GREEN=[
+    [55.3388,25.2228],// Al Jadaf
+    [55.3258,25.2298],// Creek
+    [55.3168,25.2368],// Healthcare City
+    [55.3018,25.2518],// BurJuman ← interchange
+    [55.3128,25.2648],// Union ← interchange
+    [55.3118,25.2728],// BaniYas Square
+    [55.3378,25.2878],// Abu Hail
+    [55.3648,25.2638],// Etisalat
+    [55.3778,25.2748],// Al Qusais
+    [55.3748,25.3088] // Al Qiyadah
+  ];
+  // Dubai Tram: Sobha Realty → Al Sufouh
+  const TRAM=[
+    [55.2108,25.0998],// Sobha Realty (interchange w/red)
+    [55.1798,25.1028],// Al Sufouh 1
+    [55.1698,25.0998],// Knowledge Village
+    [55.1628,25.0968],// Media City
+    [55.1498,25.0808],// Dubai Marina Mall
+    [55.1428,25.0778],// Dubai Marina
+    [55.1378,25.0748],// JLT
+    [55.1318,25.0768] // DAMAC Properties
+  ];
 
-  // 500m walkability rings (filled circles)
-  _map.addLayer({id:'metro-rings-500',type:'circle',source:'metro-src',
+  // ── Sources ──────────────────────────────────────────────
+  _map.addSource('metro-lines-src',{type:'geojson',data:{
+    type:'FeatureCollection',features:[
+      {type:'Feature',properties:{t:'red', col:'#FF3B52'},
+       geometry:{type:'LineString',coordinates:RED}},
+      {type:'Feature',properties:{t:'green',col:'#00C875'},
+       geometry:{type:'LineString',coordinates:GREEN}},
+      {type:'Feature',properties:{t:'tram', col:'#C9A84C'},
+       geometry:{type:'LineString',coordinates:TRAM}},
+    ]
+  }});
+
+  _map.addSource('metro-stations-src',{type:'geojson',data:{
+    type:'FeatureCollection',features:[
+      ...METRO_STATIONS.map(s=>({type:'Feature',
+        properties:{name:s.name,line:s.line,
+          col:s.line==='red'?'#FF3B52':'#00C875',t:'metro'},
+        geometry:{type:'Point',coordinates:[s.lng,s.lat]}})),
+      ...TRAM_STOPS.map(s=>({type:'Feature',
+        properties:{name:s.name,line:'tram',col:'#C9A84C',t:'tram'},
+        geometry:{type:'Point',coordinates:[s.lng,s.lat]}})),
+    ]
+  }});
+
+  // ── Line glow (subtle halo for legibility) ───────────────
+  _map.addLayer({id:'metro-line-glow',type:'line',source:'metro-lines-src',
+    filter:['!=',['get','t'],'tram'],
     paint:{
-      'circle-radius':['interpolate',['exponential',2],['zoom'],
-        9, ['/', 500, ['cos',['*',['get','lat'],['/',Math.PI,180]]]],
-        // Approximate metres-to-pixels at each zoom
-        // Use fixed pixel sizes scaled by zoom instead:
-        9,14, 11,28, 13,56, 15,112
-      ],
-      'circle-color':['get','col'],
-      'circle-opacity':0.07,
-      'circle-stroke-width':1,
-      'circle-stroke-color':['get','col'],
-      'circle-stroke-opacity':0.25,
-    },
-    layout:{visibility:_layers.metro?'visible':'none'}
+      'line-color':['get','col'],
+      'line-width':['interpolate',['linear'],['zoom'],9,8,13,18],
+      'line-opacity':0.12,'line-blur':6,
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
   });
 
-  // 1km rings (outer)
-  _map.addLayer({id:'metro-rings-1k',type:'circle',source:'metro-src',
+  // ── Metro lines (solid, sharp) ───────────────────────────
+  _map.addLayer({id:'metro-line-red',type:'line',source:'metro-lines-src',
+    filter:['!=',['get','t'],'tram'],
     paint:{
-      'circle-radius':['interpolate',['linear'],['zoom'],9,22,11,44,13,88,15,176],
-      'circle-color':['get','col'],
-      'circle-opacity':0.03,
-      'circle-stroke-width':1,
-      'circle-stroke-color':['get','col'],
-      'circle-stroke-opacity':0.12,
-    },
-    layout:{visibility:_layers.metro?'visible':'none'}
+      'line-color':['get','col'],
+      'line-width':['interpolate',['linear'],['zoom'],9,1.8,11,2.5,13,4,15,6],
+      'line-opacity':['interpolate',['linear'],['zoom'],9,0.7,11,0.9],
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
   });
 
-  // Station dots
-  _map.addLayer({id:'metro-stations',type:'circle',source:'metro-src',
+  // ── Tram line (gold dashed) ──────────────────────────────
+  _map.addLayer({id:'tram-line',type:'line',source:'metro-lines-src',
+    filter:['==',['get','t'],'tram'],
     paint:{
-      'circle-radius':['interpolate',['linear'],['zoom'],9,3,12,5,15,8],
-      'circle-color':['get','col'],
-      'circle-stroke-width':1.5,
-      'circle-stroke-color':'rgba(255,255,255,0.7)',
-      'circle-opacity':0.95,
-    },
-    layout:{visibility:_layers.metro?'visible':'none'}
+      'line-color':'#C9A84C',
+      'line-width':['interpolate',['linear'],['zoom'],9,1,11,1.5,13,2.5],
+      'line-opacity':0.7,
+      'line-dasharray':[5,4],
+    },layout:{visibility:vis,'line-cap':'round','line-join':'round'}
   });
 
-  // Metro labels (show at zoom 12+)
-  _map.addLayer({id:'metro-labels',type:'symbol',source:'metro-src',
-    minzoom:12,
+  // ── Walkability rings — ONLY zoom 11.5+ (not at overview) ─
+  _map.addLayer({id:'metro-rings',type:'circle',source:'metro-stations-src',
+    minzoom:11.5,filter:['==',['get','t'],'metro'],
+    paint:{
+      // 500m radius ~ 28px at z12
+      'circle-radius':['interpolate',['linear'],['zoom'],11.5,14,13,34,15,70],
+      'circle-color':['get','col'],
+      'circle-opacity':['interpolate',['linear'],['zoom'],11.5,0,12,0.05,14,0.08],
+      'circle-stroke-width':1,'circle-stroke-color':['get','col'],
+      'circle-stroke-opacity':['interpolate',['linear'],['zoom'],11.5,0,12,0.18,14,0.3],
+    },layout:{visibility:vis}
+  });
+
+  // ── Station dots ─────────────────────────────────────────
+  // White border ring
+  _map.addLayer({id:'metro-stations-outer',type:'circle',source:'metro-stations-src',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,3.5,12,5.5,15,9],
+      'circle-color':'#ffffff','circle-opacity':0.9,
+    },layout:{visibility:vis}
+  });
+  // Coloured fill
+  _map.addLayer({id:'metro-stations',type:'circle',source:'metro-stations-src',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,2.5,12,4,15,7],
+      'circle-color':['get','col'],'circle-opacity':1,
+    },layout:{visibility:vis}
+  });
+
+  // ── Station name labels (zoom 12.5+) ─────────────────────
+  _map.addLayer({id:'metro-labels',type:'symbol',source:'metro-stations-src',
+    minzoom:12.5,
     layout:{
-      'text-field':['get','name'],
-      'text-size':10,
-      'text-offset':[0,1.2],
-      'text-anchor':'top',
+      'text-field':['get','name'],'text-size':9,
+      'text-offset':[0,1.3],'text-anchor':'top',
       'text-font':['Noto Sans Regular'],
-      visibility:_layers.metro?'visible':'none'
+      'text-max-width':8,
+      visibility:vis
     },
     paint:{
       'text-color':'#EDE9E3',
-      'text-halo-color':'rgba(5,9,26,0.8)',
-      'text-halo-width':1.5,
+      'text-halo-color':'rgba(5,9,26,0.9)','text-halo-width':1.5,
+      'text-opacity':['interpolate',['linear'],['zoom'],12.5,0,13.5,1],
     }
   });
 
-  // Tram stops
-  const tramGJ={type:'FeatureCollection',features:TRAM_STOPS.map(s=>({
-    type:'Feature',
-    properties:{id:s.id,name:s.name},
-    geometry:{type:'Point',coordinates:[s.lng,s.lat]}
-  }))};
-  _map.addSource('tram-src',{type:'geojson',data:tramGJ});
-  _map.addLayer({id:'tram-stops',type:'circle',source:'tram-src',
-    paint:{
-      'circle-radius':['interpolate',['linear'],['zoom'],9,2,12,4,15,6],
-      'circle-color':'#C9A84C',
-      'circle-stroke-width':1,
-      'circle-stroke-color':'rgba(255,255,255,0.5)',
-      'circle-opacity':0.9,
-    },
-    layout:{visibility:_layers.metro?'visible':'none'}
-  });
-
-  // Metro hover tooltip
-  const mPop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:8});
+  // ── Hover tooltip ────────────────────────────────────────
+  const mPop=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:10});
   _map.on('mouseenter','metro-stations',e=>{
     _map.getCanvas().style.cursor='pointer';
     const p=e.features[0].properties;
+    const lineLabel=p.line==='red'?'Red Line ·Metro':p.line==='green'?'Green Line · Metro':'Dubai Tram';
     mPop.setLngLat(e.lngLat).setHTML(
-      `<div style="padding:8px 10px">
-        <div style="font-size:11px;font-weight:600;color:#EDE9E3;margin-bottom:2px">${p.name}</div>
-        <div style="font-size:10px;color:${p.col}">${p.line==='red'?'Red Line':'Green Line'} · Metro</div>
-        <div style="font-size:10px;color:#8a9bb0;margin-top:4px">500m · 1km walkability shown</div>
+      `<div style="padding:7px 10px">
+        <div style="font-size:12px;font-weight:600;color:#EDE9E3;margin-bottom:3px">${p.name}</div>
+        <div style="font-size:10px;color:${p.col}">${lineLabel}</div>
       </div>`
     ).addTo(_map);
   });
   _map.on('mouseleave','metro-stations',()=>{_map.getCanvas().style.cursor='';mPop.remove();});
 }
+
 
 /* ══════════════════════════════════════════════
    LAYER 2: DUBAI 2040 MASTER PLAN ZONES
@@ -2124,7 +2210,7 @@ function build2040Layer(){
   _map.addSource('zones-src',{type:'geojson',data:{type:'FeatureCollection',features}});
 
   _map.addLayer({id:'zones-fill',type:'fill',source:'zones-src',
-    paint:{'fill-color':['get','col'],'fill-opacity':0.10},
+    paint:{'fill-color':['get','col'],'fill-opacity':0.08},
     layout:{visibility:_layers.zones?'visible':'none'}
   });
 
@@ -2133,7 +2219,7 @@ function build2040Layer(){
       'line-color':['get','col'],
       'line-width':1.5,
       'line-opacity':0.6,
-      'line-dasharray':[4,3]
+      'line-dasharray':[5,4]
     },
     layout:{visibility:_layers.zones?'visible':'none'}
   });
