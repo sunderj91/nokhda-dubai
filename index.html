@@ -8,7 +8,6 @@
 <link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script src="https://unpkg.com/deck.gl@9.0.0/dist.min.js"></script>
 <style>
 /* ══════════ RESET & TOKENS ══════════ */
 *{box-sizing:border-box;margin:0;padding:0}
@@ -45,7 +44,7 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 @keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
 
 /* ══════════ SHELL ══════════ */
-#shell{display:none;flex-direction:column;height:100%;width:100%}
+#shell{opacity:0;pointer-events:none;flex-direction:column;height:100%;width:100%;display:flex;position:fixed;inset:0;z-index:1}
 
 /* ══════════ HEADER ══════════ */
 #hdr{height:var(--hh);background:var(--surf);border-bottom:1px solid var(--bord);display:flex;align-items:center;padding:0 16px;gap:12px;z-index:500;flex-shrink:0;box-shadow:var(--s1)}
@@ -149,7 +148,6 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 /* ══════════ MAP ══════════ */
 #map-wrap{flex:1;position:relative;overflow:hidden}
 #map{position:absolute;inset:0}
-#deck-canvas{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none}
 
 /* MAP CONTROLS — top left of map-wrap */
 #map-ctrl{position:absolute;top:12px;left:12px;z-index:200;display:flex;flex-direction:column;gap:0;min-width:178px;max-width:200px}
@@ -309,6 +307,13 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 /* Maplibre popup override */
 .maplibregl-popup-content{background:var(--surf)!important;border:1px solid var(--bord2)!important;border-radius:var(--r)!important;padding:0!important;box-shadow:var(--s2)!important;color:var(--t1)!important;font-family:'DM Sans',sans-serif!important}
 .maplibregl-popup-tip{border-top-color:var(--surf)!important;border-bottom-color:var(--surf)!important}
+.ps-field{display:flex;flex-direction:column;gap:5px;margin-bottom:2px}
+.ps-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+.ps-num{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);font-weight:600}
+.ps-range{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:2px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--gold) var(--fill,25%),rgba(255,255,255,.12) var(--fill,25%))}
+.ps-range::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid rgba(255,255,255,.2);box-shadow:0 0 8px rgba(201,168,76,.5)}
+.ps-range::-moz-range-thumb{width:15px;height:15px;border-radius:50%;background:var(--gold);cursor:pointer;border:2px solid rgba(255,255,255,.2);box-shadow:0 0 8px rgba(201,168,76,.5)}
+.ps-range:focus{outline:none}
 </style>
 </head>
 <body>
@@ -373,7 +378,6 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
     <!-- MAP WRAP -->
     <div id="map-wrap">
       <div id="map"></div>
-      <canvas id="deck-canvas"></canvas>
 
       <!-- Map controls — layers + signal + legend all in one panel -->
       <div id="map-ctrl">
@@ -484,37 +488,31 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
     </div>
     <div class="port-body">
       <div class="port-group">
-        <div>
-          <div class="port-label">Area</div>
+        <div class="ps-field">
+          <div class="ps-top"><span class="port-label">Area / District</span></div>
           <select class="port-select" id="port-area" onchange="calcPortfolio()">
-            <option value="bb">Business Bay</option>
-            <option value="dtn">Downtown Dubai</option>
-            <option value="marina">Dubai Marina</option>
-            <option value="palm">Palm Jumeirah</option>
-            <option value="dh">Dubai Hills Estate</option>
-            <option value="jvc">JVC</option>
-            <option value="jlt">JLT</option>
+            ${AREAS.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}
           </select>
         </div>
-        <div>
-          <div class="port-label">Property Value (AED)</div>
-          <input class="port-input" type="number" id="port-val" value="2000000" oninput="calcPortfolio()">
+        <div class="ps-field">
+          <div class="ps-top"><span class="port-label">Property Value</span><span class="ps-num" id="lbl-val">AED 2,000,000</span></div>
+          <input type="range" class="ps-range" id="port-val" min="500000" max="25000000" step="250000" value="2000000" oninput="psUpdate(this,'aed','lbl-val')">
         </div>
-        <div>
-          <div class="port-label">Down Payment %</div>
-          <input class="port-input" type="number" id="port-dp" value="25" min="20" max="100" oninput="calcPortfolio()">
+        <div class="ps-field">
+          <div class="ps-top"><span class="port-label">Down Payment</span><span class="ps-num" id="lbl-dp">25%</span></div>
+          <input type="range" class="ps-range" id="port-dp" min="10" max="50" step="5" value="25" oninput="psUpdate(this,'pct','lbl-dp')">
         </div>
-        <div>
-          <div class="port-label">Mortgage Rate %</div>
-          <input class="port-input" type="number" id="port-rate" value="4.5" step="0.1" oninput="calcPortfolio()">
+        <div class="ps-field">
+          <div class="ps-top"><span class="port-label">Mortgage Rate</span><span class="ps-num" id="lbl-rate">4.5%</span></div>
+          <input type="range" class="ps-range" id="port-rate" min="2" max="9" step="0.25" value="4.5" oninput="psUpdate(this,'pct','lbl-rate')">
         </div>
-        <div>
-          <div class="port-label">Hold Period (years)</div>
-          <input class="port-input" type="number" id="port-hold" value="5" min="1" max="20" oninput="calcPortfolio()">
+        <div class="ps-field">
+          <div class="ps-top"><span class="port-label">Hold Period</span><span class="ps-num" id="lbl-hold">5 years</span></div>
+          <input type="range" class="ps-range" id="port-hold" min="1" max="15" step="1" value="5" oninput="psUpdate(this,'yr','lbl-hold')">
         </div>
-        <div>
-          <div class="port-label">Monthly Rent (AED)</div>
-          <input class="port-input" type="number" id="port-rent" value="8500" oninput="calcPortfolio()">
+        <div class="ps-field">
+          <div class="ps-top"><span class="port-label">Monthly Rent</span><span class="ps-num" id="lbl-rent">AED 8,500</span></div>
+          <input type="range" class="ps-range" id="port-rent" min="3000" max="150000" step="500" value="8500" oninput="psUpdate(this,'aed','lbl-rent')">
         </div>
       </div>
       <div class="port-group">
@@ -525,6 +523,17 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
   </div>
 </div>
 
+
+<div id="dbg" style="position:fixed;bottom:60px;left:8px;z-index:9999;background:rgba(0,0,0,.92);color:#0f0;font-family:monospace;font-size:10px;padding:8px;border-radius:4px;max-width:320px;max-height:200px;overflow:auto;pointer-events:none;display:block"></div>
+<script>
+// Debug only in dev — remove before prod
+const _dbg=[];
+const dbgEl=document.getElementById('dbg');
+function dbg(s){_dbg.push(s);if(dbgEl)dbgEl.innerHTML=_dbg.slice(-15).join('<br>');console.log('[DBG]',s);}
+window.dbg=dbg;
+// Show debug overlay when ? key pressed
+document.addEventListener('keydown',e=>{if(e.key==='?'||e.key=='/')dbgEl.style.display=dbgEl.style.display==='none'?'block':'none';});
+</script>
 </body>
 </html>
 <script>
@@ -663,7 +672,7 @@ const AREA_POLYS={
 /* ══════════════════════════════════════════════
    STATE
 ══════════════════════════════════════════════ */
-let _map=null, _deck=null, _heatMode='psf', _gRaf=null;
+let _map=null, _heatMode='psf', _gRaf=null;
 let _markers=[], _selArea=null, _selProj=null, _selMarker=null, _projMarkers=[];
 let _tab='proj', _listMode='buy', _search='';
 let _filters=new Set(['all']), _areaFilter='all';
@@ -837,19 +846,23 @@ function initGlobe(){
   container.onclick=()=>enterMap();
 }
 
-function enterMap(){
+function enterMap(){dbg('enterMap called, _map='+ !!_map);
   if(_gRaf){cancelAnimationFrame(_gRaf);_gRaf=null;}
   const gw=document.getElementById('globe-wrap');
   gw.classList.add('hide');
-  setTimeout(()=>gw.style.display='none',700);
-  document.getElementById('shell').style.display='flex';
-  if(!_map){ requestAnimationFrame(()=>requestAnimationFrame(initMap)); }
+  setTimeout(()=>{gw.style.display='none';},700);
+  const sh=document.getElementById('shell');
+  sh.style.pointerEvents='all';
+  sh.style.opacity='1';
+  sh.style.zIndex='2';
+  // Map was pre-initialized in background; if somehow not ready, init now
+  if(!_map){ initMap(); }
 }
 function exitGlobe(){
   const gw=document.getElementById('globe-wrap');
   gw.style.display='flex';gw.style.opacity='0';
   setTimeout(()=>{gw.style.opacity='1';gw.classList.remove('hide');},10);
-  document.getElementById('shell').style.display='none';
+  const _sh=document.getElementById('shell');_sh.style.opacity='0';_sh.style.pointerEvents='none';_sh.style.zIndex='1';
   initGlobe();
 }
 
@@ -876,7 +889,7 @@ function heatColor(area,mode){
 /* ══════════════════════════════════════════════
    MAP INIT
 ══════════════════════════════════════════════ */
-function initMap(){
+function initMap(){dbg('initMap called');
   const style=getComputedStyle(document.documentElement).getPropertyValue('--map-style').trim();
   _map=new maplibregl.Map({
     container:'map',style,
@@ -885,23 +898,9 @@ function initMap(){
   });
   _map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
 
+  _map.on('error',e=>dbg('MAP ERR:'+(e.error?.message||JSON.stringify(e)).slice(0,100)));
   _map.on('load',()=>{
-    // Deck.gl for project dots
-    const dc=document.getElementById('deck-canvas');
-    dc.width=dc.offsetWidth||window.innerWidth;
-    dc.height=dc.offsetHeight||window.innerHeight;
-    if(_deck){try{_deck.finalize();}catch(e){}_deck=null;}
-    _deck=new deck.DeckGL({
-      canvas:'deck-canvas',width:'100%',height:'100%',
-      initialViewState:{longitude:55.27,latitude:25.12,zoom:10.5,pitch:25,bearing:-4},
-      controller:false,layers:[]
-    });
-    _map.on('move',()=>{
-      const {lng,lat}=_map.getCenter();
-      _deck.setProps({viewState:{longitude:lng,latitude:lat,zoom:_map.getZoom(),pitch:_map.getPitch(),bearing:_map.getBearing()}});
-    });
-
-    // Add heatmap source & layers immediately — map.on('load') guarantees style ready
+    dbg('map LOAD ✅ style='+_map.isStyleLoaded()+' areas='+Object.keys(AREA_POLYS).length);
     addHeatmapLayers();
     buildDeck();
     buildTicker();
@@ -913,6 +912,7 @@ function initMap(){
 
 /* Add MapLibre GeoJSON source + fill/line layers for district heatmap */
 function addHeatmapLayers(){
+  dbg('addHeatmapLayers START, areas='+AREAS.length+' polys='+Object.keys(AREA_POLYS).length);
   // Clean up any existing
   ['area-label','area-fill','area-line'].forEach(id=>{
     try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
@@ -936,8 +936,13 @@ function addHeatmapLayers(){
     });
   });
 
+  dbg('features built: '+features.length);
+  try{
   _map.addSource('areas',{type:'geojson',data:{type:'FeatureCollection',features},generateId:false});
+  dbg('addSource OK ✅');
+  }catch(ex){dbg('addSource ERR: '+ex.message);return;}
 
+  try{
   // District fill
   _map.addLayer({
     id:'area-fill',type:'fill',source:'areas',
@@ -956,6 +961,8 @@ function addHeatmapLayers(){
       'line-opacity':0.9
     }
   });
+  dbg('addLayer line OK ✅');
+  }catch(ex){dbg('addLayer ERR: '+ex.message);}
 
   // Interactions
   _map.on('mousemove','area-fill',onAreaHover);
@@ -1055,20 +1062,54 @@ function onAreaClick(e){
    DECK.GL — projects only (no bubble layer)
 ══════════════════════════════════════════════ */
 function buildDeck(){
-  if(!_deck)return;
-  const proj=PROJECTS;
-  _deck.setProps({layers:[
-    new deck.ScatterplotLayer({
-      id:'proj-dots',data:proj,visible:_layers.projects,
-      getPosition:d=>[d.lng,d.lat],
-      getRadius:120,
-      getFillColor:d=>[...d.col,220],
-      getLineColor:[255,255,255,80],lineWidthMinPixels:1,stroked:true,
-      radiusMinPixels:4,radiusMaxPixels:10,
-      pickable:true,
-      onClick:({object})=>{if(object)selectProject(object);}
-    })
-  ]});
+  if(!_map||!_map.isStyleLoaded())return;
+  // Remove old layers
+  ['proj-dots-fill','proj-dots-stroke','proj-dots-label'].forEach(id=>{
+    try{if(_map.getLayer(id))_map.removeLayer(id);}catch(e){}
+  });
+  try{if(_map.getSource('projects'))_map.removeSource('projects');}catch(e){}
+
+  const gj={type:'FeatureCollection',features:PROJECTS.filter(p=>p.lat&&p.lng).map(p=>({
+    type:'Feature',
+    properties:{id:p.id,name:p.name,col:`rgb(${p.col[0]},${p.col[1]},${p.col[2]})`,
+                psf:p.psf,yoy:p.yoy,status:p.status,dev:p.dev,area:p.area},
+    geometry:{type:'Point',coordinates:[p.lng,p.lat]}
+  }))};
+
+  _map.addSource('projects',{type:'geojson',data:gj});
+
+  // Outer glow ring
+  _map.addLayer({id:'proj-dots-stroke',type:'circle',source:'projects',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,5,14,12],
+      'circle-color':['get','col'],
+      'circle-opacity':0.25,
+      'circle-stroke-width':0,
+    },
+    layout:{'visibility':_layers.projects?'visible':'none'}
+  });
+
+  // Main dot
+  _map.addLayer({id:'proj-dots-fill',type:'circle',source:'projects',
+    paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],9,4,14,9],
+      'circle-color':['get','col'],
+      'circle-stroke-width':1.5,
+      'circle-stroke-color':'rgba(255,255,255,0.6)',
+      'circle-opacity':0.92,
+    },
+    layout:{'visibility':_layers.projects?'visible':'none'}
+  });
+
+  // Click handler
+  _map.on('click','proj-dots-fill',e=>{
+    if(!e.features||!e.features.length)return;
+    const pid=e.features[0].properties.id;
+    const p=PROJECTS.find(x=>x.id===pid);
+    if(p)selectProject(p);
+  });
+  _map.on('mouseenter','proj-dots-fill',()=>{_map.getCanvas().style.cursor='pointer';});
+  _map.on('mouseleave','proj-dots-fill',()=>{_map.getCanvas().style.cursor='';});
 }
 
 const _layers={areas:true,projects:true,buildings:false};
@@ -1076,7 +1117,7 @@ function toggleLayer(id,on){
   _layers[id]=on;
   if(id==='buildings')_map&&_map.setLayoutProperty('3d-buildings','visibility',on?'visible':'none');
   if(id==='areas')['area-fill','area-line'].forEach(l=>{try{if(_map.getLayer(l))_map.setLayoutProperty(l,'visibility',on?'visible':'none');}catch(e){}});
-  if(id==='projects')buildDeck();
+  if(id==='projects'){['proj-dots-fill','proj-dots-stroke'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',on?'visible':'none');}catch(e){}});}
 }
 
 /* ══════════════════════════════════════════════
@@ -1481,7 +1522,6 @@ function toggleLP(){
   toggle.querySelector('.lp-toggle-icon').textContent=_lpOpen?'‹':'›';
   setTimeout(()=>{
     _map&&_map.resize();
-    if(_deck&&_map){const{lng,lat}=_map.getCenter();_deck.setProps({viewState:{longitude:lng,latitude:lat,zoom:_map.getZoom(),pitch:_map.getPitch(),bearing:_map.getBearing()}});}
   },310);
 }
 
@@ -1494,7 +1534,6 @@ function toggleRP(){
   toggle.querySelector('.rp-toggle-icon').textContent=_rpOpen?'›':'‹';
   setTimeout(()=>{
     _map&&_map.resize();
-    if(_deck&&_map){const{lng,lat}=_map.getCenter();_deck.setProps({viewState:{longitude:lng,latitude:lat,zoom:_map.getZoom(),pitch:_map.getPitch(),bearing:_map.getBearing()}});}
   },310);
 }
 
@@ -1555,6 +1594,58 @@ function buildTicker(){
 /* ══════════════════════════════════════════════
    PORTFOLIO CALCULATOR
 ══════════════════════════════════════════════ */
+
+function syncSlider(id,unit,step){
+  const el=document.getElementById(id);
+  const v=parseFloat(el.value);
+  const valEl=document.getElementById(id+'-val');
+  if(!valEl)return;
+  let display;
+  if(unit==='AED'){
+    display=v>=1e6?'AED '+(v/1e6).toFixed(v%1e6===0?0:2)+'M':'AED '+v.toLocaleString();
+  }else if(unit==='%'){
+    display=v+'%';
+  }else if(unit==='yrs'){
+    display=v+' yr'+(v!==1?'s':'');
+  }else{
+    display=v.toLocaleString()+' '+unit;
+  }
+  valEl.textContent=display;
+  // Update track fill
+  const min=parseFloat(el.min),max=parseFloat(el.max);
+  const pct=((v-min)/(max-min)*100).toFixed(1)+'%';
+  el.style.setProperty('--pct',pct);
+  // Recalculate
+  calcPortfolio();
+}
+function initSliders(){
+  ['port-val','port-dp','port-rate','port-hold','port-rent'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const unit=id==='port-val'||id==='port-rent'?'AED':id==='port-hold'?'yrs':'%';
+    syncSlider(id,unit,parseFloat(el.step));
+  });
+}
+function psUpdate(el,fmt,lblId){
+  const v=parseFloat(el.value),mn=parseFloat(el.min),mx=parseFloat(el.max);
+  const fill=((v-mn)/(mx-mn)*100).toFixed(1)+'%';
+  el.style.setProperty('--fill',fill);
+  let s;
+  if(fmt==='aed') s=v>=1000000?'AED '+(v/1000000).toFixed(v%1000000===0?0:2)+'M':'AED '+v.toLocaleString();
+  else if(fmt==='pct') s=v+'%';
+  else if(fmt==='yr') s=v+' year'+(v!==1?'s':'');
+  else s=v.toString();
+  document.getElementById(lblId).textContent=s;
+  calcPortfolio();
+}
+function initSliders(){
+  const cfg=[
+    ['port-val','aed','lbl-val'],['port-dp','pct','lbl-dp'],
+    ['port-rate','pct','lbl-rate'],['port-hold','yr','lbl-hold'],
+    ['port-rent','aed','lbl-rent']
+  ];
+  cfg.forEach(([id,fmt,lbl])=>{const el=document.getElementById(id);if(el)psUpdate(el,fmt,lbl);});
+}
 function calcPortfolio(){
   const val=+document.getElementById('port-val').value||2000000;
   const dp=Math.max(20,+document.getElementById('port-dp').value||25);
@@ -1739,6 +1830,9 @@ function updateStatsBar(){
 ══════════════════════════════════════════════ */
 window.addEventListener('load',()=>{
   initGlobe();
+  // Pre-init map in background while user sees globe
+  // Shell is opacity:0 but display:flex so container has real pixel dimensions
+  setTimeout(initMap, 500);
   // Set initial toggle positions (panels open by default)
   document.getElementById('lp-toggle').style.left='var(--lw)';
   document.getElementById('rp-toggle').style.right='var(--rw)';
@@ -1750,6 +1844,7 @@ window.addEventListener('load',()=>{
   document.getElementById('zoom-ctrls').style.transition='opacity 1s';
   setTimeout(()=>document.getElementById('zoom-ctrls').style.opacity='1',3000);
   calcPortfolio();
+  initSliders();
   // Phase 1: attempt live DLD data fetch
   setTimeout(fetchLiveDLD, 2000);
 });
