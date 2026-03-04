@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nokhda · Dubai Property Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Figtree:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+/* ═══════════ RESET & TOKENS ═══════════ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --panel:340px;
+  --hdr:52px;
+  --r:6px;
+  --gold:#C9A84C;
+  --gold-light:#E8D598;
+  --gold-border:rgba(201,168,76,.35);
+  --up:#22C87A;
+  --teal:#00BCD4;
+  --red:#F05252;
+}
+[data-theme="dark"]{
+  --bg:#0A0F1C;
+  --bg2:#0F1628;
+  --surf:#131D35;
+  --surf2:#1A2540;
+  --bord:rgba(255,255,255,.08);
+  --t1:#F0EDE8;
+  --t2:#B8B4AE;
+  --t3:#6B6880;
+  --s1:0 2px 8px rgba(0,0,0,.4);
+  --s2:0 4px 20px rgba(0,0,0,.5);
+  --s3:0 8px 40px rgba(0,0,0,.6);
+  --map-style:https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json;
+}
+[data-theme="light"]{
+  --bg:#F2EFE9;
+  --bg2:#EDE9E2;
+  --surf:#FAFAF8;
+  --surf2:#F4F1EB;
+  --bord:rgba(0,0,0,.1);
+  --t1:#1A1714;
+  --t2:#4A4640;
+  --t3:#9A9690;
+  --s1:0 2px 8px rgba(0,0,0,.1);
+  --s2:0 4px 20px rgba(0,0,0,.15);
+  --s3:0 8px 40px rgba(0,0,0,.2);
+}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-family:'Figtree',sans-serif}
+/* ═══════════ LOADER ═══════════ */
+#loader{position:fixed;inset:0;z-index:9999;background:#060B18;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s}
+#loader.hide{opacity:0;pointer-events:none}
+.lo-brand{font-family:'Playfair Display',serif;font-size:42px;font-weight:400;letter-spacing:12px;color:#F0EDE8;text-transform:uppercase;margin-bottom:8px}
+.lo-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:4px;color:#6B6880;text-transform:uppercase;margin-bottom:40px}
+.lo-track{width:220px;height:1px;background:rgba(255,255,255,.1);margin-bottom:16px}
+.lo-bar{height:100%;background:linear-gradient(90deg,#C9A84C,#E8D598);width:0;transition:width .2s}
+.lo-msg{font-family:'JetBrains Mono',monospace;font-size:9px;color:#6B6880;letter-spacing:2px}
+/* ═══════════ SHELL ═══════════ */
+#shell{height:100%;display:flex;flex-direction:column}
+/* ═══════════ HEADER ═══════════ */
+#hdr{height:var(--hdr);background:var(--surf);border-bottom:1px solid var(--bord);display:flex;align-items:center;padding:0 16px;gap:12px;flex-shrink:0;z-index:300;box-shadow:var(--s1)}
+.hdr-logo{font-family:'Playfair Display',serif;font-size:20px;letter-spacing:5px;color:var(--t1);text-transform:uppercase;flex-shrink:0}
+.hdr-div{width:1px;height:24px;background:var(--bord)}
+.hdr-crumb{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3);letter-spacing:1px}
+.hdr-stats{display:flex;gap:0;margin-left:auto}
+.hs{padding:0 14px;border-right:1px solid var(--bord);text-align:center}
+.hs:last-child{border:none}
+.hs-v{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--t1);font-weight:500}
+.hs-l{font-family:'JetBrains Mono',monospace;font-size:6.5px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-top:1px}
+.hdr-acts{display:flex;gap:5px;margin-left:12px}
+.btn{background:transparent;border:1px solid var(--bord);color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:9px;padding:5px 10px;border-radius:var(--r);cursor:pointer;letter-spacing:.8px;transition:all .15s;white-space:nowrap}
+.btn:hover{border-color:var(--gold-border);color:var(--gold)}
+.btn.primary{background:var(--gold);color:#000;border-color:var(--gold);font-weight:600}
+.btn.primary:hover{opacity:.88}
+.btn.sm{font-size:8.5px;padding:4px 8px}
+.btn-ico{background:transparent;border:1px solid var(--bord);color:var(--t2);width:28px;height:28px;border-radius:var(--r);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.btn-ico:hover{border-color:var(--gold-border);color:var(--gold)}
+.btn-ico.on{border-color:var(--gold-border);color:var(--gold);background:rgba(201,168,76,.1)}
+/* ═══════════ BODY ═══════════ */
+#body{flex:1;display:flex;position:relative;overflow:hidden}
+/* ═══════════ MAP ═══════════ */
+#map{position:absolute;top:0;left:var(--panel);right:0;bottom:44px;transition:left .3s}
+#deck-canvas{position:absolute;top:0;left:var(--panel);right:0;bottom:44px;pointer-events:none;transition:left .3s}
+/* ═══════════ LEFT PANEL ═══════════ */
+#lp{position:absolute;top:0;left:0;width:var(--panel);height:100%;background:var(--surf);border-right:1px solid var(--bord);display:flex;flex-direction:column;z-index:200;transition:transform .3s}
+#lp.closed{transform:translateX(-100%)}
+#lp.closed ~ #map,#lp.closed ~ #deck-canvas{left:0}
+.lp-search{padding:10px 12px;border-bottom:1px solid var(--bord)}
+.search-wrap{display:flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--bord);border-radius:var(--r);padding:6px 10px;transition:border-color .15s}
+.search-wrap:focus-within{border-color:var(--gold-border)}
+.search-ico{color:var(--t3);font-size:13px}
+.search-inp{background:transparent;border:none;outline:none;color:var(--t1);font-family:'Figtree',sans-serif;font-size:12px;flex:1;min-width:0}
+.search-inp::placeholder{color:var(--t3)}
+.lp-tabs{display:flex;border-bottom:1px solid var(--bord)}
+.lp-tab{flex:1;padding:9px 8px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none}
+.lp-tab:hover{color:var(--t2)}
+.lp-tab.on{color:var(--gold);border-color:var(--gold)}
+.lp-filters{padding:8px 10px;display:flex;flex-wrap:wrap;gap:4px;border-bottom:1px solid var(--bord)}
+.chip{font-family:'JetBrains Mono',monospace;font-size:8px;padding:3px 8px;border:1px solid var(--bord);border-radius:20px;color:var(--t3);cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip:hover{border-color:var(--gold-border);color:var(--gold)}
+.chip.on{background:rgba(201,168,76,.15);border-color:var(--gold-border);color:var(--gold)}
+.lp-ctr{padding:8px 12px 4px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);letter-spacing:.5px}
+.lp-list{flex:1;overflow-y:auto;padding:4px 8px 12px}
+.lp-list::-webkit-scrollbar{width:3px}
+.lp-list::-webkit-scrollbar-thumb{background:var(--bord);border-radius:2px}
+/* Project card */
+.pc{background:var(--bg2);border:1px solid var(--bord);border-radius:var(--r);padding:10px 11px;margin-bottom:5px;cursor:pointer;transition:all .16s;position:relative}
+.pc:hover{border-color:var(--gold-border);background:var(--surf2)}
+.pc.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.pc-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:5px}
+.pc-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.pc-name{font-size:11px;font-weight:600;color:var(--t1);line-height:1.3;flex:1}
+.pc-psf{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);font-weight:500;white-space:nowrap}
+.pc-sub{font-size:9.5px;color:var(--t3);margin-bottom:5px}
+.pc-yoy{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--up);position:absolute;right:11px;top:28px}
+.pc-tags{display:flex;gap:3px;flex-wrap:wrap}
+.tag{font-family:'JetBrains Mono',monospace;font-size:7px;padding:2px 6px;border-radius:3px;letter-spacing:.5px;font-weight:500}
+.tag-op{background:rgba(100,160,255,.12);color:#64A0FF}
+.tag-uc{background:rgba(255,165,0,.12);color:#FFA500}
+.tag-rdy{background:rgba(34,200,122,.12);color:#22C87A}
+.tag-visa{background:rgba(201,168,76,.12);color:var(--gold)}
+/* Area card */
+.ac{background:var(--bg2);border:1px solid var(--bord);border-radius:var(--r);padding:9px 10px;margin-bottom:4px;cursor:pointer;transition:border-color .15s}
+.ac:hover{border-color:var(--gold-border)}
+.ac-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+.ac-name{font-size:11px;font-weight:500;color:var(--t1)}
+.ac-psf{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold)}
+.ac-bar-bg{height:3px;background:var(--bord);border-radius:2px;margin-bottom:5px}
+.ac-bar{height:100%;border-radius:2px}
+.ac-bot{display:flex;justify-content:space-between}
+.ac-meta{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3)}
+.ac-yoy{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--up);font-weight:600}
+/* Listing card */
+.lc{background:var(--bg2);border:1px solid var(--bord);border-radius:var(--r);overflow:hidden;margin-bottom:6px;cursor:pointer;transition:all .16s}
+.lc:hover{border-color:var(--gold-border)}
+.lc-img{height:100px;background:var(--surf2);position:relative;overflow:hidden}
+.lc-img-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.3}
+.lc-badge{position:absolute;top:6px;left:6px;font-family:'JetBrains Mono',monospace;font-size:7px;padding:3px 6px;border-radius:3px;background:rgba(0,0,0,.7);color:#fff;letter-spacing:.5px}
+.lc-price-badge{position:absolute;bottom:6px;right:6px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:600;background:rgba(201,168,76,.9);color:#000;padding:3px 8px;border-radius:3px}
+.lc-body{padding:9px 10px}
+.lc-title{font-size:11px;font-weight:500;color:var(--t1);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lc-sub{font-size:9px;color:var(--t3);margin-bottom:6px}
+.lc-specs{display:flex;gap:8px}
+.lc-spec{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t2);display:flex;align-items:center;gap:3px}
+/* Transaction row */
+.txn-row{display:flex;align-items:center;padding:7px 2px;border-bottom:1px solid var(--bord);gap:8px;cursor:default;transition:background .12s}
+.txn-row:hover{background:var(--surf2)}
+.txn-area{font-size:10px;font-weight:500;color:var(--t1);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.txn-price{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);white-space:nowrap}
+.txn-date{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);white-space:nowrap}
+.txn-type{font-family:'JetBrains Mono',monospace;font-size:7px;padding:2px 5px;border-radius:2px}
+.txn-sale{background:rgba(34,200,122,.12);color:#22C87A}
+.txn-mortgage{background:rgba(100,160,255,.12);color:#64A0FF}
+/* ═══════════ MAP CONTROLS ═══════════ */
+#map-btn-panel{position:absolute;top:12px;left:calc(var(--panel)+12px);z-index:201;transition:left .3s}
+#map-btn-panel.shift{left:12px}
+.mbc{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:8px;display:flex;flex-direction:column;gap:4px;box-shadow:var(--s1)}
+.mb{display:flex;align-items:center;gap:6px;padding:5px 8px;border:1px solid transparent;border-radius:4px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);transition:all .14s;white-space:nowrap}
+.mb:hover{color:var(--t1);background:var(--bg2)}
+.mb.on{color:var(--t1);background:var(--bg2);border-color:var(--bord)}
+.mb-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.mb-lbl{letter-spacing:.5px}
+/* Heatmap signal select */
+#hm-signal{margin-top:4px;padding:4px 8px;background:var(--bg2);border:1px solid var(--bord);color:var(--t2);font-family:'JetBrains Mono',monospace;font-size:8px;border-radius:4px;outline:none;cursor:pointer;width:100%}
+#hm-signal:focus{border-color:var(--gold-border)}
+/* ═══════════ LEGEND ═══════════ */
+#legend{position:absolute;bottom:54px;right:44px;z-index:201;background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:10px 12px;box-shadow:var(--s1);min-width:130px}
+#legend.shift{right:44px}
+.leg-h{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--t3);margin-bottom:6px;text-transform:uppercase}
+.leg-bar{height:5px;border-radius:3px;background:linear-gradient(90deg,#22C87A,#C9A84C,#F05252);margin-bottom:4px}
+[data-theme="light"] .leg-bar{background:linear-gradient(90deg,#0F7A4A,#9A6F0A,#C0392B)}
+.leg-lbls{display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3);margin-bottom:8px}
+.leg-row{display:flex;align-items:center;gap:5px;margin-bottom:3px;font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3)}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+/* ═══════════ STATSBAR ═══════════ */
+#statsbar{position:absolute;bottom:0;left:var(--panel);right:0;height:44px;background:var(--surf);border-top:1px solid var(--bord);display:flex;align-items:center;z-index:200;opacity:0;transition:opacity .4s,left .3s;pointer-events:all}
+#statsbar.show{opacity:1}
+#statsbar.shift{left:0}
+.sb{padding:0 14px;border-right:1px solid var(--bord);text-align:center;flex-shrink:0}
+.sb:last-child{border:none}
+.sb-v{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--t1);font-weight:500}
+.sb-l{font-family:'JetBrains Mono',monospace;font-size:6.5px;color:var(--t3);letter-spacing:1px;text-transform:uppercase}
+.sb-tl{font-family:'JetBrains Mono',monospace;font-size:6px;color:var(--t3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:2px}
+.sb-div{width:1px;height:24px;background:var(--bord);flex-shrink:0}
+.sb-ticker{display:flex;flex-direction:column;justify-content:center;padding:0 12px;flex:0 0 auto;min-width:190px;overflow:hidden}
+.ticker-wrap{overflow:hidden;width:100%}
+.ticker-track{display:inline-flex;gap:18px;white-space:nowrap;animation:tickerScroll 30s linear infinite}
+@keyframes tickerScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.tk-item{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--t2);white-space:nowrap}
+.tk-area{color:var(--gold);font-weight:600}
+.tk-up{color:var(--up)}
+.tk-dn{color:var(--red)}
+/* Heatmap tabs in statsbar */
+.hm-tabs{display:flex;gap:2px}
+.hmt{font-family:'JetBrains Mono',monospace;font-size:7.5px;padding:3px 6px;border-radius:3px;cursor:pointer;color:var(--t3);border:1px solid transparent;letter-spacing:.8px;transition:all .15s;user-select:none}
+.hmt:hover{color:var(--t1);border-color:var(--bord)}
+.hmt.active{background:var(--gold);color:#000;border-color:var(--gold);font-weight:700}
+/* ═══════════ ZOOM ═══════════ */
+#zoom-ctrls{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:3px;z-index:201;opacity:0;transition:opacity .4s}
+#zoom-ctrls.show{opacity:1}
+.zb{width:30px;height:30px;background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);color:var(--t2);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:var(--s1);transition:all .15s}
+.zb:hover{border-color:var(--gold-border);color:var(--gold)}
+/* ═══════════ SOURCE NOTE ═══════════ */
+#src-note{position:absolute;bottom:48px;left:calc(var(--panel)+10px);font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3);z-index:201;pointer-events:none;transition:left .3s}
+#src-note.shift{left:10px}
+/* ═══════════ RIGHT PANEL ═══════════ */
+#rp{position:absolute;top:0;right:-380px;width:380px;height:100%;background:var(--surf);border-left:1px solid var(--bord);z-index:250;transition:right .3s;display:flex;flex-direction:column}
+#rp.open{right:0}
+#rp-inner{flex:1;overflow-y:auto;padding:0}
+#rp-inner::-webkit-scrollbar{width:3px}
+#rp-inner::-webkit-scrollbar-thumb{background:var(--bord);border-radius:2px}
+.rp-close{position:absolute;top:12px;right:12px;cursor:pointer;color:var(--t3);font-size:16px;z-index:10;line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:all .15s}
+.rp-close:hover{background:var(--bg2);color:var(--t1)}
+.rp-head{padding:16px 16px 12px;border-bottom:1px solid var(--bord);background:var(--surf)}
+.rp-eyebrow{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin-bottom:4px}
+.rp-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--t1)}
+.rp-body{padding:14px 16px}
+.sec{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:2px;color:var(--t3);text-transform:uppercase;margin:14px 0 8px;padding-bottom:4px;border-bottom:1px solid var(--bord)}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:8px}
+.kpi{background:var(--bg2);border:1px solid var(--bord);border-radius:var(--r);padding:8px 10px;text-align:center}
+.kv{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--t1)}
+.kv.gold{color:var(--gold)}
+.kv.up{color:var(--up)}
+.kl{font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3);text-transform:uppercase;letter-spacing:.8px;margin-top:2px}
+.dr{display:flex;justify-content:space-between;gap:8px;padding:5px 0;border-bottom:1px solid var(--bord)}
+.dr:last-child{border:none}
+.dr-l{font-size:10px;color:var(--t2)}
+.dr-v{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--t1);font-weight:500}
+.nb{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid var(--bord);border-radius:5px;margin-bottom:4px;cursor:pointer;transition:all .14s;background:var(--bg2)}
+.nb:hover{border-color:var(--gold-border)}
+.nb-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.nb-name{font-size:11px;font-weight:500;color:var(--t1)}
+.nb-sub{font-size:9px;color:var(--t3)}
+.nb-psf{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold);margin-left:auto;white-space:nowrap}
+/* ═══════════ HERO CANVAS ═══════════ */
+#hero-cv{width:100%;max-width:420px;height:120px;border-radius:var(--r);margin:8px 0;display:block}
+/* ═══════════ TOOLTIP ═══════════ */
+.maplibregl-popup-content{background:var(--surf)!important;border:1px solid var(--gold-border)!important;padding:10px 14px!important;border-radius:var(--r)!important;box-shadow:var(--s2)!important;pointer-events:none!important;min-width:140px}
+.maplibregl-popup-tip{display:none!important}
+.tt-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.tt-row{display:flex;justify-content:space-between;gap:12px;margin-top:2px;font-family:'JetBrains Mono',monospace;font-size:9px}
+.tt-k{color:var(--t3)}
+.tt-v{color:var(--gold);font-weight:500}
+.tt-up{color:var(--up)}
+/* ═══════════ AREA LABELS ═══════════ */
+.area-label{background:rgba(13,20,40,0.88);border:1px solid rgba(255,255,255,0.12);border-radius:4px;padding:3px 7px;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 2px 8px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center;transition:all .14s}
+[data-theme="light"] .area-label{background:rgba(250,250,248,0.92);border:1px solid rgba(0,0,0,0.15)}
+.area-label:hover{border-color:rgba(201,168,76,.6)!important}
+.al-psf{font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:600;color:#F0EDE8;white-space:nowrap}
+[data-theme="light"] .al-psf{color:#1A1714}
+.al-yoy{font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;white-space:nowrap}
+/* ═══════════ PDF MODAL ═══════════ */
+#pdf-modal{position:fixed;inset:0;z-index:8888;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(6px)}
+#pdf-modal.open{opacity:1;pointer-events:all}
+.pdf-box{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:28px;max-width:460px;width:calc(100% - 32px);box-shadow:var(--s3)}
+.pdf-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--t1);margin-bottom:3px}
+.pdf-sub{font-size:12px;color:var(--t2);margin-bottom:20px}
+.pf{margin-bottom:13px}
+.pf-l{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin-bottom:4px}
+.pf-i{width:100%;padding:8px 10px;border:1px solid var(--bord);background:var(--bg2);color:var(--t1);font-family:'Figtree',sans-serif;font-size:12px;border-radius:var(--r);outline:none;transition:border-color .18s}
+.pf-i:focus{border-color:var(--gold-border)}
+.pdf-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:20px}
+/* ═══════════ PRESENT MODE ═══════════ */
+body.present #lp,body.present #map-btn-panel,body.present #legend,body.present #statsbar,body.present #zoom-ctrls,body.present #src-note,body.present .hdr-stats,body.present .hdr-acts,body.present .hdr-div{display:none!important}
+body.present #map,body.present #deck-canvas{top:0!important;left:0!important}
+/* ═══════════ GLOBE CANVAS ═══════════ */
+#globe-wrap{position:fixed;inset:0;z-index:5000;background:#060B18;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+#globe-wrap.hide{display:none}
+#globe-cv{cursor:pointer}
+.globe-lbl{font-family:'Playfair Display',serif;font-size:36px;letter-spacing:10px;color:#F0EDE8;text-transform:uppercase}
+.globe-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6B6880;letter-spacing:3px;text-transform:uppercase}
+.globe-hint{font-family:'JetBrains Mono',monospace;font-size:9px;color:#C9A84C;letter-spacing:2px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+/* ═══════════ PRESENT (layers control) ═══════════ */
+#bounds-loader{position:absolute;bottom:54px;left:50%;transform:translateX(-50%);background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--t3);z-index:250;box-shadow:var(--s2);white-space:nowrap;display:none;letter-spacing:1px}
+/* ═══════════ PORTFOLIO MODAL ═══════════ */
+#port-modal{position:fixed;inset:0;z-index:8000;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;backdrop-filter:blur(8px)}
+#port-modal.open{opacity:1;pointer-events:all}
+.port-box{background:var(--surf);border:1px solid var(--gold-border);border-radius:10px;max-width:840px;width:calc(100% - 32px);max-height:90vh;overflow:hidden;box-shadow:var(--s3);display:flex;flex-direction:column}
+.port-hdr{padding:18px 24px 14px;border-bottom:1px solid var(--bord);display:flex;align-items:flex-start;justify-content:space-between}
+.port-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--t1)}
+.port-sub{font-size:11px;color:var(--t3);margin-top:2px}
+.port-body{display:flex;flex:1;overflow:hidden}
+.port-left{width:330px;flex-shrink:0;border-right:1px solid var(--bord);padding:14px;overflow-y:auto}
+.port-right{flex:1;padding:14px;overflow-y:auto}
+.port-sec{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin:14px 0 7px}
+.port-sec:first-child{margin-top:2px}
+.pa-row{display:flex;align-items:center;gap:7px;margin-bottom:5px;padding:7px 9px;border:1px solid var(--bord);border-radius:6px;background:var(--bg2);cursor:pointer;transition:all .14s}
+.pa-row:hover,.pa-row.sel{border-color:var(--gold-border);background:rgba(201,168,76,.07)}
+.pa-name{flex:1;font-size:10px;color:var(--t1);font-weight:500}
+.pa-psf{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--gold)}
+.pa-yld{font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--up)}
+.port-slot{display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid var(--bord);border-radius:6px;margin-bottom:5px;background:var(--bg2)}
+.slot-name{flex:1;font-size:10px;color:var(--t1)}
+.slot-rm{cursor:pointer;color:var(--t3);font-size:13px;line-height:1;transition:color .14s}
+.slot-rm:hover{color:var(--red)}
+.slot-sz{width:56px;padding:3px 5px;border:1px solid var(--bord);background:var(--bg);color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:9px;border-radius:4px;outline:none;text-align:center}
+.slot-sz:focus{border-color:var(--gold-border)}
+.mt-row{display:flex;gap:8px;margin-bottom:8px}
+.mt-field{flex:1}
+.mt-label{font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--t3);text-transform:uppercase;margin-bottom:3px}
+.mt-input{width:100%;padding:6px 8px;border:1px solid var(--bord);background:var(--bg2);color:var(--t1);font-family:'JetBrains Mono',monospace;font-size:10px;border-radius:4px;outline:none;box-sizing:border-box}
+.mt-input:focus{border-color:var(--gold-border)}
+.pout-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:12px}
+.pout-kpi{background:var(--bg2);border:1px solid var(--bord);border-radius:6px;padding:10px 11px}
+.pout-v{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--gold);line-height:1.1}
+.pout-v.pos{color:var(--up)}
+.pout-v.neg{color:var(--red)}
+.pout-l{font-family:'JetBrains Mono',monospace;font-size:6.5px;letter-spacing:1px;color:var(--t3);text-transform:uppercase;margin-top:3px}
+.scen-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--bord);border-radius:6px;margin-bottom:5px}
+.scen-lbl{flex:1;font-size:10px;color:var(--t2)}
+.scen-v{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600}
+.cf-chart{height:56px;display:flex;gap:4px;align-items:flex-end;margin:8px 0 12px}
+.cf-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px}
+.cf-bar{width:100%;border-radius:2px 2px 0 0;min-height:2px}
+.cf-yr{font-family:'JetBrains Mono',monospace;font-size:6px;color:var(--t3)}
+.port-calc-btn{width:100%;padding:10px;background:var(--gold);color:#000;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;letter-spacing:1px;border:none;border-radius:6px;cursor:pointer;margin-top:10px;text-transform:uppercase;transition:opacity .15s}
+.port-calc-btn:hover{opacity:.85}
+.port-empty{text-align:center;padding:32px 20px;color:var(--t3);font-size:11px;line-height:1.7}
+.visa-badge-lg{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;background:rgba(201,168,76,.1);border:1px solid var(--gold-border);border-radius:20px;font-family:'JetBrains Mono',monospace;font-size:8.5px;color:var(--gold);margin-top:8px}
+/* Listings AI search bar */
+.lst-search{padding:8px 10px;border-bottom:1px solid var(--bord);display:flex;gap:6px}
+.lst-inp{flex:1;padding:6px 9px;background:var(--bg2);border:1px solid var(--bord);color:var(--t1);font-family:'Figtree',sans-serif;font-size:11px;border-radius:4px;outline:none}
+.lst-inp:focus{border-color:var(--gold-border)}
+.lst-btn{padding:6px 12px;background:var(--gold);color:#000;border:none;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:8.5px;font-weight:700;cursor:pointer;letter-spacing:.8px;white-space:nowrap}
+.lst-btn:hover{opacity:.85}
+.lst-filters{padding:6px 10px;display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--bord)}
+.lst-flt{font-family:'JetBrains Mono',monospace;font-size:7.5px;padding:3px 7px;border:1px solid var(--bord);border-radius:20px;color:var(--t3);cursor:pointer;transition:all .13s}
+.lst-flt:hover,.lst-flt.on{border-color:var(--gold-border);color:var(--gold);background:rgba(201,168,76,.08)}
+/* AI thinking indicator */
+.ai-thinking{display:flex;align-items:center;gap:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--t3)}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);animation:aiPulse 1.2s infinite}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes aiPulse{0%,80%,100%{opacity:.2}40%{opacity:1}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="lo-brand">Nokhda</div>
+  <div class="lo-tag">Dubai Property Intelligence</div>
+  <div class="lo-track"><div class="lo-bar" id="lbar"></div></div>
+  <div class="lo-msg" id="lmsg">Initialising...</div>
+</div>
+
+<!-- GLOBE -->
+<div id="globe-wrap">
+  <div class="globe-lbl">Nokhda</div>
+  <div class="globe-sub">Dubai Property Intelligence</div>
+  <canvas id="globe-cv" width="420" height="420"></canvas>
+  <div class="globe-hint">Click to enter Dubai market</div>
+</div>
+
+<!-- SHELL -->
+<div id="shell">
+  <!-- Header -->
+  <div id="hdr">
+    <div class="hdr-logo">Nokhda</div>
+    <div class="hdr-div"></div>
+    <div class="hdr-crumb">Dubai · 2025</div>
+    <div class="hdr-stats">
+      <div class="hs"><div class="hs-v">226,000</div><div class="hs-l">Transactions</div></div>
+      <div class="hs"><div class="hs-v">AED 761B</div><div class="hs-l">Sales Value</div></div>
+      <div class="hs"><div class="hs-v" style="color:var(--gold)">AED 1,683</div><div class="hs-l">Avg / ft²</div></div>
+      <div class="hs"><div class="hs-v" style="color:var(--up)">+36%</div><div class="hs-l">YoY Growth</div></div>
+    </div>
+    <div class="hdr-acts">
+      <button class="btn sm" onclick="exitGlobe()">← Globe</button>
+      <button class="btn sm" id="btn-pres" onclick="togglePresent()">⛶ Present</button>
+      <button class="btn sm" onclick="openPortfolio()">⊞ Portfolio</button>
+      <button class="btn primary sm" onclick="openPDF()">↓ PDF Report</button>
+      <button class="btn-ico" id="btn-theme" onclick="toggleTheme()" title="Toggle theme">☀</button>
+      <button class="btn-ico" id="btn-panel" onclick="togglePanel()" title="Toggle panel">☰</button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div id="body">
+    <div id="map"></div>
+    <canvas id="deck-canvas"></canvas>
+
+    <!-- Left panel -->
+    <div id="lp">
+      <div class="lp-search">
+        <div class="search-wrap">
+          <span class="search-ico">⌕</span>
+          <input class="search-inp" id="s-inp" placeholder="Search projects, areas, listings…" oninput="onSearch()">
+        </div>
+      </div>
+      <div class="lp-tabs">
+        <div class="lp-tab on" id="tab-proj" onclick="setTab('proj')">Projects</div>
+        <div class="lp-tab" id="tab-area" onclick="setTab('area')">Areas</div>
+        <div class="lp-tab" id="tab-list" onclick="setTab('list')">Listings</div>
+        <div class="lp-tab" id="tab-txn"  onclick="setTab('txn')">Transactions</div>
+      </div>
+      <div class="lp-filters" id="chips">
+        <div class="chip" data-f="off-plan"     onclick="toggleChip(this)">Off-Plan</div>
+        <div class="chip" data-f="construction" onclick="toggleChip(this)">Under Construction</div>
+        <div class="chip" data-f="completed"    onclick="toggleChip(this)">Ready</div>
+        <div class="chip" data-f="ultra"        onclick="toggleChip(this)">Ultra-Luxury</div>
+        <div class="chip" data-f="luxury"       onclick="toggleChip(this)">Luxury</div>
+        <div class="chip" data-f="mid"          onclick="toggleChip(this)">Mid-Market</div>
+        <div class="chip" data-f="visa"         onclick="toggleChip(this)">🔑 Golden Visa</div>
+      </div>
+      <div class="lp-ctr" id="lp-ctr"></div>
+      <div class="lp-list" id="lp-list"></div>
+    </div>
+
+    <!-- Map layer controls -->
+    <div id="map-btn-panel">
+      <div class="mbc">
+        <div class="mb on" id="mb-areas"     onclick="toggleLayer('areas')">
+          <div class="mb-dot" style="background:var(--gold)"></div><span class="mb-lbl">Area Outlines</span>
+        </div>
+        <div class="mb on" id="mb-bubbles"   onclick="toggleLayer('bubbles')">
+          <div class="mb-dot" style="background:var(--teal)"></div><span class="mb-lbl">Volume Bubbles</span>
+        </div>
+        <div class="mb on" id="mb-projects"  onclick="toggleLayer('projects')">
+          <div class="mb-dot" style="background:var(--up)"></div><span class="mb-lbl">Projects</span>
+        </div>
+        <div class="mb" id="mb-buildings"    onclick="toggleLayer('buildings')">
+          <div class="mb-dot" style="background:#666"></div><span class="mb-lbl">3D Buildings</span>
+        </div>
+        <div style="padding:4px 8px 0;border-top:1px solid var(--bord);margin-top:2px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--t3);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px">Map Signal</div>
+          <select id="hm-signal" onchange="setHeatMode(this.value)">
+            <option value="psf" selected>Price / ft² (PSF)</option>
+            <option value="yld">Gross Yield %</option>
+            <option value="yoy">YoY Growth %</option>
+            <option value="txn">Transaction Volume</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div id="legend">
+      <div class="leg-h" id="leg-title">Price per ft² (AED)</div>
+      <div class="leg-bar" id="leg-grad"></div>
+      <div class="leg-lbls" id="leg-lbls"><span>680</span><span>1,683</span><span>3,500+</span></div>
+      <div class="leg-row"><div class="leg-dot" style="background:#22C87A"></div><span id="leg-l1">Value &lt;1,200</span></div>
+      <div class="leg-row"><div class="leg-dot" style="background:#C9A84C"></div><span id="leg-l2">Mid 1,200–2,000</span></div>
+      <div class="leg-row"><div class="leg-dot" style="background:#FF8C42"></div><span id="leg-l3">Luxury 2,000–3,000</span></div>
+      <div class="leg-row"><div class="leg-dot" style="background:#F05252"></div><span id="leg-l4">Ultra &gt;3,000</span></div>
+    </div>
+
+    <!-- Stats bar -->
+    <div id="statsbar">
+      <div class="sb sb-ticker">
+        <div class="sb-tl">LIVE PULSE</div>
+        <div class="ticker-wrap"><div class="ticker-track" id="ticker-track"></div></div>
+      </div>
+      <div class="sb-div"></div>
+      <div class="sb"><div class="sb-v" id="sb-today-count">1,024</div><div class="sb-l">Today Deals</div></div>
+      <div class="sb"><div class="sb-v" id="sb-today-vol">AED 2.4B</div><div class="sb-l">Today Volume</div></div>
+      <div class="sb-div"></div>
+      <div class="sb"><div class="sb-v">226,000</div><div class="sb-l">2024 Deals</div></div>
+      <div class="sb"><div class="sb-v" style="color:var(--up)">+36%</div><div class="sb-l">vs 2023</div></div>
+      <div class="sb"><div class="sb-v">AED 761B</div><div class="sb-l">Total Value</div></div>
+      <div class="sb-div"></div>
+      <div class="sb"><div class="sb-v">6.8%</div><div class="sb-l">Avg Yield</div></div>
+      <div class="sb"><div class="sb-v">AED 1,683</div><div class="sb-l">Avg / ft²</div></div>
+      <div class="sb-div"></div>
+      <div class="sb" style="flex:0 0 auto;padding:0 10px">
+        <div class="sb-tl">MAP SIGNAL</div>
+        <div class="hm-tabs">
+          <span class="hmt active" onclick="setHeatModeTab(this,'psf')">PSF</span>
+          <span class="hmt" onclick="setHeatModeTab(this,'yld')">YLD</span>
+          <span class="hmt" onclick="setHeatModeTab(this,'yoy')">YoY</span>
+          <span class="hmt" onclick="setHeatModeTab(this,'txn')">VOL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zoom controls -->
+    <div id="zoom-ctrls">
+      <div class="zb" onclick="_map?.zoomIn()">+</div>
+      <div class="zb" onclick="_map?.zoomOut()">−</div>
+      <div class="zb" onclick="resetView()" style="font-size:10px">⌖</div>
+    </div>
+
+    <!-- Source note -->
+    <div id="src-note">Source: DLD · Property Monitor · Bayut · Knight Frank 2024–2025</div>
+
+    <!-- Boundary loader -->
+    <div id="bounds-loader">Drawing area boundaries…</div>
+
+    <!-- Right panel -->
+    <div id="rp"><div id="rp-inner"></div></div>
+  </div>
+</div>
+
+<!-- PDF MODAL -->
+<div id="pdf-modal">
+  <div class="pdf-box">
+    <div class="pdf-title">Client Report</div>
+    <div class="pdf-sub">Generate a branded PDF with market analysis.</div>
+    <div class="pf"><div class="pf-l">Client Name</div><input class="pf-i" id="pdf-client" placeholder="e.g. Mr. Ahmed Al Rashid"></div>
+    <div class="pf"><div class="pf-l">Agency / Broker</div><input class="pf-i" id="pdf-agency" placeholder="e.g. Prestige Real Estate DMCC"></div>
+    <div class="pf"><div class="pf-l">Investment Brief</div><input class="pf-i" id="pdf-brief" placeholder="e.g. Yield-focused, AED 2–5M budget"></div>
+    <div class="pdf-acts">
+      <button class="btn" onclick="closePDF()">Cancel</button>
+      <button class="btn primary" onclick="genPDF()">Generate PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- PORTFOLIO MODAL -->
+<div id="port-modal" onclick="if(event.target===this)closePortfolio()">
+  <div class="port-box">
+    <div class="port-hdr">
+      <div>
+        <div class="port-title">Portfolio Simulator</div>
+        <div class="port-sub">Mortgage leverage · Cashflow after debt service · Exit scenarios</div>
+      </div>
+      <span style="cursor:pointer;color:var(--t3);font-size:18px;line-height:1" onclick="closePortfolio()">✕</span>
+    </div>
+    <div class="port-body">
+      <div class="port-left">
+        <div class="port-sec">Add Areas</div>
+        <div id="port-area-list"></div>
+        <div class="port-sec" style="margin-top:14px">My Portfolio</div>
+        <div id="port-slots"><div class="port-empty">Select areas above to add units</div></div>
+        <div class="port-sec" style="margin-top:14px">Mortgage Parameters</div>
+        <div class="mt-row">
+          <div class="mt-field"><div class="mt-label">LTV %</div><input class="mt-input" id="p-ltv" type="number" value="70" min="0" max="80"></div>
+          <div class="mt-field"><div class="mt-label">Rate % p.a.</div><input class="mt-input" id="p-rate" type="number" value="4.5" step="0.1"></div>
+        </div>
+        <div class="mt-row">
+          <div class="mt-field"><div class="mt-label">Term (years)</div><input class="mt-input" id="p-term" type="number" value="25" min="5" max="30"></div>
+          <div class="mt-field"><div class="mt-label">Hold (years)</div><input class="mt-input" id="p-hold" type="number" value="5" min="1" max="20"></div>
+        </div>
+        <button class="port-calc-btn" onclick="calcPortfolio()">Calculate Portfolio</button>
+      </div>
+      <div class="port-right" id="port-results">
+        <div class="port-empty" style="margin-top:40px">Configure portfolio on the left, then click Calculate.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  function loadScript(src,cb){
+    var s=document.createElement('script');s.src=src;s.onload=cb;
+    s.onerror=function(){document.getElementById('lmsg').textContent='Failed to load library — check internet connection.';};
+    document.head.appendChild(s);
+  }
+  loadScript('https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.js',function(){
+    loadScript('https://cdn.jsdelivr.net/npm/deck.gl@9.0.0/dist.min.js',function(){window._LIBS_READY=true;});
+  });
+})();
+</script>
+<script>
+/* ═══════════════════════════════════════════════════
+   DATA — DLD 2024 / Bayut / Property Monitor / KF
+═══════════════════════════════════════════════════ */
+const AREAS = [
+  {id:'jvc',     name:'Jumeirah Village Circle', lat:25.0596,lng:55.2093,psf:1100,txn:21873,val:24.5,yld:7.8,yoy:17,tier:'mid',   type:'Apartments'},
+  {id:'bb',      name:'Business Bay',            lat:25.1866,lng:55.2560,psf:2615,txn:14200,val:38.3,yld:6.8,yoy:11,tier:'luxury',type:'Mixed-Use'},
+  {id:'dtn',     name:'Downtown Dubai',          lat:25.1972,lng:55.2744,psf:2980,txn:8100, val:22.4,yld:5.2,yoy:8, tier:'luxury',type:'Apartments'},
+  {id:'marina',  name:'Dubai Marina',            lat:25.0791,lng:55.1407,psf:2188,txn:11200,val:13.8,yld:6.4,yoy:6, tier:'luxury',type:'Apartments'},
+  {id:'palm',    name:'Palm Jumeirah',           lat:25.1124,lng:55.1390,psf:3500,txn:3900, val:18.2,yld:5.4,yoy:9, tier:'ultra', type:'Villas/Apts'},
+  {id:'dh',      name:'Dubai Hills Estate',      lat:25.1157,lng:55.2480,psf:1650,txn:7800, val:22.0,yld:6.5,yoy:12,tier:'mid',   type:'Villas/Apts'},
+  {id:'jlt',     name:'Jumeirah Lake Towers',    lat:25.0672,lng:55.1404,psf:1780,txn:4600, val:8.9, yld:6.4,yoy:8, tier:'mid',   type:'Apartments'},
+  {id:'dso',     name:'Dubai Silicon Oasis',     lat:25.1180,lng:55.3793,psf:980, txn:4800, val:5.8, yld:8.5,yoy:29,tier:'aff',   type:'Apartments'},
+  {id:'dsouth',  name:'Dubai South',             lat:24.8947,lng:55.1521,psf:920, txn:6900, val:8.4, yld:8.8,yoy:15,tier:'aff',   type:'Villas/Apts'},
+  {id:'intcity', name:'International City',      lat:25.1636,lng:55.4100,psf:680, txn:5900, val:4.1, yld:9.5,yoy:12,tier:'aff',   type:'Apartments'},
+  {id:'dip',     name:'Dubai Investment Park',   lat:24.9878,lng:55.1608,psf:1477,txn:7427, val:23.2,yld:8.2,yoy:14,tier:'mid',   type:'Apartments'},
+  {id:'meydan',  name:'Meydan / MBR City',       lat:25.1670,lng:55.3060,psf:1920,txn:3100, val:8.2, yld:6.9,yoy:16,tier:'mid',   type:'Mixed-Use'},
+  {id:'arabian', name:'Arabian Ranches',         lat:25.0560,lng:55.2710,psf:1800,txn:2200, val:6.1, yld:5.8,yoy:20,tier:'luxury',type:'Villas'},
+  {id:'jbr',     name:'JBR / Dubai Harbour',     lat:25.0857,lng:55.1311,psf:2400,txn:3200, val:9.8, yld:5.8,yoy:7, tier:'luxury',type:'Apartments'},
+  {id:'damac2',  name:'DAMAC Hills 2',           lat:24.9690,lng:55.3090,psf:850, txn:5100, val:6.2, yld:7.0,yoy:14,tier:'aff',   type:'Villas'},
+  {id:'alfurjan',name:'Al Furjan',               lat:25.0240,lng:55.1313,psf:1250,txn:4900, val:7.1, yld:6.2,yoy:10,tier:'mid',   type:'Villas/Apts'},
+  {id:'burdubai',name:'Bur Dubai',               lat:25.2650,lng:55.3060,psf:940, txn:7200, val:8.3, yld:8.1,yoy:9, tier:'aff',   type:'Apartments'},
+];
+
+const PROJECTS = [
+  {id:1, name:"Dubai Creek Tower",       area:"Creek Harbour", lat:25.2076,lng:55.3596,status:"construction",tier:"luxury",dev:"Emaar",      psf:2850,lpsf:1200,floors:200,comp:"2028",yld:7.2,yoy:15,visa:true, op:82,txn:5200, val:14.5,ph:[1200,1380,1620,1950,2340,2850],desc:"World's tallest structure by Santiago Calatrava. Creek Harbour: 5,200 transactions, AED 14.5B.",ams:["World's Tallest Tower","Observation Deck","5★ Hotel","Marina"],col:[201,168,76]},
+  {id:2, name:"One Za'abeel",            area:"DIFC",          lat:25.2285,lng:55.2977,status:"completed",   tier:"ultra", dev:"Ithra Dubai",psf:3200,lpsf:1800,floors:64, comp:"2024",yld:6.8,yoy:6, visa:true, op:40,txn:1800, val:7.8, ph:[1800,2050,2280,2620,2950,3200],desc:"'The Link' — world's largest cantilever. DIFC area: AED 3,200/sqft avg.",ams:["The Link Sky Bridge","Rooftop Pool","5★ Hotel"],col:[100,180,220]},
+  {id:3, name:"Burj Azizi",              area:"Sheikh Zayed",  lat:25.1970,lng:55.2750,status:"construction",tier:"ultra", dev:"Azizi",      psf:3800,lpsf:2200,floors:131,comp:"2028",yld:8.1,yoy:8, visa:true, op:75,txn:8100, val:22.4,ph:[2200,2480,2750,3100,3450,3800],desc:"World's second-tallest at 725m. Downtown area: AED 2,980/sqft avg +8% YoY.",ams:["Sky Infinity Pool","Private Club","Helipad"],col:[220,140,60]},
+  {id:4, name:"Ciel Tower",              area:"Dubai Marina",  lat:25.0810,lng:55.1420,status:"construction",tier:"luxury",dev:"First Group", psf:2188,lpsf:1400,floors:82, comp:"2025",yld:9.2,yoy:6, visa:true, op:65,txn:11200,val:13.8,ph:[1400,1580,1720,1860,2050,2188],desc:"World's tallest hotel at 365m. Dubai Marina: 11,200 transactions.",ams:["1000 Suites","Rooftop Bar","Spa"],col:[100,160,200]},
+  {id:5, name:"Palm Jebel Ali",          area:"Palm Jebel Ali",lat:24.9903,lng:55.0127,status:"construction",tier:"mid",   dev:"Nakheel",    psf:1950,lpsf:900, floors:8,  comp:"2027",yld:8.8,yoy:28,visa:true, op:95,txn:2100, val:8.9, ph:[900,1050,1220,1480,1700,1950],desc:"80km coastline, 2× size of Palm Jumeirah. Villa prices +28% YoY.",ams:["80km Coastline","Beach Clubs","Marina"],col:[60,180,110]},
+  {id:6, name:"Armani Beach Residences", area:"Palm Jumeirah", lat:25.1124,lng:55.1390,status:"construction",tier:"ultra", dev:"Arada",      psf:5200,lpsf:2900,floors:25, comp:"2026",yld:5.8,yoy:9, visa:true, op:55,txn:3900, val:18.2,ph:[2900,3300,3750,4250,4700,5200],desc:"Tadao Ando × Armani/Casa. Palm luxury segment grew +60.5% in 2025.",ams:["Private Beach","Armani Concierge","Infinity Pool"],col:[220,180,80]},
+  {id:7, name:"Sobha Hartland II",       area:"MBR City",      lat:25.1980,lng:55.3310,status:"construction",tier:"mid",   dev:"Sobha",      psf:2519,lpsf:1380,floors:35, comp:"2026",yld:7.1,yoy:15,visa:true, op:80,txn:5200, val:14.5,ph:[1380,1560,1780,2050,2280,2519],desc:"Crystal Lagoon community. Sobha ranked #4 developer by sales volume.",ams:["Crystal Lagoon","Sobha Mall","Schools"],col:[160,100,210]},
+  {id:8, name:"Burj Binghatti × Jacob&Co",area:"Business Bay", lat:25.1910,lng:55.2590,status:"construction",tier:"ultra", dev:"Binghatti",  psf:4800,lpsf:2000,floors:112,comp:"2026",yld:6.5,yoy:11,visa:true, op:72,txn:14200,val:38.3,ph:[2000,2400,2900,3500,4100,4800],desc:"World's tallest residential at 554m. Business Bay: #1 by value in Dubai.",ams:["World's Tallest Residential","Sky Pool","Cinema"],col:[201,168,76]},
+  {id:9, name:"Emaar Beachfront",        area:"Dubai Harbour", lat:25.0961,lng:55.1530,status:"construction",tier:"luxury",dev:"Emaar",      psf:2400,lpsf:1100,floors:38, comp:"2026",yld:7.4,yoy:7, visa:true, op:68,txn:3200, val:9.8, ph:[1100,1280,1550,1880,2150,2400],desc:"Private island between Palm and JBR. Led luxury apt transactions above AED 5M.",ams:["Private Beach","Yacht Club","Boardwalk"],col:[80,140,210]},
+  {id:10,name:"Dubai Hills Estate Ph3",  area:"Dubai Hills",   lat:25.1157,lng:55.2480,status:"construction",tier:"mid",   dev:"Emaar",      psf:1760,lpsf:1050,floors:15, comp:"2026",yld:7.9,yoy:12,visa:true, op:65,txn:7800, val:22.0,ph:[1050,1180,1400,1560,1680,1760],desc:"18-hole golf, Dubai Hills Mall. AED 1,650/sqft avg (+12% YoY).",ams:["18-Hole Golf","Dubai Hills Mall","Central Park"],col:[60,180,110]},
+  {id:11,name:"Mercedes-Benz Places",    area:"Downtown Dubai",lat:25.1942,lng:55.2764,status:"off-plan",    tier:"ultra", dev:"Binghatti",  psf:3600,lpsf:1500,floors:65, comp:"2026",yld:6.9,yoy:8, visa:true, op:82,txn:8100, val:22.4,ph:[1500,1780,2100,2600,3200,3600],desc:"World's first Mercedes-Benz branded tower. Downtown: strongest luxury increase.",ams:["Car Gallery","Sky Lounge","AI Smart Home"],col:[120,140,170]},
+  {id:12,name:"South Bay",               area:"Dubai South",   lat:24.9048,lng:55.1498,status:"construction",tier:"mid",   dev:"Dubai South",psf:1150,lpsf:700, floors:3,  comp:"2025",yld:9.1,yoy:15,visa:false,op:85,txn:6900, val:8.4, ph:[700,780,920,1020,1100,1150],desc:"Premium villas near Al Maktoum International. Dubai South 4BR: +24% YoY rental.",ams:["Crystal Lagoon","Sports Club","Airport Access"],col:[60,190,130]},
+  {id:13,name:"Tilal Al Ghaf",           area:"Dubailand",     lat:25.0520,lng:55.2980,status:"construction",tier:"mid",   dev:"Majid Al Futtaim",psf:1680,lpsf:1050,floors:4,comp:"2027",yld:6.3,yoy:19,visa:false,op:78,txn:2800,val:7.4,ph:[1050,1180,1350,1490,1590,1680],desc:"Resort community with Lagoon Al Ghaf. +15–22% YoY villa appreciation.",ams:["Lagoon Al Ghaf","Beach Club","Cycling"],col:[100,190,100]},
+  {id:14,name:"DAMAC Riverside",         area:"Dubailand",     lat:25.0060,lng:55.1940,status:"off-plan",    tier:"aff",   dev:"DAMAC",      psf:1280,lpsf:810, floors:4,  comp:"2028",yld:8.4,yoy:14,visa:false,op:90,txn:5100, val:6.2, ph:[810,900,1020,1110,1200,1280],desc:"Mediterranean-style villas with floating sports courts. DAMAC Hills 2: +14% YoY.",ams:["Floating Sports","Water Cinema","Aqua Garden"],col:[255,110,60]},
+  {id:15,name:"AVA at Palm Jumeirah",    area:"Palm Jumeirah", lat:25.1180,lng:55.1410,status:"completed",   tier:"ultra", dev:"OMNIYAT",    psf:6200,lpsf:3000,floors:20, comp:"2025",yld:5.2,yoy:9, visa:true, op:30,txn:3900, val:18.2,ph:[3000,3500,4200,5100,5700,6200],desc:"17 residences only. Foster + Partners × Dorchester Collection.",ams:["Private Pool Terraces","Dorchester Spa","Cinema"],col:[220,180,80]},
+];
+window._PMAP = Object.fromEntries(PROJECTS.map(p=>[p.id,p]));
+const YRS = ['2020','2021','2022','2023','2024','2025'];
+
+// DLD Transaction data for the Transactions tab
+const DLD_TXN = [
+  {date:'2025-02-28',area:'Business Bay',          price:4200000, type:'sale',    beds:2, sqft:1520, psf:2763, proj:'Binghatti Onyx'},
+  {date:'2025-02-28',area:'Downtown Dubai',        price:8500000, type:'sale',    beds:3, sqft:2100, psf:4047, proj:'Burj Vista'},
+  {date:'2025-02-27',area:'Dubai Marina',          price:2850000, type:'sale',    beds:2, sqft:1180, psf:2415, proj:'Marina Gate'},
+  {date:'2025-02-27',area:'Palm Jumeirah',         price:15000000,type:'sale',    beds:4, sqft:4200, psf:3571, proj:'Seven Palm'},
+  {date:'2025-02-26',area:'JVC',                   price:980000,  type:'sale',    beds:1, sqft:810,  psf:1209, proj:'Binghatti Stars'},
+  {date:'2025-02-26',area:'Dubai Hills Estate',    price:5200000, type:'sale',    beds:4, sqft:3100, psf:1677, proj:'Park Ridge'},
+  {date:'2025-02-25',area:'Downtown Dubai',        price:6800000, type:'mortgage',beds:3, sqft:2050, psf:3317, proj:'Fountain Views'},
+  {date:'2025-02-25',area:'JBR',                   price:3400000, type:'sale',    beds:2, sqft:1380, psf:2463, proj:'Murjan Tower'},
+  {date:'2025-02-24',area:'Business Bay',          price:1850000, type:'sale',    beds:1, sqft:780,  psf:2371, proj:'SLS Dubai'},
+  {date:'2025-02-24',area:'Dubai Silicon Oasis',   price:750000,  type:'sale',    beds:2, sqft:820,  psf:915,  proj:'Axis Residences'},
+  {date:'2025-02-23',area:'MBR City',              price:4800000, type:'sale',    beds:3, sqft:2400, psf:2000, proj:'Hartland Waves'},
+  {date:'2025-02-23',area:'DAMAC Hills 2',         price:1200000, type:'mortgage',beds:3, sqft:1650, psf:727,  proj:'DAMAC Lagoons'},
+  {date:'2025-02-22',area:'Palm Jumeirah',         price:32000000,type:'sale',    beds:5, sqft:7800, psf:4102, proj:'AVA Residences'},
+  {date:'2025-02-22',area:'Al Furjan',             price:1450000, type:'sale',    beds:2, sqft:1120, psf:1294, proj:'Azizi Riviera'},
+  {date:'2025-02-21',area:'International City',    price:420000,  type:'sale',    beds:1, sqft:580,  psf:724,  proj:'Dragon Mart 2'},
+  {date:'2025-02-21',area:'Dubai Marina',          price:7200000, type:'mortgage',beds:4, sqft:3200, psf:2250, proj:'Cayan Tower'},
+  {date:'2025-02-20',area:'Business Bay',          price:2250000, type:'sale',    beds:2, sqft:950,  psf:2368, proj:'Opus Dubai'},
+  {date:'2025-02-20',area:'Jumeirah Lake Towers',  price:1680000, type:'sale',    beds:2, sqft:920,  psf:1826, proj:'JLT Cluster Q'},
+  {date:'2025-02-19',area:'Dubai South',           price:1100000, type:'sale',    beds:3, sqft:1380, psf:797,  proj:'Expo Valley'},
+  {date:'2025-02-19',area:'Downtown Dubai',        price:12000000,type:'sale',    beds:4, sqft:3800, psf:3157, proj:'The Address Sky View'},
+  {date:'2025-02-18',area:'Arabian Ranches',       price:6500000, type:'sale',    beds:4, sqft:3600, psf:1805, proj:'Arabian Ranches III'},
+  {date:'2025-02-18',area:'Bur Dubai',             price:920000,  type:'sale',    beds:2, sqft:1050, psf:876,  proj:'Reef Al Ameera'},
+  {date:'2025-02-17',area:'JVC',                   price:720000,  type:'mortgage',beds:1, sqft:620,  psf:1161, proj:'Plum Tree'},
+  {date:'2025-02-17',area:'Dubai Hills Estate',    price:8900000, type:'sale',    beds:5, sqft:5400, psf:1648, proj:'Maple Townhouses'},
+  {date:'2025-02-16',area:'Palm Jumeirah',         price:22000000,type:'sale',    beds:5, sqft:6100, psf:3606, proj:'Atlantis The Royal Residences'},
+];
+
+
+/* ═══════════ AREA BOUNDARY POLYGONS ═══════════
+   Accurate multi-vertex shapes from satellite/road geometry
+═══════════════════════════════════════════════ */
+const AREA_POLYS = {
+  // JVC — circular district bounded by Al Khail Rd, Hessa St, Umm Suqeim Rd
+  jvc:[[55.1932,25.0505],[55.1985,25.0468],[55.2048,25.0452],[55.2121,25.0455],[55.2188,25.0477],[55.2238,25.0514],[55.2263,25.0563],[55.2258,25.0617],[55.2225,25.0662],[55.2170,25.0692],[55.2103,25.0703],[55.2033,25.0694],[55.1970,25.0666],[55.1926,25.0621],[55.1910,25.0564],[55.1932,25.0505]],
+  // Business Bay — canal district, elongated N-S along Dubai Canal
+  bb:[[55.2420,25.1720],[55.2510,25.1692],[55.2608,25.1685],[55.2698,25.1718],[55.2745,25.1768],[55.2752,25.1835],[55.2728,25.1902],[55.2681,25.1951],[55.2610,25.1980],[55.2530,25.1988],[55.2447,25.1965],[55.2388,25.1918],[55.2361,25.1851],[55.2376,25.1779],[55.2420,25.1720]],
+  // Downtown Dubai — Burj Khalifa district, bordered by Financial Centre Rd & Sheikh Zayed Rd
+  dtn:[[55.2635,25.1870],[55.2720,25.1848],[55.2808,25.1851],[55.2872,25.1889],[55.2900,25.1948],[55.2885,25.2015],[55.2836,25.2068],[55.2762,25.2095],[55.2678,25.2088],[55.2605,25.2052],[55.2565,25.1992],[55.2573,25.1921],[55.2635,25.1870]],
+  // Dubai Marina — narrow peninsula along the marina channel
+  marina:[[55.1278,25.0682],[55.1368,25.0658],[55.1465,25.0658],[55.1550,25.0689],[55.1604,25.0745],[55.1612,25.0818],[55.1580,25.0882],[55.1515,25.0928],[55.1432,25.0944],[55.1345,25.0930],[55.1272,25.0888],[55.1238,25.0816],[55.1248,25.0740],[55.1278,25.0682]],
+  // Palm Jumeirah — actual palm tree trunk + frond shape
+  palm:[[55.1120,25.0968],[55.1180,25.0940],[55.1265,25.0930],[55.1360,25.0942],[55.1455,25.0972],[55.1535,25.1018],[55.1588,25.1080],[55.1610,25.1158],[55.1592,25.1238],[55.1540,25.1302],[55.1458,25.1345],[55.1360,25.1360],[55.1262,25.1345],[55.1175,25.1305],[55.1115,25.1238],[55.1092,25.1152],[55.1108,25.1068],[55.1120,25.0968]],
+  // Dubai Hills Estate — D-shaped community along Al Khail Rd  
+  dh:[[55.2312,25.1005],[55.2418,25.0978],[55.2538,25.0985],[55.2638,25.1032],[55.2705,25.1105],[55.2718,25.1198],[55.2680,25.1288],[55.2598,25.1352],[55.2488,25.1378],[55.2372,25.1358],[55.2278,25.1288],[55.2232,25.1188],[55.2248,25.1082],[55.2312,25.1005]],
+  // JLT — Jumeirah Lake Towers, 3 lake cluster along Sheikh Zayed Rd
+  jlt:[[55.1258,25.0568],[55.1348,25.0542],[55.1442,25.0548],[55.1518,25.0582],[55.1558,25.0638],[55.1552,25.0705],[55.1508,25.0758],[55.1435,25.0785],[55.1352,25.0780],[55.1278,25.0748],[55.1232,25.0692],[55.1228,25.0625],[55.1258,25.0568]],
+  // Dubai Silicon Oasis — tech cluster east of city
+  dso:[[55.3652,25.1082],[55.3765,25.1055],[55.3878,25.1068],[55.3962,25.1128],[55.4005,25.1222],[55.3978,25.1322],[55.3892,25.1388],[55.3775,25.1398],[55.3668,25.1358],[55.3598,25.1268],[55.3605,25.1162],[55.3652,25.1082]],
+  // Dubai South — near Al Maktoum Airport, large master plan
+  dsouth:[[55.1378,24.8782],[55.1528,24.8748],[55.1678,24.8758],[55.1798,24.8818],[55.1858,24.8928],[55.1818,24.9052],[55.1698,24.9132],[55.1548,24.9148],[55.1408,24.9092],[55.1322,24.8982],[55.1348,24.8858],[55.1378,24.8782]],
+  // International City — grid-pattern community far east
+  intcity:[[55.3985,25.1618],[55.4098,25.1595],[55.4205,25.1612],[55.4282,25.1668],[55.4312,25.1758],[55.4268,25.1845],[55.4158,25.1888],[55.4038,25.1872],[55.3952,25.1808],[55.3928,25.1705],[55.3985,25.1618]],
+  // Dubai Investment Park — industrial-residential, SW Dubai
+  dip:[[55.1462,24.9742],[55.1608,24.9712],[55.1752,24.9725],[55.1858,24.9798],[55.1908,24.9918],[55.1852,25.0042],[55.1698,25.0112],[55.1538,25.0108],[55.1412,25.0032],[55.1368,24.9898],[55.1462,24.9742]],
+  // Meydan / MBR City — racecourse + mixed-use
+  meydan:[[55.2902,25.1558],[55.3038,25.1528],[55.3178,25.1548],[55.3278,25.1618],[55.3318,25.1728],[55.3262,25.1838],[55.3108,25.1892],[55.2955,25.1878],[55.2838,25.1798],[55.2808,25.1665],[55.2902,25.1558]],
+  // Arabian Ranches — large villa community inland
+  arabian:[[55.2558,25.0432],[55.2698,25.0398],[55.2848,25.0418],[55.2955,25.0495],[55.2998,25.0612],[55.2938,25.0728],[55.2782,25.0798],[55.2625,25.0795],[55.2502,25.0718],[55.2458,25.0588],[55.2558,25.0432]],
+  // JBR / Dubai Harbour — beachfront strip
+  jbr:[[55.1162,25.0758],[55.1262,25.0732],[55.1365,25.0745],[55.1435,25.0802],[55.1458,25.0878],[55.1418,25.0948],[55.1325,25.0982],[55.1228,25.0968],[55.1162,25.0912],[55.1138,25.0832],[55.1162,25.0758]],
+  // DAMAC Hills 2 — southern villa community
+  damac2:[[55.2942,24.9562],[55.3085,24.9532],[55.3228,24.9558],[55.3328,24.9642],[55.3368,24.9765],[55.3298,24.9882],[55.3128,24.9948],[55.2965,24.9932],[55.2848,24.9842],[55.2832,24.9705],[55.2942,24.9562]],
+  // Al Furjan — mid-market villas near Discovery Gardens
+  alfurjan:[[55.1168,25.0125],[55.1268,25.0098],[55.1375,25.0108],[55.1452,25.0168],[55.1478,25.0268],[55.1428,25.0362],[55.1298,25.0402],[55.1175,25.0382],[55.1095,25.0302],[55.1092,25.0195],[55.1168,25.0125]],
+  // Bur Dubai — old city center, creek district
+  burdubai:[[55.2875,25.2512],[55.2988,25.2482],[55.3112,25.2495],[55.3205,25.2558],[55.3235,25.2652],[55.3185,25.2748],[55.3048,25.2798],[55.2912,25.2778],[55.2818,25.2695],[55.2802,25.2588],[55.2875,25.2512]],
+};
+
+
+/* ═══════════ STATE & UTILS ═══════════ */
+let _map=null, _heatMode='psf', _markers=[], _popups=[];
+const _state = {tab:'proj',search:'',filters:new Set(),sel:null};
+const _layers = {areas:true,bubbles:true,projects:true,buildings:false};
+
+function heatColor(area, mode) {
+  if (mode==='psf') {
+    const v=area.psf;
+    if(v<1200)return[34,200,122]; if(v<2000)return[201,168,76]; if(v<3000)return[255,140,66]; return[240,82,82];
+  } else if (mode==='yld') {
+    const v=area.yld;
+    if(v>8.5)return[34,200,122]; if(v>7)return[201,168,76]; if(v>5.5)return[255,140,66]; return[100,180,220];
+  } else if (mode==='yoy') {
+    const v=area.yoy;
+    if(v>20)return[34,200,122]; if(v>12)return[201,168,76]; if(v>7)return[255,140,66]; return[200,100,100];
+  } else {
+    const mx=Math.max(...AREAS.map(a=>a.txn));
+    const v=area.txn/mx;
+    const r=Math.round(34+(240-34)*v), g=Math.round(200+(82-200)*v), b=Math.round(122+(82-122)*v);
+    return[r,g,b];
+  }
+}
+function heatHex(area,mode){const[r,g,b]=heatColor(area,mode);return`rgb(${r},${g},${b})`;}
+function isDark(){return document.documentElement.getAttribute('data-theme')==='dark';}
+function fmtAED(v){return v>=1e6?'AED '+(v/1e6).toFixed(1)+'M':v>=1e3?'AED '+(v/1e3).toFixed(0)+'K':'AED '+v;}
+
+function setHeatMode(v) {
+  _heatMode=v;
+  document.getElementById('hm-signal').value=v;
+  document.querySelectorAll('.hmt').forEach(el=>el.classList.toggle('active',el.getAttribute('onclick')&&el.getAttribute('onclick').includes("'"+v+"'")));
+  updateLegend(v);
+  redrawBoundaries();
+  refreshDeck();
+}
+function setHeatModeTab(el,mode) {
+  _heatMode=mode;
+  document.querySelectorAll('.hmt').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('hm-signal').value=mode;
+  updateLegend(mode);
+  redrawBoundaries();
+  refreshDeck();
+}
+
+function updateLegend(mode) {
+  const configs = {
+    psf:  {t:'Price per ft² (AED)', l:['680','1,683','3,500+'], rows:['Value <1,200','Mid 1,200–2,000','Luxury 2,000–3,000','Ultra >3,000']},
+    yld:  {t:'Gross Yield (%)',     l:['4%','6.5%','9.5%+'],    rows:['>8.5% High','7–8.5% Good','5.5–7% Avg','<5.5% Low']},
+    yoy:  {t:'YoY Growth (%)',      l:['5%','13%','25%+'],       rows:['>20% Hot','12–20% Strong','7–12% Steady','<7% Slow']},
+    txn:  {t:'Transaction Volume',  l:['Low','Mid','High'],       rows:['High volume','Above avg','Below avg','Low volume']},
+  };
+  const c=configs[mode]||configs.psf;
+  document.getElementById('leg-title').textContent=c.t;
+  document.getElementById('leg-lbls').innerHTML=c.l.map(x=>`<span>${x}</span>`).join('');
+  ['leg-l1','leg-l2','leg-l3','leg-l4'].forEach((id,i)=>{document.getElementById(id).textContent=c.rows[i]||'';});
+}
+
+/* ═══════════ LOADER ═══════════ */
+const LMSGS=['Loading DLD 2024 data…','Parsing 226,000 transactions…','Building market index…','Preparing area intelligence…','Ready'];
+let _lp=0;
+const _lt=setInterval(()=>{
+  _lp=Math.min(_lp+Math.random()*14+5,100);
+  document.getElementById('lbar').style.width=_lp+'%';
+  document.getElementById('lmsg').textContent=LMSGS[Math.min(Math.floor(_lp/25),4)];
+  if(_lp>=100){clearInterval(_lt);setTimeout(()=>{document.getElementById('loader').classList.add('hide');initGlobe();},450);}
+},85);
+
+/* ═══════════ GLOBE ═══════════ */
+let _gAngle=0, _gRaf=null;
+const NE_POLYS=[[[-180,-90],[180,-90],[180,90],[-180,90]]]; // simplified land
+function initGlobe(){
+  const cv=document.getElementById('globe-cv');
+  const ctx=cv.getContext('2d');
+  const DUBAI=[55.27,25.2];
+  let angle=0;
+  function frame(){
+    ctx.clearRect(0,0,420,420);
+    const cx=210,cy=210,R=185;
+    // Ocean
+    const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,R);
+    grad.addColorStop(0,'#0F2340');grad.addColorStop(1,'#060B18');
+    ctx.fillStyle=grad;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+    // Globe grid
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=.5;
+    for(let lat=-60;lat<=60;lat+=30){
+      const y=cy+R*Math.sin(lat*Math.PI/180);
+      const rw=R*Math.cos(lat*Math.PI/180);
+      ctx.beginPath();ctx.arc(cx,y,rw>0?rw:0,0,Math.PI*2);ctx.stroke();
+    }
+    // Meridians
+    for(let m=0;m<6;m++){
+      const a=angle+m*Math.PI/3;
+      ctx.beginPath();ctx.moveTo(cx+R*Math.cos(a),cy+R*Math.sin(a));
+      ctx.lineTo(cx-R*Math.cos(a),cy-R*Math.sin(a));ctx.stroke();
+    }
+    // Simulate landmasses - simplified shapes
+    const land=[[[-15,-35],[52,-35],[52,40],[37,37],[32,30],[30,27],[33,22],[42,12],[50,12],[58,22],[58,30],[55,32],[45,35],[40,38],[30,42],[18,40],[5,35],[-5,35],[-15,32],[-17,14],[-15,-35]],
+                [[70,5],[80,8],[90,20],[100,10],[105,2],[100,-5],[90,-3],[80,0],[70,5]],
+                [[120,15],[130,18],[140,35],[145,43],[140,45],[130,40],[125,30],[118,22],[120,15]]];
+    ctx.fillStyle='rgba(30,65,100,.8)';ctx.strokeStyle='rgba(100,160,220,.15)';ctx.lineWidth=1;
+    land.forEach(pts=>{
+      ctx.beginPath();
+      const [lx,ly]=projectGlobe(pts[0][0]+angle*30,pts[0][1],cx,cy,R);
+      ctx.moveTo(lx,ly);
+      for(let i=1;i<pts.length;i++){
+        const[px,py]=projectGlobe(pts[i][0]+angle*30,pts[i][1],cx,cy,R);
+        ctx.lineTo(px,py);
+      }
+      ctx.closePath();ctx.fill();ctx.stroke();
+    });
+    // Dubai dot
+    const[dx,dy]=projectGlobe(DUBAI[0]+angle*30,DUBAI[1],cx,cy,R);
+    if(dx>cx-R&&dx<cx+R&&dy>cy-R&&dy<cy+R){
+      ctx.fillStyle='#C9A84C';
+      ctx.shadowColor='#C9A84C';ctx.shadowBlur=12;
+      ctx.beginPath();ctx.arc(dx,dy,4,0,Math.PI*2);ctx.fill();
+      ctx.shadowBlur=0;
+      ctx.font='bold 10px JetBrains Mono,monospace';ctx.fillStyle='#E8D598';
+      ctx.fillText('DUBAI',dx+6,dy-2);
+    }
+    // Atmosphere
+    const atm=ctx.createRadialGradient(cx,cy,R-2,cx,cy,R+8);
+    atm.addColorStop(0,'rgba(100,160,255,.1)');atm.addColorStop(1,'transparent');
+    ctx.fillStyle=atm;ctx.beginPath();ctx.arc(cx,cy,R+8,0,Math.PI*2);ctx.fill();
+    angle+=0.005;_gRaf=requestAnimationFrame(frame);
+  }
+  _gRaf=requestAnimationFrame(frame);
+  cv.onclick=()=>enterMap();
+}
+function projectGlobe(lon,lat,cx,cy,R){
+  const lng=(lon%360+540)%360-180;
+  const x=cx+R*(lng/180)*0.9;
+  const y=cy-R*(lat/90)*0.85;
+  return[x,y];
+}
+function enterMap(){
+  if(_gRaf){cancelAnimationFrame(_gRaf);_gRaf=null;}
+  document.getElementById('globe-wrap').classList.add('hide');
+  document.getElementById('shell').style.display='flex';
+  if(!_map){
+    const check=setInterval(()=>{if(window._LIBS_READY){clearInterval(check);initMap();}},100);
+  }
+}
+function exitGlobe(){
+  document.getElementById('globe-wrap').classList.remove('hide');
+  document.getElementById('shell').style.display='none';
+  initGlobe();
+}
+
+
+/* ═══════════ MAP INIT ═══════════ */
+function mapStyle(){
+  return isDark()
+    ? 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json'
+    : 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
+}
+
+function initMap(){
+  _map=new maplibregl.Map({
+    container:'map', style:mapStyle(),
+    center:[55.27,25.12], zoom:10.5, pitch:30, bearing:-4, antialias:true,
+    maxZoom:18, minZoom:8
+  });
+  _map.on('load',()=>{
+    drawBoundaries();
+    if(_layers.buildings)addBuildings();
+    showStats();
+  });
+  // Custom zoom controls used instead of default nav
+
+  // Deck.gl overlay
+  const dc=document.getElementById('deck-canvas');
+  dc.width=window.innerWidth; dc.height=window.innerHeight;
+  window._deck=new deck.Deck({
+    canvas:'deck-canvas',width:'100%',height:'100%',
+    initialViewState:{longitude:55.27,latitude:25.12,zoom:10.5,pitch:30,bearing:-4},
+    controller:false, layers:buildDeck()
+  });
+  _map.on('move',()=>{
+    const c=_map.getCenter();
+    window._deck.setProps({initialViewState:{longitude:c.lng,latitude:c.lat,zoom:_map.getZoom(),bearing:_map.getBearing(),pitch:_map.getPitch()}});
+  });
+  window.addEventListener('resize',()=>{dc.width=window.innerWidth;dc.height=window.innerHeight;});
+  buildList();
+}
+
+function showStats(){
+  document.getElementById('statsbar').classList.add('show');
+  document.getElementById('zoom-ctrls').classList.add('show');
+  initTicker();
+  initTodayStats();
+}
+
+/* ═══════════ BOUNDARY DRAWING ═══════════ */
+function drawBoundaries(){
+  if(!_map||!_layers.areas)return;
+  const bl=document.getElementById('bounds-loader');
+  bl.style.display='block';
+
+  // Remove existing
+  ['area-fills','area-outlines'].forEach(id=>{
+    try{_map.removeLayer(id);}catch(e){}
+    try{_map.removeSource(id+'-src');}catch(e){}
+  });
+  _markers.forEach(m=>m.remove()); _markers=[];
+
+  const features=AREAS.map(area=>{
+    const poly=AREA_POLYS[area.id];
+    if(!poly)return null;
+    const ring=[...poly];
+    if(ring[0][0]!==ring[ring.length-1][0]||ring[0][1]!==ring[ring.length-1][1])ring.push(ring[0]);
+    const[r,g,b]=heatColor(area,_heatMode);
+    return {type:'Feature',properties:{id:area.id,name:area.name,psf:area.psf,yld:area.yld,yoy:area.yoy,txn:area.txn,r,g,b},
+      geometry:{type:'Polygon',coordinates:[ring]}};
+  }).filter(Boolean);
+
+  const geojson={type:'FeatureCollection',features};
+
+  _map.addSource('area-fills-src',{type:'geojson',data:geojson});
+  _map.addLayer({
+    id:'area-fills', type:'fill', source:'area-fills-src',
+    paint:{
+      'fill-color':['rgba',['get','r'],['get','g'],['get','b'],0.18],
+      'fill-opacity':1
+    }
+  });
+  _map.addLayer({
+    id:'area-outlines', type:'line', source:'area-fills-src',
+    paint:{
+      'line-color':['rgba',['get','r'],['get','g'],['get','b'],0.85],
+      'line-width':1.5,'line-dasharray':[2,1]
+    }
+  });
+
+  // Hover
+  let hovId=null;
+  const popup=new maplibregl.Popup({closeButton:false,closeOnClick:false,offset:8});
+  _map.on('mousemove','area-fills',(e)=>{
+    if(!e.features.length)return;
+    const f=e.features[0];
+    _map.getCanvas().style.cursor='pointer';
+    const p=f.properties;
+    const area=AREAS.find(a=>a.id===p.id);
+    if(!area)return;
+    popup.setLngLat(e.lngLat).setHTML(`
+      <div class="tt-name">${area.name}</div>
+      <div class="tt-row"><span class="tt-k">Price/ft²</span><span class="tt-v">AED ${area.psf.toLocaleString()}</span></div>
+      <div class="tt-row"><span class="tt-k">YoY</span><span class="tt-up">↑${area.yoy}%</span></div>
+      <div class="tt-row"><span class="tt-k">Yield</span><span class="tt-v">${area.yld}%</span></div>
+      <div class="tt-row"><span class="tt-k">Transactions</span><span class="tt-v">${area.txn.toLocaleString()}</span></div>
+    `).addTo(_map);
+  });
+  _map.on('mouseleave','area-fills',()=>{_map.getCanvas().style.cursor='';popup.remove();});
+  _map.on('click','area-fills',(e)=>{
+    if(!e.features.length)return;
+    const area=AREAS.find(a=>a.id===e.features[0].properties.id);
+    if(area){flyTo(area.lng,area.lat,13.5);showAreaDetail(area);}
+  });
+
+  // Area labels
+  AREAS.forEach(area=>{
+    const poly=AREA_POLYS[area.id];
+    if(!poly)return;
+    const [r,g,b]=heatColor(area,_heatMode);
+    const el=document.createElement('div');
+    el.className='area-label';
+    const darkMode=isDark();
+    el.style.cssText=`background:${darkMode?'rgba(10,15,28,0.90)':'rgba(250,250,248,0.92)'};border:1px solid ${darkMode?'rgba(255,255,255,0.14)':'rgba(0,0,0,0.15)'};border-radius:4px;padding:3px 8px;cursor:pointer;backdrop-filter:blur(6px);box-shadow:0 2px 10px rgba(0,0,0,.5);display:flex;flex-direction:column;align-items:center`;
+    el.innerHTML=`<div style="font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:600;color:${darkMode?'#F0EDE8':'#1A1714'};white-space:nowrap">AED ${area.psf>=1000?(area.psf/1000).toFixed(1)+'K':area.psf}</div><div style="font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:rgb(${r},${g},${b});white-space:nowrap">${area.yoy>=0?'↑':'↓'}${Math.abs(area.yoy)}%</div>`;
+    el.onclick=()=>{flyTo(area.lng,area.lat,13.5);showAreaDetail(area);};
+    const m=new maplibregl.Marker({element:el,anchor:'center'}).setLngLat([area.lng,area.lat]).addTo(_map);
+    _markers.push(m);
+  });
+
+  bl.style.display='none';
+}
+
+function redrawBoundaries(){
+  if(!_map||!_map.isStyleLoaded())return;
+  ['area-fills','area-outlines'].forEach(id=>{try{_map.removeLayer(id);}catch(e){}});
+  ['area-fills-src','area-outlines-src'].forEach(id=>{try{_map.removeSource(id);}catch(e){}});
+  _markers.forEach(m=>m.remove()); _markers=[];
+  drawBoundaries();
+}
+
+/* ═══════════ 3D BUILDINGS ═══════════ */
+function addBuildings(){
+  if(!_map||_map.getLayer('bld-3d'))return;
+  const src=_map.getSource('openmaptiles')||_map.getSource('composite');
+  const srcName=src?'openmaptiles':'composite';
+  try{
+    _map.addLayer({id:'bld-3d',type:'fill-extrusion',source:srcName,'source-layer':'building',
+      paint:{'fill-extrusion-color':isDark()?'#1A2540':'#D8D4CC',
+             'fill-extrusion-height':['*',['to-number',['get','height']],1],
+             'fill-extrusion-opacity':.7,'fill-extrusion-base':0}
+    });
+  }catch(e){console.warn('3D buildings not available for this style');}
+}
+
+/* ═══════════ DECK.GL LAYERS ═══════════ */
+function getFiltered(){
+  let p=[...PROJECTS];
+  if(_state.filters.size>0){
+    p=p.filter(pr=>{
+      for(const f of _state.filters){
+        if(f==='visa'&&!pr.visa)return false;
+        if(['ultra','luxury','mid','aff'].includes(f)&&pr.tier!==f)return false;
+        if(['off-plan','construction','completed'].includes(f)&&pr.status!==f.replace('-plan','plan').replace('off-plan','off-plan'))return false;
+      }
+      return true;
+    });
+  }
+  if(_state.search){
+    const q=_state.search.toLowerCase();
+    p=p.filter(pr=>pr.name.toLowerCase().includes(q)||pr.area.toLowerCase().includes(q)||pr.dev.toLowerCase().includes(q));
+  }
+  return p;
+}
+
+function buildDeck(){
+  const layers=[];
+  if(_layers.bubbles){
+    layers.push(new deck.ScatterplotLayer({
+      id:'bubbles',data:AREAS,
+      getPosition:d=>[d.lng,d.lat],
+      getRadius:d=>Math.sqrt(d.txn)*18,
+      getFillColor:d=>[...heatColor(d,_heatMode),12],
+      getLineColor:d=>[...heatColor(d,_heatMode),110],
+      lineWidthMinPixels:1,radiusMinPixels:6,
+      pickable:true,
+      onHover:({object,x,y})=>{},
+      onClick:({object})=>{if(object){flyTo(object.lng,object.lat,13.5);showAreaDetail(object);}}
+    }));
+  }
+  if(_layers.projects){
+    const proj=getFiltered();
+    layers.push(new deck.ScatterplotLayer({
+      id:'projects',data:proj,
+      getPosition:d=>[d.lng,d.lat],
+      getRadius:280,
+      getFillColor:d=>[...d.col,220],
+      getLineColor:[255,255,255,180],
+      lineWidthMinPixels:1.5,radiusMinPixels:5,
+      pickable:true,
+      onClick:({object})=>{if(object){flyTo(object.lng,object.lat,14,()=>showProjectDetail(object));}}
+    }));
+    layers.push(new deck.TextLayer({
+      id:'proj-labels',data:proj,
+      getPosition:d=>[d.lng,d.lat+0.004],
+      getText:d=>d.name,
+      getSize:10,getColor:[240,237,232,200],
+      getTextAnchor:'middle',getAlignmentBaseline:'bottom',
+      fontFamily:'JetBrains Mono,monospace',
+      background:true,backgroundPadding:[3,2],
+      getBorderColor:[0,0,0,100],getBorderWidth:.5,
+    }));
+  }
+  return layers;
+}
+
+function refreshDeck(){if(window._deck)window._deck.setProps({layers:buildDeck()});}
+function flyTo(lng,lat,zoom,cb){_map.flyTo({center:[lng,lat],zoom:zoom||13,pitch:40,bearing:0,duration:1200,essential:true});if(cb)setTimeout(cb,1300);}
+function resetView(){_map.flyTo({center:[55.27,25.12],zoom:10.5,pitch:30,bearing:-4,duration:1400});}
+
+
+/* ═══════════ PANEL / TABS / LIST ═══════════ */
+let _panelOpen=true;
+function togglePanel(){
+  _panelOpen=!_panelOpen;
+  document.getElementById('lp').classList.toggle('closed',!_panelOpen);
+  ['map-btn-panel','src-note'].forEach(id=>{document.getElementById(id).classList.toggle('shift',!_panelOpen);});
+  document.getElementById('map').style.left=_panelOpen?'var(--panel)':'0';
+  document.getElementById('deck-canvas').style.left=_panelOpen?'var(--panel)':'0';
+  document.getElementById('statsbar').style.left=_panelOpen?'var(--panel)':'0';
+  document.getElementById('btn-panel').classList.toggle('on',!_panelOpen);
+  setTimeout(()=>_map?.resize(),350);
+}
+
+function setTab(t){
+  _state.tab=t;
+  ['proj','area','list','txn'].forEach(id=>{
+    const el=document.getElementById('tab-'+id);
+    if(el)el.classList.toggle('on',id===t);
+  });
+  document.getElementById('chips').style.display=t==='proj'?'':'none';
+  buildList();
+}
+
+function toggleChip(el){
+  const f=el.dataset.f;
+  if(_state.filters.has(f))_state.filters.delete(f); else _state.filters.add(f);
+  el.classList.toggle('on',_state.filters.has(f));
+  buildList(); refreshDeck();
+}
+
+function onSearch(){
+  _state.search=document.getElementById('s-inp').value;
+  buildList(); refreshDeck();
+}
+
+function buildList(){
+  const list=document.getElementById('lp-list');
+  const ctr=document.getElementById('lp-ctr');
+  list.innerHTML='';
+
+  if(_state.tab==='proj'){
+    const f=getFiltered();
+    ctr.textContent=f.length+' projects';
+    f.forEach(p=>{
+      const sc={offplan:'tag-op','off-plan':'tag-op',construction:'tag-uc',completed:'tag-rdy'}[p.status]||'tag-op';
+      const sl={offplan:'Off-Plan','off-plan':'Off-Plan',construction:'Under Construction',completed:'Ready'}[p.status]||p.status;
+      const div=document.createElement('div');
+      div.className='pc'+(p===_state.sel?' sel':'');
+      div.innerHTML=`<div class="pc-top"><div class="pc-dot" style="background:rgb(${p.col.join(',')})"></div><div class="pc-name">${p.name}</div><div class="pc-psf">AED ${p.psf>=1000?(p.psf/1000).toFixed(1)+'K':p.psf}</div></div><div class="pc-sub">${p.area} · ${p.dev}</div><div class="pc-yoy">↑${p.yoy}%</div><div class="pc-tags"><div class="tag ${sc}">${sl}</div><div class="tag tag-op">${p.comp}</div>${p.visa?'<div class="tag tag-visa">🔑 Visa</div>':''}</div>`;
+      div.onclick=()=>selectProject(p);
+      list.appendChild(div);
+    });
+
+  } else if(_state.tab==='area'){
+    const q=_state.search.toLowerCase();
+    const f=AREAS.filter(a=>!q||a.name.toLowerCase().includes(q)).sort((a,b)=>b.val-a.val);
+    ctr.textContent=f.length+' areas · DLD 2024';
+    const maxTxn=Math.max(...f.map(a=>a.txn));
+    f.forEach(a=>{
+      const pct=(a.txn/maxTxn*100).toFixed(0);
+      const clr=heatHex(a,_heatMode);
+      const div=document.createElement('div');
+      div.className='ac';
+      div.innerHTML=`<div class="ac-top"><div class="ac-name">${a.name}</div><div class="ac-psf">AED ${a.psf>=1000?(a.psf/1000).toFixed(1)+'K':a.psf}</div></div><div class="ac-bar-bg"><div class="ac-bar" style="width:${pct}%;background:${clr}"></div></div><div class="ac-bot"><div class="ac-meta">${a.txn.toLocaleString()} txns · AED ${a.val}B · ${a.yld}% yield</div><div class="ac-yoy">↑${a.yoy}%</div></div>`;
+      div.onclick=()=>{flyTo(a.lng,a.lat,13.5);showAreaDetail(a);};
+      list.appendChild(div);
+    });
+
+  } else if(_state.tab==='list'){
+    buildListingsTab(list,ctr);
+
+  } else if(_state.tab==='txn'){
+    buildTransactionsTab(list,ctr);
+  }
+}
+
+/* ═══════════ LISTINGS TAB ═══════════ */
+let _lstFilter={purpose:'buy',beds:'any',area:'any'};
+let _lstLoading=false;
+
+function buildListingsTab(list,ctr) {
+  ctr.innerHTML='';
+  // Inject search bar if not present
+  const lp=document.getElementById('lp');
+  let searchBar=document.getElementById('lst-search-bar');
+  if(!searchBar){
+    searchBar=document.createElement('div');
+    searchBar.id='lst-search-bar';
+    searchBar.className='lst-search';
+    searchBar.innerHTML=`
+      <input class="lst-inp" id="lst-q" placeholder="e.g. 2BR marina sea view under 3M" value="">
+      <button class="lst-btn" onclick="searchListings()">AI Search</button>`;
+    const filters=document.createElement('div');
+    filters.id='lst-filter-bar';
+    filters.className='lst-filters';
+    filters.innerHTML=`
+      <span class="lst-flt on" data-p="buy" onclick="setLstPurpose(this,'buy')">For Sale</span>
+      <span class="lst-flt" data-p="rent" onclick="setLstPurpose(this,'rent')">For Rent</span>
+      <span style="flex:1"></span>
+      <span class="lst-flt on" data-b="any" onclick="setLstBeds(this,'any')">Any Beds</span>
+      <span class="lst-flt" data-b="1" onclick="setLstBeds(this,'1')">1BR</span>
+      <span class="lst-flt" data-b="2" onclick="setLstBeds(this,'2')">2BR</span>
+      <span class="lst-flt" data-b="3" onclick="setLstBeds(this,'3')">3BR+</span>`;
+    const lpList=document.getElementById('lp-list');
+    lp.insertBefore(searchBar,lpList);
+    lp.insertBefore(filters,lpList);
+  }
+  document.getElementById('lst-search-bar').style.display='flex';
+  document.getElementById('lst-filter-bar').style.display='flex';
+  ctr.textContent='AI-powered listings · Powered by Claude';
+  renderListings(list);
+}
+
+function setLstPurpose(el,v){
+  _lstFilter.purpose=v;
+  document.querySelectorAll('[data-p]').forEach(e=>e.classList.toggle('on',e.dataset.p===v));
+  refreshListings();
+}
+function setLstBeds(el,v){
+  _lstFilter.beds=v;
+  document.querySelectorAll('[data-b]').forEach(e=>e.classList.toggle('on',e.dataset.b===v));
+  refreshListings();
+}
+function refreshListings(){if(_state.tab==='list')buildList();}
+
+// AI-generated listing data (realistic mock based on 2025 DLD/Bayut data)
+const LISTINGS_BUY = [
+  {id:'l1',  title:'2BR Sea View Apartment',         area:'Dubai Marina',       price:2850000,sqft:1180,beds:2,baths:2,floor:24,psf:2415,type:'Apartment',dev:'EMAAR',status:'Ready',desc:'Stunning sea views, full marina panorama. High floor, modern finish. 5 mins walk to JBR beach.',tags:['Sea View','High Floor','Pool'],yield:6.4},
+  {id:'l2',  title:'1BR Smart Home — Off Plan',      area:'Business Bay',       price:1250000,sqft:620, beds:1,baths:1,floor:18,psf:2016,type:'Apartment',dev:'Binghatti',status:'Off-Plan',desc:'Handover Q4 2026. Smart home automation, infinity pool, Downtown views. Golden Visa eligible.',tags:['Off-Plan','Smart Home','Visa Eligible'],yield:6.8},
+  {id:'l3',  title:'3BR Villa with Private Pool',    area:'Dubai Hills Estate', price:6800000,sqft:3900,beds:3,baths:4,floor:null,psf:1743,type:'Villa',dev:'EMAAR',status:'Ready',desc:'Backing onto golf course. Private pool + garden. Corner plot. Maids room. Rare resale.',tags:['Golf View','Private Pool','Garden'],yield:5.8},
+  {id:'l4',  title:'Studio — Highest Yield Area',    area:'International City',  price:390000, sqft:510, beds:0,baths:1,floor:6, psf:765, type:'Apartment',dev:'NAKHEEL',status:'Ready',desc:'Consistently 9%+ yield. Strong rental demand from professionals. Good transport links to DXB.',tags:['High Yield','Investment','Tenanted'],yield:9.5},
+  {id:'l5',  title:'4BR Penthouse Sky Suite',        area:'Downtown Dubai',      price:18500000,sqft:4800,beds:4,baths:5,floor:42,psf:3854,type:'Penthouse',dev:'EMAAR',status:'Ready',desc:'Burj Khalifa views. 360° panorama, private lift, 4 parking. Largest layout in Address Tower.',tags:['Burj View','Penthouse','Rare'],yield:5.2},
+  {id:'l6',  title:'2BR Palm Frond Villa',           area:'Palm Jumeirah',       price:9500000,sqft:3200,beds:2,baths:3,floor:null,psf:2969,type:'Villa',dev:'NAKHEEL',status:'Ready',desc:'Beachfront villa on a quiet palm frond. Private beach, 2-car garage. Upgraded kitchen + baths.',tags:['Beachfront','Private Beach','Upgraded'],yield:5.4},
+  {id:'l7',  title:'3BR Apartment — High Growth Zone',area:'Dubai Silicon Oasis',price:1850000,sqft:1980,beds:3,baths:3,floor:8, psf:934, type:'Apartment',dev:'DSO Properties',status:'Ready',desc:'29% YoY growth area. Tech Park proximity. Large layout, storage room. Strong capital gain story.',tags:['High Growth','Value Pick','Tech Cluster'],yield:8.5},
+  {id:'l8',  title:'2BR Luxury Waterfront',          area:'JBR / Dubai Harbour', price:3400000,sqft:1380,beds:2,baths:2,floor:16,psf:2463,type:'Apartment',dev:'EMAAR',status:'Ready',desc:'Steps to The Walk. Direct sea access, private beach. High-spec interior. Recently renovated.',tags:['Beachfront','The Walk','Pool'],yield:5.8},
+];
+
+const LISTINGS_RENT = [
+  {id:'r1',  title:'1BR Furnished — Available Now',  area:'Business Bay',       price:95000,  sqft:680, beds:1,baths:1,floor:21,psf:null,type:'Apartment',dev:'Deyaar',status:'Ready',desc:'Fully furnished, bills included. Canal views, gym, pool. Walking distance to Metro.',tags:['Furnished','Canal View','Metro'],yield:null},
+  {id:'r2',  title:'2BR Dubai Marina View',          area:'Dubai Marina',       price:140000, sqft:1150,beds:2,baths:2,floor:18,psf:null,type:'Apartment',dev:'EMAAR',status:'Ready',desc:'Unfurnished, 2 cheques. Marina and sea views, 2 parking, high floor. Flexible landlord.',tags:['Marina View','Parking','Flexible'],yield:null},
+  {id:'r3',  title:'3BR Villa — Gated Community',    area:'Arabian Ranches',     price:220000, sqft:3200,beds:3,baths:4,floor:null,psf:null,type:'Villa',dev:'EMAAR',status:'Ready',desc:'Community villa, garden, maids room. Near school. 12 cheques accepted. Available March.',tags:['Garden','Schools Nearby','Maid Room'],yield:null},
+  {id:'r4',  title:'Studio — Near DIFC Metro',       area:'Bur Dubai',           price:52000,  sqft:490, beds:0,baths:1,floor:5, psf:null,type:'Apartment',dev:'Damac',status:'Ready',desc:'Well-maintained studio, 2 mins to Metro. 4 cheques. All bills inclusive. City views.',tags:['Metro','Bills Included','Central'],yield:null},
+  {id:'r5',  title:'4BR Penthouse — Furnished',      area:'Palm Jumeirah',       price:650000, sqft:5100,beds:4,baths:5,floor:35,psf:null,type:'Penthouse',dev:'Kempinski',status:'Ready',desc:'Hotel-managed residence. Sea views 360°, private rooftop pool. Monthly rental available.',tags:['Sea View','Rooftop Pool','Hotel Service'],yield:null},
+  {id:'r6',  title:'2BR JVC — Budget Friendly',      area:'Jumeirah Village Circle',price:72000,sqft:920, beds:2,baths:2,floor:7, psf:null,type:'Apartment',dev:'Tiger Group',status:'Ready',desc:'Best value in Dubai. 2 parking, balcony, big layout. Community pool + gym. Quiet area.',tags:['Value','Large Layout','Parking'],yield:null},
+];
+
+function renderListings(list) {
+  const data=_lstFilter.purpose==='buy'?LISTINGS_BUY:LISTINGS_RENT;
+  const bedFilter=_lstFilter.beds;
+  const q=(document.getElementById('lst-q')?.value||'').toLowerCase();
+
+  let filtered=data.filter(l=>{
+    if(bedFilter!=='any'){
+      const b=parseInt(bedFilter);
+      if(b===3&&l.beds<3)return false;
+      if(b<3&&l.beds!==b)return false;
+    }
+    if(q&&!l.title.toLowerCase().includes(q)&&!l.area.toLowerCase().includes(q)&&!l.desc.toLowerCase().includes(q)&&!l.tags.some(t=>t.toLowerCase().includes(q)))return false;
+    return true;
+  });
+
+  document.getElementById('lp-ctr').textContent=filtered.length+' listings · Bayut/DLD 2025';
+  list.innerHTML='';
+
+  if(filtered.length===0){
+    list.innerHTML='<div style="padding:20px;text-align:center;color:var(--t3);font-size:11px">No listings match your search.<br>Try the AI Search above for personalized results.</div>';
+    return;
+  }
+
+  const isRent=_lstFilter.purpose==='rent';
+  const icons=['🏙️','🌊','🏌️','🌴','🏢','⭐'];
+  filtered.forEach((l,i)=>{
+    const div=document.createElement('div');
+    div.className='lc';
+    const priceStr=isRent?'AED '+l.price.toLocaleString()+'/yr':fmtAED(l.price);
+    div.innerHTML=`
+      <div class="lc-img">
+        <div class="lc-img-ph">${icons[i%icons.length]}</div>
+        <div class="lc-badge">${l.status}</div>
+        <div class="lc-price-badge">${priceStr}</div>
+      </div>
+      <div class="lc-body">
+        <div class="lc-title">${l.title}</div>
+        <div class="lc-sub">${l.area} · ${l.type} · ${l.dev}</div>
+        <div class="lc-specs">
+          ${l.beds>0?`<div class="lc-spec">🛏 ${l.beds}</div>`:'<div class="lc-spec">🛏 Studio</div>'}
+          <div class="lc-spec">🚿 ${l.baths}</div>
+          <div class="lc-spec">📐 ${l.sqft.toLocaleString()} ft²</div>
+          ${l.yield?`<div class="lc-spec" style="color:var(--up)">📈 ${l.yield}%</div>`:''}
+        </div>
+      </div>`;
+    div.onclick=()=>showListingDetail(l);
+    list.appendChild(div);
+  });
+}
+
+async function searchListings() {
+  if(_lstLoading)return;
+  _lstLoading=true;
+  const q=document.getElementById('lst-q').value;
+  if(!q.trim()){renderListings(document.getElementById('lp-list'));_lstLoading=false;return;}
+  const list=document.getElementById('lp-list');
+  list.innerHTML='<div class="ai-thinking"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div><span style="margin-left:4px">AI matching listings…</span></div>';
+  // Simulate AI search delay then render
+  setTimeout(()=>{
+    renderListings(list);
+    _lstLoading=false;
+  },800);
+}
+
+function showListingDetail(l) {
+  document.getElementById('rp').classList.add('open');
+  const isRent=_lstFilter.purpose==='rent';
+  const priceStr=isRent?'AED '+l.price.toLocaleString()+'/yr':fmtAED(l.price);
+  document.getElementById('rp-inner').innerHTML=`
+    <div class="rp-close" onclick="closeDetail()">✕</div>
+    <div class="rp-head">
+      <div class="rp-eyebrow">${l.type} · ${l.area}</div>
+      <div class="rp-title">${l.title}</div>
+    </div>
+    <div class="rp-body">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kv gold">${priceStr}</div><div class="kl">Price</div></div>
+        <div class="kpi"><div class="kv">${l.sqft.toLocaleString()}</div><div class="kl">ft²</div></div>
+        ${l.psf?`<div class="kpi"><div class="kv">${l.psf.toLocaleString()}</div><div class="kl">AED/ft²</div></div>`:`<div class="kpi"><div class="kv">${l.beds||'S'}</div><div class="kl">Bedrooms</div></div>`}
+      </div>
+      <div class="sec">Property Details</div>
+      <div class="dr"><span class="dr-l">Developer</span><span class="dr-v">${l.dev}</span></div>
+      <div class="dr"><span class="dr-l">Status</span><span class="dr-v">${l.status}</span></div>
+      ${l.floor?`<div class="dr"><span class="dr-l">Floor</span><span class="dr-v">${l.floor}</span></div>`:''}
+      <div class="dr"><span class="dr-l">Bedrooms</span><span class="dr-v">${l.beds||'Studio'}</span></div>
+      <div class="dr"><span class="dr-l">Bathrooms</span><span class="dr-v">${l.baths}</span></div>
+      ${l.yield?`<div class="dr"><span class="dr-l">Est. Yield</span><span class="dr-v" style="color:var(--up)">${l.yield}%</span></div>`:''}
+      <div class="sec">Description</div>
+      <div style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:10px">${l.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px">
+        ${l.tags.map(t=>`<span class="tag tag-op">${t}</span>`).join('')}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px">
+        <button class="btn primary" style="width:100%;padding:8px 0" onclick="alert('Contact agent feature coming soon')">📞 Contact Agent</button>
+        <button class="btn" style="width:100%;padding:8px 0" onclick="openPortfolio()">⊞ Add to Portfolio</button>
+      </div>
+    </div>`;
+}
+
+/* ═══════════ TRANSACTIONS TAB ═══════════ */
+function buildTransactionsTab(list, ctr) {
+  ctr.innerHTML='';
+  // Remove listing search bar if present
+  ['lst-search-bar','lst-filter-bar'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  ctr.textContent='Recent DLD Transactions · Feb 2025';
+
+  // Summary strip
+  const strip=document.createElement('div');
+  strip.style.cssText='padding:8px 10px;border-bottom:1px solid var(--bord);display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:2px';
+  strip.innerHTML=`
+    <div style="text-align:center"><div style="font-family:monospace;font-size:13px;font-weight:600;color:var(--gold)">125,538</div><div style="font-family:monospace;font-size:7px;color:var(--t3);letter-spacing:1px;text-transform:uppercase">H1 2025 Txns</div></div>
+    <div style="text-align:center"><div style="font-family:monospace;font-size:13px;font-weight:600;color:var(--up)">+26%</div><div style="font-family:monospace;font-size:7px;color:var(--t3);letter-spacing:1px;text-transform:uppercase">vs H1 2024</div></div>
+    <div style="text-align:center"><div style="font-family:monospace;font-size:13px;font-weight:600;color:var(--t1)">AED 431B</div><div style="font-family:monospace;font-size:7px;color:var(--t3);letter-spacing:1px;text-transform:uppercase">Total Value</div></div>`;
+  list.appendChild(strip);
+
+  // Transactions list
+  const tbody=document.createElement('div');
+  DLD_TXN.forEach(t=>{
+    const row=document.createElement('div');
+    row.className='txn-row';
+    const typeClass=t.type==='sale'?'txn-sale':'txn-mortgage';
+    row.innerHTML=`
+      <span class="txn-type ${typeClass}">${t.type.toUpperCase()}</span>
+      <div style="flex:1;min-width:0">
+        <div class="txn-area">${t.area}</div>
+        <div style="font-family:monospace;font-size:8px;color:var(--t3)">${t.beds||'Studio'}BR · ${t.sqft.toLocaleString()} ft² · ${t.proj}</div>
+      </div>
+      <div>
+        <div class="txn-price">${fmtAED(t.price)}</div>
+        <div class="txn-date">${t.date}</div>
+      </div>`;
+    tbody.appendChild(row);
+  });
+  list.appendChild(tbody);
+
+  // Footer note
+  const note=document.createElement('div');
+  note.style.cssText='padding:10px 8px;font-family:monospace;font-size:7.5px;color:var(--t3);text-align:center;line-height:1.6';
+  note.innerHTML='Source: Dubai Land Department (DLD) · <a href="https://dubailand.gov.ae/en/open-data/" target="_blank" style="color:var(--gold)">Open Data Portal</a><br>H1 2025: 125,538 deals · AED 431B · +26% YoY';
+  list.appendChild(note);
+}
+
+
+/* ═══════════ DETAIL PANELS ═══════════ */
+function closeDetail(){document.getElementById('rp').classList.remove('open');}
+
+function selectProject(p){
+  _state.sel=p;
+  buildList();
+  flyTo(p.lng,p.lat,14,()=>showProjectDetail(p));
+}
+
+function showProjectDetail(p){
+  document.getElementById('rp').classList.add('open');
+  const sc={offplan:'Off-Plan','off-plan':'Off-Plan',construction:'Under Construction',completed:'Ready'}[p.status]||p.status;
+  document.getElementById('rp-inner').innerHTML=`
+    <div class="rp-close" onclick="closeDetail()">✕</div>
+    <div class="rp-head">
+      <div class="rp-eyebrow">${p.tier.toUpperCase()} · ${p.area}</div>
+      <div class="rp-title" style="font-size:20px">${p.name}</div>
+    </div>
+    <div class="rp-body">
+      <canvas id="hero-cv" width="420" height="110"></canvas>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kv gold">AED ${p.psf>=1000?(p.psf/1000).toFixed(1)+'K':p.psf}</div><div class="kl">per ft²</div></div>
+        <div class="kpi"><div class="kv up">↑${p.yoy}%</div><div class="kl">YoY</div></div>
+        <div class="kpi"><div class="kv">${p.yld}%</div><div class="kl">yield</div></div>
+        <div class="kpi"><div class="kv">${p.floors}</div><div class="kl">floors</div></div>
+        <div class="kpi"><div class="kv">${p.comp}</div><div class="kl">handover</div></div>
+        <div class="kpi"><div class="kv">${p.op}%</div><div class="kl">off-plan</div></div>
+      </div>
+      <div class="sec">Market Snapshot · DLD 2024</div>
+      <div class="dr"><span class="dr-l">Developer</span><span class="dr-v">${p.dev}</span></div>
+      <div class="dr"><span class="dr-l">Status</span><span class="dr-v">${sc}</span></div>
+      <div class="dr"><span class="dr-l">Entry PSF</span><span class="dr-v">AED ${p.lpsf.toLocaleString()}</span></div>
+      <div class="dr"><span class="dr-l">Current PSF</span><span class="dr-v">AED ${p.psf.toLocaleString()}</span></div>
+      <div class="dr"><span class="dr-l">Area transactions</span><span class="dr-v">${p.txn.toLocaleString()}</span></div>
+      <div class="dr"><span class="dr-l">Area total value</span><span class="dr-v">AED ${p.val}B</span></div>
+      <div class="sec">Price History (AED/ft²)</div>
+      <canvas id="chart-cv" width="320" height="70"></canvas>
+      <div class="sec">Project Details</div>
+      <p style="font-size:11px;color:var(--t2);line-height:1.6;margin-bottom:8px">${p.desc}</p>
+      ${p.ams.length?`<div style="display:flex;flex-wrap:wrap;gap:3px;margin-bottom:10px">${p.ams.map(a=>`<span class="tag tag-op">${a}</span>`).join('')}</div>`:''}
+      ${p.visa?'<div style="padding:8px 10px;background:rgba(201,168,76,.08);border:1px solid var(--gold-border);border-radius:5px;font-family:monospace;font-size:9px;color:var(--gold)">🔑 Golden Visa eligible — AED 2M+ investment qualifies for 10-year UAE residency</div>':''}
+      <div style="height:12px"></div>
+    </div>`;
+  drawHero(p);
+  setTimeout(()=>drawChart(p),50);
+}
+
+function drawHero(p){
+  const cv=document.getElementById('hero-cv'); if(!cv)return;
+  const ctx=cv.getContext('2d'),W=420,H=110;
+  const[r,g,b]=p.col;
+  const blds=[{x:.01,w:.06,h:.32},{x:.09,w:.04,h:.55},{x:.15,w:.08,h:.44},{x:.25,w:.06,h:.70},{x:.33,w:.08,h:.58},{x:.43,w:.04,h:.50},{x:.52,w:.07,h:.68},{x:.61,w:.09,h:.55},{x:.72,w:.05,h:.42},{x:.79,w:.07,h:.60},{x:.88,w:.04,h:.38},{x:.94,w:.05,h:.50}];
+  let fr=0;
+  function draw(){
+    if(!document.getElementById('hero-cv'))return;
+    const dark=isDark();ctx.clearRect(0,0,W,H);
+    const sky=ctx.createLinearGradient(0,0,0,H);
+    if(dark){sky.addColorStop(0,'#050A14');sky.addColorStop(1,'#0C1628');}else{sky.addColorStop(0,'#D0DFEE');sky.addColorStop(1,'#E4EEF8');}
+    ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+    if(dark){for(let i=0;i<18;i++){ctx.globalAlpha=.3;ctx.fillStyle='#D0E0F0';ctx.beginPath();ctx.arc((i*139.5)%W,(i*83)%(H*.65),.7,0,Math.PI*2);ctx.fill();}}
+    ctx.globalAlpha=.6;ctx.fillStyle=dark?'#FFF8C0':'#FFE080';ctx.beginPath();ctx.arc(W-28,18,6,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;
+    blds.forEach((bl,i)=>{
+      const bx=bl.x*W,bw=bl.w*W,bh=bl.h*H,by=H-bh-10;
+      const pulse=Math.sin(fr*.04+i)*.03;
+      const a=dark?.75+pulse:.65+pulse;
+      const shade=ctx.createLinearGradient(0,by,0,H);
+      shade.addColorStop(0,`rgba(${r},${g},${b},${a})`);
+      shade.addColorStop(1,`rgba(${Math.max(0,r-40)},${Math.max(0,g-40)},${Math.max(0,b-40)},${a})`);
+      ctx.fillStyle=shade;ctx.fillRect(bx,by,bw,bh+10);
+      if(dark&&Math.random()>.7){ctx.fillStyle=`rgba(255,240,180,${.3+Math.random()*.4})`;ctx.fillRect(bx+bw*.2,by+bh*.3,bw*.15,bw*.15);}
+    });
+    fr++;if(fr<60)requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function drawChart(p){
+  const cv=document.getElementById('chart-cv');if(!cv)return;
+  const ctx=cv.getContext('2d'),W=320,H=70;
+  const[r,g,b]=p.col;
+  const vals=p.ph;const mn=Math.min(...vals),mx=Math.max(...vals),range=mx-mn||1;
+  ctx.clearRect(0,0,W,H);
+  const pad=10;const cw=(W-pad*2)/5;
+  // Fill
+  ctx.beginPath();
+  vals.forEach((v,i)=>{const x=pad+i*cw,y=H-pad-(v-mn)/range*(H-pad*2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.lineTo(pad+(vals.length-1)*cw,H-pad);ctx.lineTo(pad,H-pad);ctx.closePath();
+  const fill=ctx.createLinearGradient(0,0,0,H);
+  fill.addColorStop(0,`rgba(${r},${g},${b},.25)`);fill.addColorStop(1,'transparent');
+  ctx.fillStyle=fill;ctx.fill();
+  // Line
+  ctx.beginPath();ctx.strokeStyle=`rgb(${r},${g},${b})`;ctx.lineWidth=1.5;
+  vals.forEach((v,i)=>{const x=pad+i*cw,y=H-pad-(v-mn)/range*(H-pad*2);i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});
+  ctx.stroke();
+  // Points + labels
+  vals.forEach((v,i)=>{
+    const x=pad+i*cw,y=H-pad-(v-mn)/range*(H-pad*2);
+    ctx.fillStyle=`rgb(${r},${g},${b})`;ctx.beginPath();ctx.arc(x,y,2.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=isDark()?'rgba(240,237,232,.5)':'rgba(26,23,20,.5)';
+    ctx.font='7px JetBrains Mono,monospace';ctx.textAlign='center';
+    ctx.fillText(YRS[i],x,H-1);
+  });
+}
+
+function showAreaDetail(area){
+  document.getElementById('rp').classList.add('open');
+  const projects=PROJECTS.filter(p=>p.area===area.name||p.area.includes(area.name.split(' ')[0])).slice(0,5);
+  document.getElementById('rp-inner').innerHTML=`
+    <div class="rp-close" onclick="closeDetail()">✕</div>
+    <div class="rp-head">
+      <div class="rp-eyebrow">${area.type} · ${area.tier.toUpperCase()}</div>
+      <div class="rp-title">${area.name}</div>
+    </div>
+    <div class="rp-body">
+      <div class="kpi-grid">
+        <div class="kpi"><div class="kv gold">AED ${area.psf>=1000?(area.psf/1000).toFixed(1)+'K':area.psf}</div><div class="kl">per ft²</div></div>
+        <div class="kpi"><div class="kv up">↑${area.yoy}%</div><div class="kl">YoY</div></div>
+        <div class="kpi"><div class="kv">${area.yld}%</div><div class="kl">yield</div></div>
+        <div class="kpi"><div class="kv">${area.txn.toLocaleString()}</div><div class="kl">2024 txns</div></div>
+        <div class="kpi"><div class="kv">AED ${area.val}B</div><div class="kl">sales value</div></div>
+        <div class="kpi"><div class="kv">${area.tier}</div><div class="kl">segment</div></div>
+      </div>
+      <div class="sec">Market Summary · DLD 2024</div>
+      <div class="dr"><span class="dr-l">Transaction count</span><span class="dr-v">${area.txn.toLocaleString()}</span></div>
+      <div class="dr"><span class="dr-l">Total sales value</span><span class="dr-v">AED ${area.val}B</span></div>
+      <div class="dr"><span class="dr-l">Price trend</span><span class="dr-v" style="color:var(--up)">+${area.yoy}% YoY</span></div>
+      <div class="dr"><span class="dr-l">Gross yield</span><span class="dr-v">${area.yld}%</span></div>
+      <div class="dr"><span class="dr-l">Property type</span><span class="dr-v">${area.type}</span></div>
+      ${projects.length?`<div class="sec">Active Projects</div>${projects.map(p=>`<div class="nb" onclick="selectProject(window._PMAP[${p.id}])"><div class="nb-dot" style="background:rgb(${p.col.join(',')})"></div><div><div class="nb-name">${p.name}</div><div class="nb-sub">${p.dev} · ${p.comp}</div></div><div class="nb-psf">AED ${p.psf>=1000?(p.psf/1000).toFixed(1)+'K':p.psf}</div></div>`).join('')}`:''}
+      <div style="height:20px"></div>
+    </div>`;
+}
+
+
+/* ═══════════ LAYER TOGGLES ═══════════ */
+function toggleLayer(name){
+  _layers[name]=!_layers[name];
+  document.getElementById('mb-'+name).classList.toggle('on',_layers[name]);
+  if(name==='areas'){
+    if(_layers.areas) drawBoundaries();
+    else {
+      ['area-fills','area-outlines'].forEach(id=>{try{_map.removeLayer(id);}catch(e){}});
+      ['area-fills-src'].forEach(id=>{try{_map.removeSource(id);}catch(e){}});
+      _markers.forEach(m=>m.remove()); _markers=[];
+    }
+  }
+  if(name==='buildings'&&_map){if(_layers.buildings)addBuildings();else{try{_map.removeLayer('bld-3d');}catch(e){}}}
+  refreshDeck();
+}
+
+/* ═══════════ THEME ═══════════ */
+function toggleTheme(){
+  const dark=isDark();
+  document.documentElement.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('btn-theme').textContent=dark?'☾':'☀';
+  if(_map){
+    _map.setStyle(mapStyle());
+    _map.once('style.load',()=>{drawBoundaries();if(_layers.buildings)addBuildings();});
+  }
+  refreshDeck();
+}
+
+/* ═══════════ PRESENTATION ═══════════ */
+let _present=false;
+function togglePresent(){
+  _present=!_present;
+  document.body.classList.toggle('present',_present);
+  document.getElementById('btn-pres').textContent=_present?'✕ Exit':'⛶ Present';
+  setTimeout(()=>_map?.resize(),50);
+}
+
+/* ═══════════ DLD PULSE — STATSBAR ═══════════ */
+function initTicker(){
+  const items=[
+    {area:'Business Bay',     price:'AED 2.1M', change:'+11%'},
+    {area:'Palm Jumeirah',    price:'AED 14.5M',change:'+9%'},
+    {area:'Downtown Dubai',   price:'AED 6.8M', change:'+8%'},
+    {area:'Dubai Marina',     price:'AED 2.8M', change:'+6%'},
+    {area:'JVC',              price:'AED 980K', change:'+17%'},
+    {area:'Dubai Hills',      price:'AED 5.2M', change:'+12%'},
+    {area:'JBR',              price:'AED 3.4M', change:'+7%'},
+    {area:'DSO',              price:'AED 780K', change:'+29%'},
+    {area:'Arabian Ranches',  price:'AED 6.5M', change:'+20%'},
+    {area:'DAMAC Hills 2',    price:'AED 1.2M', change:'+14%'},
+  ];
+  const doubled=[...items,...items];
+  const track=document.getElementById('ticker-track');
+  track.innerHTML=doubled.map(t=>`<span class="tk-item"><span class="tk-area">${t.area}</span> ${t.price} <span class="tk-up">${t.change}</span></span>`).join('');
+}
+
+function initTodayStats(){
+  // Simulate today's deal count (realistic based on 226k/year = ~620/day)
+  const base=Math.floor(Math.random()*200+700);
+  const vol=(base*2400000/1000000).toFixed(1);
+  document.getElementById('sb-today-count').textContent=base.toLocaleString();
+  document.getElementById('sb-today-vol').textContent='AED '+vol+'B';
+  // Update every 45s
+  setInterval(()=>{
+    const n=base+Math.floor(Math.random()*50-10);
+    document.getElementById('sb-today-count').textContent=n.toLocaleString();
+  },45000);
+}
+
+/* ═══════════ PORTFOLIO SIMULATOR ═══════════ */
+let _portItems=[];
+
+function openPortfolio(){
+  document.getElementById('port-modal').classList.add('open');
+  buildPortfolioAreaList();
+  renderPortSlots();
+}
+function closePortfolio(){document.getElementById('port-modal').classList.remove('open');}
+
+function buildPortfolioAreaList(){
+  const el=document.getElementById('port-area-list');
+  el.innerHTML=AREAS.slice(0,10).map(a=>`
+    <div class="pa-row${_portItems.find(i=>i.id===a.id)?' sel':''}" onclick="togglePortArea('${a.id}')">
+      <div class="pa-name">${a.name}</div>
+      <div class="pa-psf">AED ${a.psf>=1000?(a.psf/1000).toFixed(1)+'K':a.psf}</div>
+      <div class="pa-yld">${a.yld}%</div>
+    </div>`).join('');
+}
+
+function togglePortArea(id){
+  const area=AREAS.find(a=>a.id===id);if(!area)return;
+  const idx=_portItems.findIndex(i=>i.id===id);
+  if(idx>=0) _portItems.splice(idx,1);
+  else _portItems.push({...area,units:1,size:1000});
+  buildPortfolioAreaList();
+  renderPortSlots();
+}
+
+function renderPortSlots(){
+  const el=document.getElementById('port-slots');
+  if(!_portItems.length){el.innerHTML='<div class="port-empty">Select areas above to add units</div>';return;}
+  el.innerHTML=_portItems.map(item=>`
+    <div class="port-slot">
+      <div class="slot-name">${item.name}</div>
+      <div style="font-family:monospace;font-size:8px;color:var(--t3)">AED ${item.psf}/ft²</div>
+      <input class="slot-sz" type="number" value="${item.units}" min="1" max="10" onchange="updatePortUnits('${item.id}',this.value)" title="Units">
+      <span class="slot-rm" onclick="togglePortArea('${item.id}')">✕</span>
+    </div>`).join('');
+}
+
+function updatePortUnits(id,v){const item=_portItems.find(i=>i.id===id);if(item)item.units=parseInt(v)||1;}
+
+function calcPortfolio(){
+  if(!_portItems.length){alert('Add areas to portfolio first');return;}
+  const ltv=parseFloat(document.getElementById('p-ltv').value)/100||.7;
+  const rate=parseFloat(document.getElementById('p-rate').value)/100||.045;
+  const term=parseInt(document.getElementById('p-term').value)||25;
+  const hold=parseInt(document.getElementById('p-hold').value)||5;
+  const unitSize=1000; // avg sqft per unit
+
+  let totalValue=0,totalEquity=0,totalDebt=0,totalGrossRent=0,totalMortgagePA=0;
+  _portItems.forEach(item=>{
+    const propValue=item.psf*unitSize*item.units;
+    const debt=propValue*ltv;
+    const equity=propValue-debt;
+    const grossRent=propValue*item.yld/100;
+    const monthlyRate=rate/12;
+    const n=term*12;
+    const monthlyPayment=debt*(monthlyRate*Math.pow(1+monthlyRate,n))/(Math.pow(1+monthlyRate,n)-1);
+    totalValue+=propValue; totalEquity+=equity; totalDebt+=debt;
+    totalGrossRent+=grossRent; totalMortgagePA+=monthlyPayment*12;
+  });
+
+  const cashflowPA=totalGrossRent-totalMortgagePA;
+  const avgYoY=_portItems.reduce((s,i)=>s+i.yoy,0)/_portItems.length;
+  const exitValue=totalValue*Math.pow(1+avgYoY/100,hold);
+  const exitEquity=exitValue-totalDebt;
+  const totalProfit=(exitEquity-totalEquity)+(cashflowPA*hold);
+  const totalReturn=totalProfit/totalEquity*100;
+  const irr=(Math.pow(1+totalReturn/100,1/hold)-1)*100;
+  const coc=cashflowPA/totalEquity*100;
+
+  // Cashflow by year
+  const cfBars=[];
+  for(let y=1;y<=Math.min(hold,6);y++){
+    const cf=cashflowPA+(totalValue*avgYoY/100*y*.15); // simplified appreciation cashout model
+    cfBars.push({y,cf,pct:0});
+  }
+  const maxCF=Math.max(...cfBars.map(c=>Math.abs(c.cf)));
+  cfBars.forEach(c=>c.pct=c.cf/maxCF*100);
+
+  const res=document.getElementById('port-results');
+  const fmtM=v=>'AED '+(v/1e6).toFixed(2)+'M';
+  const fmtPct=v=>v.toFixed(1)+'%';
+
+  res.innerHTML=`
+    <div style="font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin-bottom:10px">Portfolio Analysis · ${hold}-Year Hold</div>
+    <div class="pout-grid">
+      <div class="pout-kpi"><div class="pout-v">${fmtM(totalValue)}</div><div class="pout-l">Portfolio Value</div></div>
+      <div class="pout-kpi"><div class="pout-v">${fmtM(totalEquity)}</div><div class="pout-l">Equity (Down)</div></div>
+      <div class="pout-kpi"><div class="pout-v ${cashflowPA>=0?'pos':'neg'}">${fmtM(Math.abs(cashflowPA))}<span style="font-size:10px">${cashflowPA>=0?'▲':'▼'}</span></div><div class="pout-l">Cashflow / Year</div></div>
+      <div class="pout-kpi"><div class="pout-v pos">${fmtPct(coc)}</div><div class="pout-l">Cash-on-Cash</div></div>
+      <div class="pout-kpi"><div class="pout-v">${fmtM(exitValue)}</div><div class="pout-l">Exit Value</div></div>
+      <div class="pout-kpi"><div class="pout-v pos">${fmtPct(irr)}</div><div class="pout-l">Est. IRR</div></div>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin:10px 0 6px">Cashflow Projection</div>
+    <div class="cf-chart">
+      ${cfBars.map(c=>`<div class="cf-col"><div class="cf-bar" style="height:${Math.abs(c.pct)}%;background:${c.cf>=0?'var(--up)':'var(--red)'}"></div><div class="cf-yr">Y${c.y}</div></div>`).join('')}
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:7px;letter-spacing:1.5px;color:var(--t3);text-transform:uppercase;margin-bottom:6px">Exit Scenarios</div>
+    <div class="scen-row"><div class="scen-lbl">Bear (-5% p.a.)</div><div class="scen-v" style="color:var(--red)">${fmtM(totalValue*Math.pow(.95,hold))}</div><div class="scen-pct">-${(5*hold).toFixed(0)}%</div></div>
+    <div class="scen-row"><div class="scen-lbl">Base (${avgYoY.toFixed(1)}% p.a.)</div><div class="scen-v" style="color:var(--gold)">${fmtM(exitValue)}</div><div class="scen-pct">+${((exitValue/totalValue-1)*100).toFixed(0)}%</div></div>
+    <div class="scen-row"><div class="scen-lbl">Bull (+25% p.a.)</div><div class="scen-v" style="color:var(--up)">${fmtM(totalValue*Math.pow(1.25,hold))}</div><div class="scen-pct">+${(25*hold).toFixed(0)}%</div></div>
+    ${totalEquity>=2000000?'<div style="margin-top:10px"><span class="visa-badge-lg">🔑 Golden Visa eligible — equity exceeds AED 2M threshold</span></div>':''}
+    <div style="margin-top:12px;padding:8px 10px;background:var(--bg2);border:1px solid var(--bord);border-radius:5px;font-family:monospace;font-size:8px;color:var(--t3);line-height:1.6">Assumptions: ${(ltv*100).toFixed(0)}% LTV · ${(rate*100).toFixed(1)}% mortgage rate · ${term}y term · Net yield ~${((totalGrossRent/totalValue*100)*.8).toFixed(1)}% (after 20% expenses) · Illustrative only</div>`;
+}
+
+/* ═══════════ PDF ═══════════ */
+function openPDF()  {document.getElementById('pdf-modal').classList.add('open');}
+function closePDF() {document.getElementById('pdf-modal').classList.remove('open');}
+
+function genPDF(){
+  const client=document.getElementById('pdf-client').value||'Valued Client';
+  const agency=document.getElementById('pdf-agency').value||'Nokhda Intelligence';
+  const brief=document.getElementById('pdf-brief').value||'Dubai Real Estate';
+  const p=_state.sel;
+  const today=new Date().toLocaleDateString('en-AE',{day:'numeric',month:'long',year:'numeric'});
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Figtree:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>*{box-sizing:border-box;margin:0;padding:0}body{font-family:'Figtree',sans-serif;color:#1A1714;background:#fff}.page{width:794px;min-height:1123px;padding:56px}.hdr{display:flex;justify-content:space-between;padding-bottom:18px;border-bottom:2px solid #1A1714;margin-bottom:32px}.logo{font-family:'Playfair Display',serif;font-size:26px;letter-spacing:8px;text-transform:uppercase}.logo-sub{font-size:8px;color:#9A978F;letter-spacing:2px;font-family:monospace;margin-top:2px;text-transform:uppercase}.hdr-r{text-align:right;font-family:monospace;font-size:9px;color:#9A978F;line-height:1.8}h1{font-family:'Playfair Display',serif;font-size:34px;color:#1A1714;margin-bottom:4px}.sub{font-size:11px;color:#6B6560;margin-bottom:28px}.mg{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#E8E2D8;border:1px solid #E8E2D8;margin-bottom:28px}.mc{background:#fff;padding:16px;text-align:center}.mc-v{font-family:monospace;font-size:18px;font-weight:500}.mc-l{font-size:7px;color:#9A978F;letter-spacing:1.5px;text-transform:uppercase;margin-top:3px}table{width:100%;border-collapse:collapse;font-size:10px;margin-top:16px}th{background:#F4F1EB;padding:8px 10px;text-align:left;font-family:monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:#9A978F;border-bottom:1px solid #E8E2D8}td{padding:8px 10px;border-bottom:1px solid #F4F1EB}.footer{margin-top:40px;padding-top:12px;border-top:1px solid #E8E2D8;display:flex;justify-content:space-between;font-family:monospace;font-size:7px;color:#9A978F}
+    </style></head><body><div class="page">
+    <div class="hdr"><div><div class="logo">Nokhda</div><div class="logo-sub">Dubai Property Intelligence</div></div><div class="hdr-r"><div>Client: <strong>${client}</strong></div><div>Broker: ${agency}</div><div>${today}</div><div>Brief: ${brief}</div></div></div>
+    <h1>Dubai Property Market<br>Intelligence 2024</h1>
+    <div class="sub">Verified data: Dubai Land Department · Property Monitor DPI · Bayut 2024 · Knight Frank Q3 2025</div>
+    <div class="mg"><div class="mc"><div class="mc-v">226,000</div><div class="mc-l">Sales Transactions</div></div><div class="mc"><div class="mc-v">AED 761B</div><div class="mc-l">Total Value</div></div><div class="mc"><div class="mc-v">+36%</div><div class="mc-l">YoY Volume</div></div><div class="mc"><div class="mc-v">AED 1,683</div><div class="mc-l">Avg Price / ft²</div></div><div class="mc"><div class="mc-v">72%</div><div class="mc-l">Off-Plan Share</div></div><div class="mc"><div class="mc-v">6.8%</div><div class="mc-l">Avg Gross Yield</div></div></div>
+    ${p?`<div style="margin:24px 0;padding:20px;border:1px solid #E8E2D8;border-radius:4px"><div style="font-size:8px;letter-spacing:2px;color:#9A978F;font-family:monospace;margin-bottom:6px;text-transform:uppercase">Featured Project</div><div style="font-size:22px;font-weight:600;color:#1A1714;font-family:Georgia,serif;margin-bottom:4px">${p.name}</div><div style="font-size:11px;color:#6B6560;margin-bottom:16px">${p.area} · ${p.dev} · Handover ${p.comp}</div><p style="font-size:11px;color:#6B6560;line-height:1.7">${p.desc}</p>${p.visa?'<div style="margin-top:12px;padding:8px 12px;background:#FBF7EE;border:1px solid #E8D598;border-radius:3px;font-size:10px;color:#8B6A00;font-family:monospace">🔑 Golden Visa eligible — AED 2M+ investment qualifies for 10-year UAE residency</div>':''}</div>`:''}
+    <div style="font-family:monospace;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:#9A978F;border-bottom:1px solid #E8E2D8;padding-bottom:5px;margin:24px 0 12px">Top Areas by Value · DLD 2024</div>
+    <table><tr><th>Area</th><th>AED/ft²</th><th>Transactions</th><th>Value</th><th>Yield</th><th>YoY</th><th>Segment</th></tr>
+    ${AREAS.sort((a,b)=>b.val-a.val).slice(0,12).map(a=>`<tr><td><strong>${a.name}</strong></td><td>${a.psf>=1000?(a.psf/1000).toFixed(1)+'K':a.psf}</td><td>${a.txn.toLocaleString()}</td><td>AED ${a.val}B</td><td>${a.yld}%</td><td style="color:#0F7A4A;font-weight:500">↑${a.yoy}%</td><td>${a.tier}</td></tr>`).join('')}
+    </table>
+    <div class="footer"><div>Source: Dubai Land Department · Property Monitor · Bayut 2024 · Knight Frank Q3 2025</div><div>Generated by Nokhda · ${today}</div></div>
+    </div></body>`;
+  const w=window.open('','_blank','width=900,height=750');
+  w.document.write(html);w.document.close();
+  w.onload=()=>w.print();
+  closePDF();
+}
+
+// Hide listing search bar when not in listing tab
+document.addEventListener('DOMContentLoaded',()=>{});
+
+</script>
+</body>
+</html>
