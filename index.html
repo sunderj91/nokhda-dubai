@@ -124,8 +124,10 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 /* LISTING CARD */
 .lc{background:var(--bg2);border:1px solid var(--bord);border-radius:var(--r);margin-bottom:6px;cursor:pointer;transition:border-color .15s;overflow:hidden}
 .lc:hover{border-color:var(--gold-a)}
-.lc-img{height:90px;background:linear-gradient(135deg,var(--surf2),var(--bg));position:relative;overflow:hidden}
-.lc-img-inner{width:100%;height:100%;background:linear-gradient(135deg,#0d1f3c 0%,#1a3a5c 50%,#0a1628 100%);display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.5}
+.lc-img{height:100px;background:var(--bg2);position:relative;overflow:hidden}
+.lc-img img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .3s}
+.lc{}.lc:hover .lc-img img{transform:scale(1.04)}
+.lc-img-fallback{width:100%;height:100%;background:linear-gradient(135deg,#0d1f3c 0%,#1a3a5c 50%,#0a1628 100%);display:flex;align-items:center;justify-content:center;font-size:28px;opacity:.5}
 .lc-badge{position:absolute;bottom:6px;right:6px;font-family:'DM Mono',monospace;font-size:10px;font-weight:500;background:rgba(201,168,76,.92);color:#000;padding:2px 7px;border-radius:3px}
 .lc-body{padding:8px 10px}
 .lc-title{font-size:11px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
@@ -236,7 +238,8 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 .rlc{display:flex;gap:8px;padding:7px 0;border-bottom:1px solid var(--bord);cursor:pointer;transition:opacity .14s}
 .rlc:hover{opacity:.8}
 .rlc:last-child{border-bottom:none}
-.rlc-img{width:56px;height:44px;border-radius:4px;background:linear-gradient(135deg,#0d1f3c,#1a3a5c);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:18px;opacity:.6}
+.rlc-img{width:64px;height:50px;border-radius:4px;background:var(--bg2);flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:18px}
+.rlc-img img{width:64px;height:50px;object-fit:cover;border-radius:4px;display:block}
 .rlc-info{flex:1;min-width:0}
 .rlc-title{font-size:10.5px;font-weight:500;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px}
 .rlc-sub{font-size:9px;color:var(--t3);margin-bottom:3px}
@@ -457,8 +460,8 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
 
   <!-- STATSBAR -->
   <div id="statsbar">
-    <div class="sb" style="padding:0 10px">
-      <div class="sb-v" style="font-size:9px;color:var(--t3);letter-spacing:1px">LIVE PULSE</div>
+    <div class="sb" style="padding:0 10px;cursor:pointer" onclick="fetchLiveDLD()" title="Click to refresh">
+      <div class="sb-v" style="font-size:9px;letter-spacing:1px" id="live-indicator">● LIVE PULSE</div>
     </div>
     <div class="sb-ticker"><div class="ticker-wrap"><div class="ticker-track" id="ticker-track"></div></div></div>
     <div class="sb"><div class="sb-v" id="sb-deals">617</div><div class="sb-l">Today Deals</div></div>
@@ -565,23 +568,34 @@ const PROJECTS=[
   {id:15,name:'Maple Townhouses',area:'Dubai Hills',dev:'Emaar',status:'ready',comp:2023,psf:1700,yoy:12,yld:5.6,beds:'3–5BR',floors:3,lat:25.108,lng:55.244,areaId:'dh',visa:true,col:[34,200,122]},
 ];
 
+// Unsplash property image IDs by type
+const IMG={
+  apt_marina:'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=70&auto=format',
+  apt_luxury:'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=400&q=70&auto=format',
+  villa_pool:'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=400&q=70&auto=format',
+  villa_golf:'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&q=70&auto=format',
+  beachfront:'https://images.unsplash.com/photo-1499793983690-e29da59ef1c2?w=400&q=70&auto=format',
+  downtown:'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=70&auto=format',
+  studio:'https://images.unsplash.com/photo-1540518614846-7eded433c457?w=400&q=70&auto=format',
+  highrise:'https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=70&auto=format',
+};
 const LISTINGS_BUY=[
-  {id:'b1',title:'2BR Sky Villa',area:'Business Bay',areaId:'bb',beds:2,baths:2,sqft:1240,price:2600000,psf:2097,yld:6.5,status:'off',emoji:'🏙️',desc:'Canal-facing high floor. Smart home. Handover Q4 2025.'},
-  {id:'b2',title:'3BR Palm Villa',area:'Palm Jumeirah',areaId:'palm',beds:3,baths:3.5,sqft:3800,price:14500000,psf:3816,yld:5.1,status:'ready',emoji:'🌴',desc:'Frond villa, private beach. Recently renovated. ROI 5.1%.'},
-  {id:'b3',title:'1BR Marina View',area:'Dubai Marina',areaId:'marina',beds:1,baths:1,sqft:740,price:1380000,psf:1865,yld:7.2,status:'ready',emoji:'⛵',desc:'High floor, panoramic marina views. Furnished, tenanted.'},
-  {id:'b4',title:'Studio JVC',area:'JVC',areaId:'jvc',beds:0,baths:1,sqft:490,price:450000,psf:918,yld:8.8,status:'off',emoji:'🏢',desc:'Handover Q1 2026. Near Circle Mall. Strong rental demand.'},
-  {id:'b5',title:'2BR Downtown',area:'Downtown Dubai',areaId:'dtn',beds:2,baths:2,sqft:1380,price:3900000,psf:2826,yld:5.9,status:'ready',emoji:'🌆',desc:'Burj Khalifa view, furnished, premium finishes.'},
-  {id:'b6',title:'4BR Dubai Hills Villa',area:'Dubai Hills Estate',areaId:'dh',beds:4,baths:4.5,sqft:4200,price:6800000,psf:1619,yld:5.4,status:'ready',emoji:'🌿',desc:'Golf course view. Private pool. Prestigious gated community.'},
-  {id:'b7',title:'1BR JBR Beachfront',area:'JBR',areaId:'jbr',beds:1,baths:1,sqft:820,price:2100000,psf:2561,yld:6.4,status:'ready',emoji:'🏖️',desc:'Beach access, furnished, strong AirBnB potential.'},
-  {id:'b8',title:'3BR DSO Apartment',area:'Dubai Silicon Oasis',areaId:'dso',beds:3,baths:2,sqft:1650,price:1250000,psf:758,yld:9.1,status:'ready',emoji:'💻',desc:'Gated tech hub. High occupancy rate. Long-term tenants.'},
+  {id:'b1',title:'2BR Sky Villa',area:'Business Bay',areaId:'bb',beds:2,baths:2,sqft:1240,price:2600000,psf:2097,yld:6.5,status:'off',img:IMG.apt_luxury,desc:'Canal-facing high floor. Smart home. Handover Q4 2025.'},
+  {id:'b2',title:'3BR Palm Villa',area:'Palm Jumeirah',areaId:'palm',beds:3,baths:3.5,sqft:3800,price:14500000,psf:3816,yld:5.1,status:'ready',img:IMG.villa_pool,desc:'Frond villa, private beach. Recently renovated. ROI 5.1%.'},
+  {id:'b3',title:'1BR Marina View',area:'Dubai Marina',areaId:'marina',beds:1,baths:1,sqft:740,price:1380000,psf:1865,yld:7.2,status:'ready',img:IMG.apt_marina,desc:'High floor, panoramic marina views. Furnished, tenanted.'},
+  {id:'b4',title:'Studio JVC',area:'JVC',areaId:'jvc',beds:0,baths:1,sqft:490,price:450000,psf:918,yld:8.8,status:'off',img:IMG.studio,desc:'Handover Q1 2026. Near Circle Mall. Strong rental demand.'},
+  {id:'b5',title:'2BR Downtown',area:'Downtown Dubai',areaId:'dtn',beds:2,baths:2,sqft:1380,price:3900000,psf:2826,yld:5.9,status:'ready',img:IMG.downtown,desc:'Burj Khalifa view, furnished, premium finishes.'},
+  {id:'b6',title:'4BR Dubai Hills Villa',area:'Dubai Hills Estate',areaId:'dh',beds:4,baths:4.5,sqft:4200,price:6800000,psf:1619,yld:5.4,status:'ready',img:IMG.villa_golf,desc:'Golf course view. Private pool. Prestigious gated community.'},
+  {id:'b7',title:'1BR JBR Beachfront',area:'JBR',areaId:'jbr',beds:1,baths:1,sqft:820,price:2100000,psf:2561,yld:6.4,status:'ready',img:IMG.beachfront,desc:'Beach access, furnished, strong AirBnB potential.'},
+  {id:'b8',title:'3BR DSO Apartment',area:'Dubai Silicon Oasis',areaId:'dso',beds:3,baths:2,sqft:1650,price:1250000,psf:758,yld:9.1,status:'ready',img:IMG.highrise,desc:'Gated tech hub. High occupancy rate. Long-term tenants.'},
 ];
 const LISTINGS_RENT=[
-  {id:'r1',title:'2BR Business Bay',area:'Business Bay',areaId:'bb',beds:2,baths:2,sqft:1100,price:130000,emoji:'🏙️'},
-  {id:'r2',title:'1BR Marina',area:'Dubai Marina',areaId:'marina',beds:1,baths:1,sqft:700,price:95000,emoji:'⛵'},
-  {id:'r3',title:'3BR Palm Frond',area:'Palm Jumeirah',areaId:'palm',beds:3,baths:3,sqft:3500,price:580000,emoji:'🌴'},
-  {id:'r4',title:'Studio JVC',area:'JVC',areaId:'jvc',beds:0,baths:1,sqft:420,price:48000,emoji:'🏢'},
-  {id:'r5',title:'2BR Downtown Burj View',area:'Downtown Dubai',areaId:'dtn',beds:2,baths:2,sqft:1250,price:220000,emoji:'🌆'},
-  {id:'r6',title:'Villa Dubai Hills',area:'Dubai Hills Estate',areaId:'dh',beds:4,baths:4,sqft:4000,price:280000,emoji:'🌿'},
+  {id:'r1',title:'2BR Business Bay',area:'Business Bay',areaId:'bb',beds:2,baths:2,sqft:1100,price:130000,img:IMG.apt_luxury},
+  {id:'r2',title:'1BR Marina',area:'Dubai Marina',areaId:'marina',beds:1,baths:1,sqft:700,price:95000,img:IMG.apt_marina},
+  {id:'r3',title:'3BR Palm Frond',area:'Palm Jumeirah',areaId:'palm',beds:3,baths:3,sqft:3500,price:580000,img:IMG.villa_pool},
+  {id:'r4',title:'Studio JVC',area:'JVC',areaId:'jvc',beds:0,baths:1,sqft:420,price:48000,img:IMG.studio},
+  {id:'r5',title:'2BR Downtown Burj View',area:'Downtown Dubai',areaId:'dtn',beds:2,baths:2,sqft:1250,price:220000,img:IMG.downtown},
+  {id:'r6',title:'Villa Dubai Hills',area:'Dubai Hills Estate',areaId:'dh',beds:4,baths:4,sqft:4000,price:280000,img:IMG.villa_golf},
 ];
 
 const DLD_TXN=[
@@ -619,16 +633,16 @@ const AREA_POLYS={
   palm:[[55.10807,25.11461],[55.11060,25.10490],[55.11983,25.09758],[55.13108,25.09696],[55.14315,25.10473],[55.15168,25.11362],[55.15694,25.12321],[55.15931,25.12804],[55.15975,25.13226],[55.15839,25.13649],[55.15547,25.13944],[55.15205,25.14003],[55.14795,25.13953],[55.14414,25.13734],[55.14105,25.13458],[55.13854,25.13229],[55.13592,25.13007],[55.13242,25.12825],[55.12979,25.12617],[55.12675,25.12402],[55.12339,25.12167],[55.12055,25.11913],[55.11831,25.11620],[55.11536,25.11399],[55.11219,25.11214],[55.10807,25.11461]],
   jvc:[[55.19392,25.04937],[55.19901,25.04619],[55.20521,25.04481],[55.21221,25.04497],[55.21868,25.04762],[55.22323,25.05148],[55.22624,25.05636],[55.22575,25.06202],[55.22247,25.06685],[55.21755,25.07031],[55.21175,25.07162],[55.20555,25.07115],[55.19976,25.06867],[55.19566,25.06479],[55.19367,25.05934],[55.19392,25.04937]],
   dh:[[55.24188,25.09906],[55.25026,25.09823],[55.25964,25.09997],[55.26632,25.10411],[55.26886,25.10937],[55.26779,25.11542],[55.26455,25.12021],[55.25993,25.12366],[55.25466,25.12507],[55.24914,25.12476],[55.24449,25.12252],[55.24081,25.11898],[55.23893,25.11464],[55.23966,25.11012],[55.24188,25.09906]],
-  jlt:[[55.14031,25.06896],[55.14069,25.06886],[55.14075,25.06889],[55.14079,25.06883],[55.14076,25.06876],[55.14073,25.06871],[55.14084,25.06863],[55.14082,25.06855],[55.14082,25.06841],[55.14081,25.06837],[55.14041,25.06821],[55.14024,25.06827],[55.14031,25.06896]],
+  jlt:[[55.1312,25.0568],[55.1392,25.0548],[55.1482,25.0578],[55.1538,25.0628],[55.1548,25.0698],[55.1522,25.0768],[55.1452,25.0828],[55.1362,25.0848],[55.1282,25.0808],[55.1232,25.0738],[55.1222,25.0658],[55.1262,25.0598],[55.1312,25.0568]],
   dso:[[55.36519,25.10818],[55.37648,25.10549],[55.38779,25.10677],[55.39618,25.11278],[55.40047,25.12221],[55.39781,25.13215],[55.38923,25.13876],[55.37746,25.13979],[55.36684,25.13582],[55.35975,25.12678],[55.36064,25.11621],[55.36519,25.10818]],
   arabian:[[55.25583,25.04323],[55.26985,25.03982],[55.28479,25.04182],[55.29554,25.04948],[55.29978,25.06122],[55.29378,25.07279],[55.27819,25.07981],[55.26251,25.07952],[55.25016,25.07182],[55.24583,25.05884],[55.25583,25.04323]],
   jbr:[[55.11622,25.07583],[55.12618,25.07319],[55.13653,25.07452],[55.14348,25.08022],[55.14483,25.08784],[55.14184,25.09484],[55.13254,25.09820],[55.12275,25.09684],[55.11621,25.09117],[55.11380,25.08315],[55.11622,25.07583]],
   alfurjan:[[55.11677,25.01254],[55.12685,25.00977],[55.13748,25.01081],[55.14518,25.01683],[55.14778,25.02677],[55.14278,25.03620],[55.12979,25.04016],[55.11749,25.03824],[55.10946,25.03016],[55.10922,25.01955],[55.11677,25.01254]],
-  burdubai:[[55.28749,25.25119],[55.29883,25.24819],[55.31118,25.24953],[55.32052,25.25578],[55.32345,25.26517],[55.31846,25.27476],[55.30477,25.27979],[55.29121,25.27783],[55.28182,25.26953],[55.28017,25.25880],[55.28749,25.25119]],
-  damac2:[[55.29419,25.09562],[55.30849,25.09317],[55.32279,25.09555],[55.33283,25.09642],[55.33683,25.09765],[55.33692,25.09882],[55.32847,25.09948],[55.31282,25.09931],[55.29848,25.09842],[55.29333,25.09705],[55.29419,25.09562]],
+  burdubai:[[55.2858,25.2382],[55.3038,25.2332],[55.3218,25.2432],[55.3288,25.2602],[55.3228,25.2762],[55.3058,25.2882],[55.2878,25.2882],[55.2718,25.2782],[55.2648,25.2612],[55.2718,25.2432],[55.2858,25.2382]],
+  damac2:[[55.2728,24.9458],[55.2998,24.9328],[55.3298,24.9368],[55.3558,24.9518],[55.3668,24.9738],[55.3548,24.9958],[55.3228,25.0078],[55.2908,25.0048],[55.2648,24.9878],[55.2578,24.9638],[55.2728,24.9458]],
   meydan:[[55.29018,25.15578],[55.30384,25.15277],[55.31784,25.15481],[55.32784,25.16179],[55.33184,25.17282],[55.32618,25.18378],[55.31084,25.18921],[55.29547,25.18782],[55.28384,25.17978],[55.28084,25.16645],[55.29018,25.15578]],
   intcity:[[55.40781,25.16181],[55.41984,25.15948],[55.42845,25.16181],[55.43218,25.16678],[55.43218,25.17578],[55.42685,25.18448],[55.41585,25.18878],[55.40385,25.18715],[55.39518,25.18018],[55.39285,25.17055],[55.40781,25.16181]],
-  dsouth:[[55.14281,24.88881],[55.16085,24.87878],[55.18085,24.87685],[55.19685,24.88578],[55.20285,24.89878],[55.19885,24.91278],[55.18285,24.92178],[55.16285,24.92278],[55.14585,24.91478],[55.13785,24.90078],[55.14281,24.88881]],
+  dsouth:[[55.1128,24.8818],[55.1468,24.8618],[55.1888,24.8568],[55.2228,24.8748],[55.2368,24.9028],[55.2288,24.9338],[55.2008,24.9578],[55.1668,24.9658],[55.1308,24.9548],[55.1068,24.9288],[55.1128,24.8818]],
 };
 
 /* ══════════════════════════════════════════════
@@ -801,28 +815,45 @@ function initMap(){
   _map=new maplibregl.Map({container:'map',style,center:[55.27,25.12],zoom:10.5,pitch:25,bearing:-4,attributionControl:false});
   _map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
 
-  const dc=document.getElementById('deck-canvas');
-  dc.width=dc.offsetWidth;dc.height=dc.offsetHeight;
-  _deck=new deck.DeckGL({canvas:'deck-canvas',width:'100%',height:'100%',initialViewState:{longitude:55.27,latitude:25.12,zoom:10.5,pitch:25,bearing:-4},controller:false,layers:[]});
-  _map.on('move',()=>{
-    const {lng,lat}=_map.getCenter();
-    _deck.setProps({viewState:{longitude:lng,latitude:lat,zoom:_map.getZoom(),pitch:_map.getPitch(),bearing:_map.getBearing()}});
-  });
+  // Init deck AFTER shell is visible so canvas has real dimensions
+  function initDeck(){
+    const dc=document.getElementById('deck-canvas');
+    dc.width=dc.offsetWidth||window.innerWidth;
+    dc.height=dc.offsetHeight||window.innerHeight;
+    if(_deck){_deck.finalize();_deck=null;}
+    _deck=new deck.DeckGL({
+      canvas:'deck-canvas',width:'100%',height:'100%',
+      initialViewState:{longitude:55.27,latitude:25.12,zoom:10.5,pitch:25,bearing:-4},
+      controller:false,layers:[]
+    });
+    // Sync deck view to map on every move
+    _map.on('move',()=>{
+      const {lng,lat}=_map.getCenter();
+      _deck.setProps({viewState:{longitude:lng,latitude:lat,zoom:_map.getZoom(),pitch:_map.getPitch(),bearing:_map.getBearing()}});
+    });
+  }
 
   _map.on('load',()=>{
-    // 3D buildings (off by default) — wrap in try/catch to not abort load
+    initDeck();
     try{
       _map.addLayer({id:'3d-buildings',type:'fill-extrusion','source-layer':'building',source:'composite',filter:['==','extrude','true'],minzoom:15,paint:{'fill-extrusion-color':'#1a2a44','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.6}});
       _map.setLayoutProperty('3d-buildings','visibility','none');
     }catch(e){}
-    drawHeatmap();
-    buildDeck();
-    buildTicker();
-    renderPanel();
-    renderRightDefault();
-    document.getElementById('zoom-ctrls').style.opacity='1';
+    // Small delay ensures tile styles fully applied before adding sources
+    setTimeout(()=>{
+      drawHeatmap();
+      buildDeck();
+      buildTicker();
+      renderPanel();
+      renderRightDefault();
+      document.getElementById('zoom-ctrls').style.opacity='1';
+    },150);
   });
-  setTimeout(()=>document.getElementById('zoom-ctrls').style.opacity='1',2000);
+  // Fallback: if load already fired
+  if(_map.isStyleLoaded()){
+    initDeck();
+    setTimeout(()=>{drawHeatmap();buildDeck();buildTicker();renderPanel();renderRightDefault();},200);
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -1035,8 +1066,8 @@ function showAreaDetail(a){
   document.getElementById('rp-list-label').textContent=a.name;
   document.getElementById('rp-listings-list').innerHTML=
     (zoneListings.length?zoneListings:LISTINGS_BUY).slice(0,4).map(l=>`
-    <div class="rlc" onclick="showListingDetail(${JSON.stringify(l).replace(/"/g,'&quot;')})">
-      <div class="rlc-img">${l.emoji}</div>
+    <div class="rlc" onclick="showListingDetail('${l.id}')">
+      <div class="rlc-img">${l.img?`<img src="${l.img}" style="width:56px;height:44px;object-fit:cover;border-radius:4px;display:block" loading="lazy">`:l.emoji||'🏢'}</div>
       <div class="rlc-info">
         <div class="rlc-title">${l.title}</div>
         <div class="rlc-sub">${l.area} · ${l.beds===0?'Studio':l.beds+'BR'}</div>
@@ -1079,7 +1110,7 @@ function showProjectDetail(p){
   document.getElementById('rp-list-label').textContent=p.area;
   document.getElementById('rp-listings-list').innerHTML=listings.map(l=>`
     <div class="rlc">
-      <div class="rlc-img">${l.emoji}</div>
+      <div class="rlc-img">${l.img?`<img src="${l.img}" style="width:56px;height:44px;object-fit:cover;border-radius:4px;display:block" loading="lazy">`:(l.emoji||'🏢')}</div>
       <div class="rlc-info"><div class="rlc-title">${l.title}</div><div class="rlc-sub">${l.beds===0?'Studio':l.beds+'BR'} · ${l.sqft.toLocaleString()} ft²</div><div class="rlc-stats">${l.yld}% yield</div></div>
       <div class="rlc-price">AED ${(l.price/1e6).toFixed(1)}M</div>
     </div>`).join('') || '<div class="rp-empty">No current listings</div>';
@@ -1109,7 +1140,7 @@ function renderRightDefault(){
   document.getElementById('rp-list-label').textContent='Featured';
   document.getElementById('rp-listings-list').innerHTML=LISTINGS_BUY.slice(0,4).map(l=>`
     <div class="rlc">
-      <div class="rlc-img">${l.emoji}</div>
+      <div class="rlc-img">${l.img?`<img src="${l.img}" style="width:56px;height:44px;object-fit:cover;border-radius:4px;display:block" loading="lazy">`:(l.emoji||'🏢')}</div>
       <div class="rlc-info"><div class="rlc-title">${l.title}</div><div class="rlc-sub">${l.area} · ${l.beds===0?'Studio':l.beds+'BR'}</div><div class="rlc-stats">${l.sqft.toLocaleString()} ft² · ${l.yld}% yield</div></div>
       <div class="rlc-price">AED ${(l.price/1e6).toFixed(1)}M</div>
     </div>`).join('');
@@ -1234,11 +1265,13 @@ function renderBody(){
   } else if(_tab==='list'){
     const listings=_listMode==='buy'?LISTINGS_BUY:LISTINGS_RENT;
     const filtered=s?listings.filter(l=>l.title.toLowerCase().includes(s)||l.area.toLowerCase().includes(s)):listings;
-    body.innerHTML=filtered.map(l=>`
-      <div class="lc" onclick="showListingDetail(${JSON.stringify(l).replace(/"/g,"'")})">
-        <div class="lc-img"><div class="lc-img-inner">${l.emoji}</div>
-          <div class="lc-badge">${l.price>=1e6?'AED '+(l.price/1e6).toFixed(1)+'M':'AED '+(l.price/1000).toFixed(0)+'K'}</div>
-        </div>
+    body.innerHTML=filtered.map(l=>{
+      const imgHtml=l.img
+        ?`<img src="${l.img}" alt="${l.title}" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.style.display='none'">`
+        :'<div class="lc-img-fallback">🏢</div>';
+      const price=l.price>=1e6?'AED '+(l.price/1e6).toFixed(1)+'M':'AED '+(l.price/1000).toFixed(0)+'K';
+      return `<div class="lc" onclick="showListingDetail('${l.id}')">
+        <div class="lc-img">${imgHtml}<div class="lc-badge">${price}</div></div>
         <div class="lc-body">
           <div class="lc-title">${l.title}</div>
           <div class="lc-sub">${l.area} · ${l.beds===0?'Studio':l.beds+'BR'} · ${l.baths||1}BA</div>
@@ -1248,7 +1281,8 @@ function renderBody(){
             ${l.status?'<span style="color:var(--gold)">'+l.status+'</span>':''}
           </div>
         </div>
-      </div>`).join('');
+      </div>`;
+    }).join('');
   } else if(_tab==='txn'){
     const txns=s?DLD_TXN.filter(t=>t.area.toLowerCase().includes(s)||t.proj.toLowerCase().includes(s)):DLD_TXN;
     body.innerHTML=`
@@ -1368,9 +1402,22 @@ function togglePresent(){_presenting=!_presenting;document.body.classList.toggle
 
 function resetView(){_map&&_map.flyTo({center:[55.27,25.12],zoom:10.5,pitch:25,bearing:-4,duration:1200});}
 
-function showListingDetail(l){
-  if(typeof l==='string')l=JSON.parse(l.replace(/'/g,'"'));
-  const a=AMAP[l.areaId];if(a){if(!_rpOpen)toggleRP();showAreaDetail(a);}
+function showListingDetail(id){
+  const allL=[...LISTINGS_BUY,...LISTINGS_RENT];
+  const l=allL.find(x=>x.id===id);
+  if(!l)return;
+  const a=AMAP[l.areaId];
+  if(a){
+    if(!_rpOpen)toggleRP();
+    showAreaDetail(a);
+    // Fly to area centroid
+    const poly=AREA_POLYS[a.id];
+    if(poly){
+      let cx=0,cy=0;poly.forEach(p=>{cx+=p[0];cy+=p[1];});cx/=poly.length;cy/=poly.length;
+      _map.flyTo({center:[cx,cy],zoom:14,pitch:35,duration:1000});
+      placeAreaMarker(a);
+    }
+  }
 }
 
 /* ══════════════════════════════════════════════
@@ -1475,6 +1522,93 @@ function drawPortfolioChart(val,equity,net_annual,exit_val,hold,growth_rate){
 ══════════════════════════════════════════════ */
 function generatePDF(){alert('PDF report generation coming soon.\nWill include area analysis, transaction history, and portfolio projections.');}
 
+
+/* ══════════════════════════════════════════════
+   PHASE 1: LIVE DATA — Dubai Open Data Portal
+══════════════════════════════════════════════ */
+let _dataRefreshTime = null;
+let _liveDataLoaded = false;
+
+async function fetchLiveDLD(){
+  const statusEl = document.getElementById('live-indicator');
+  if(statusEl) statusEl.style.color='var(--gold)';
+  try {
+    // Dubai REST API — property transactions
+    // Primary: Dubai Pulse (data.dubai.gov.ae) Bayut property index
+    const endpoints = [
+      'https://data.dubai.gov.ae/api/explore/v2.1/catalog/datasets/property-transactions/records?limit=25&order_by=transaction_date%20DESC',
+    ];
+    // Try each endpoint — use static data as reliable fallback
+    let fetched = false;
+    for(const url of endpoints){
+      try{
+        const r = await fetch(url, {headers:{'Accept':'application/json'},signal:AbortSignal.timeout(5000)});
+        if(r.ok){
+          const d = await r.json();
+          if(d.results && d.results.length){
+            // Map to our format
+            const mapped = d.results.map(t=>({
+              date: t.transaction_date||t.date||new Date().toISOString().slice(0,10),
+              area: t.area_en||t.area||'Dubai',
+              areaId: areaNameToId(t.area_en||''),
+              price: Number(t.transaction_value||t.price||0),
+              type: (t.transaction_type||'sale').toLowerCase().includes('mort')?'mortgage':'sale',
+              beds: Number(t.beds||t.bedrooms||1),
+              sqft: Number(t.property_size_sqft||t.sqft||1000),
+              psf: Math.round(Number(t.transaction_value||0)/Number(t.property_size_sqft||1)),
+              proj: t.project_en||t.project||t.building_name||'–',
+            })).filter(t=>t.price>100000);
+            if(mapped.length >= 5){
+              DLD_TXN.splice(0,0,...mapped.slice(0,10));
+              DLD_TXN.splice(25);
+              fetched = true;
+              _liveDataLoaded = true;
+              _dataRefreshTime = new Date();
+              if(statusEl){statusEl.textContent='● LIVE';statusEl.style.color='var(--green)';}
+              updateStatsBar();
+              break;
+            }
+          }
+        }
+      }catch(e){}
+    }
+    if(!fetched && statusEl){statusEl.textContent='● CACHED';statusEl.style.color='var(--t3)';}
+  } catch(e){
+    if(statusEl){statusEl.textContent='● CACHED';statusEl.style.color='var(--t3)';}
+  }
+}
+
+function areaNameToId(name){
+  const n=(name||'').toLowerCase();
+  if(n.includes('business bay'))return 'bb';
+  if(n.includes('downtown'))return 'dtn';
+  if(n.includes('marina'))return 'marina';
+  if(n.includes('palm'))return 'palm';
+  if(n.includes('jumeirah village'))return 'jvc';
+  if(n.includes('dubai hills'))return 'dh';
+  if(n.includes('jumeirah lake'))return 'jlt';
+  if(n.includes('silicon'))return 'dso';
+  if(n.includes('arabian ranches'))return 'arabian';
+  if(n.includes('jbr')||n.includes('jumeirah beach residence'))return 'jbr';
+  if(n.includes('al furjan'))return 'alfurjan';
+  if(n.includes('bur dubai'))return 'burdubai';
+  if(n.includes('damac'))return 'damac2';
+  if(n.includes('meydan')||n.includes('mbr'))return 'meydan';
+  if(n.includes('international city'))return 'intcity';
+  if(n.includes('dubai south')||n.includes('expo'))return 'dsouth';
+  return 'bb'; // default
+}
+
+function updateStatsBar(){
+  if(!_liveDataLoaded)return;
+  const sales=DLD_TXN.filter(t=>t.type==='sale');
+  if(sales.length){
+    const todayVol=sales.slice(0,5).reduce((s,t)=>s+t.price,0);
+    const el=document.getElementById('sb-deals');
+    if(el)el.textContent=(sales.length*Math.round(617/25)).toLocaleString();
+  }
+}
+
 /* ══════════════════════════════════════════════
    BOOT
 ══════════════════════════════════════════════ */
@@ -1491,5 +1625,7 @@ window.addEventListener('load',()=>{
   document.getElementById('zoom-ctrls').style.transition='opacity 1s';
   setTimeout(()=>document.getElementById('zoom-ctrls').style.opacity='1',3000);
   calcPortfolio();
+  // Phase 1: attempt live DLD data fetch
+  setTimeout(fetchLiveDLD, 2000);
 });
 </script>
