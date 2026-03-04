@@ -656,6 +656,7 @@ function initGlobe(){
 
   // Earth with real texture
   const loader=new THREE.TextureLoader();
+  loader.crossOrigin='anonymous';
   const earthGeo=new THREE.SphereGeometry(1,64,64);
   const earthMat=new THREE.MeshPhongMaterial({color:0x226622,specular:new THREE.Color(0x112233),shininess:6});
   const earth=new THREE.Mesh(earthGeo,earthMat);
@@ -690,8 +691,7 @@ function initGlobe(){
   // Lighting
   scene.add(new THREE.AmbientLight(0x445566,1.4));
   const sun=new THREE.DirectionalLight(0xffffff,2.0);sun.position.set(5,3,5);scene.add(sun);
-  scene.add(Object.assign(new THREE.DirectionalLight(0x334488,0.5),{position:{set:()=>{}}},
-    {position:new THREE.Vector3(-4,-2,-4)}));
+  const fill=new THREE.DirectionalLight(0x334488,0.5);fill.position.set(-4,-2,-4);scene.add(fill);
 
   // Interaction
   let dragging=false,lastX=0;
