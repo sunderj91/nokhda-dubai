@@ -197,19 +197,20 @@ html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--t1);font-
 /* Area labels on map */
 .alabel{pointer-events:none;transform:translate(-50%,-50%);transition:opacity .3s ease}
 .alabel-inner{
-  background:rgba(5,8,20,0.72);
-  border:1px solid rgba(255,255,255,0.10);
-  border-radius:4px;padding:3px 7px 4px;
-  backdrop-filter:blur(14px);
+  background:rgba(4,7,18,0.82);
+  border:1px solid rgba(255,255,255,0.13);
+  border-radius:5px;padding:4px 9px 5px;
+  backdrop-filter:blur(16px);
   text-align:center;white-space:nowrap;
+  box-shadow:0 2px 16px rgba(0,0,0,0.5);
 }
 .alabel-name{
-  font-family:'DM Sans',sans-serif;font-size:8.5px;font-weight:600;
-  color:rgba(237,233,227,0.75);letter-spacing:.3px;
-  line-height:1.3;margin-bottom:1px;
+  font-family:'DM Sans',sans-serif;font-size:9px;font-weight:600;
+  color:rgba(200,196,192,0.8);letter-spacing:.4px;text-transform:uppercase;
+  line-height:1.3;margin-bottom:2px;
 }
 .alabel-psf{
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
+  font-family:'DM Mono',monospace;font-size:11px;font-weight:700;
   color:#EDE9E3;letter-spacing:.1px;line-height:1.2;
 }
 [data-theme="light"] .alabel-inner{background:rgba(250,250,248,.92);border-color:rgba(0,0,0,.12)}
@@ -434,7 +435,7 @@ body.present #exit-present{display:flex;align-items:center;gap:6px}
   background:rgba(0,0,0,.25);border-left:1px solid rgba(255,255,255,.06);
   margin-left:4px;
 }
-.mtb-leg-bar{height:4px;width:80px;border-radius:2px;background:linear-gradient(90deg,#22C87A,#C9A84C,#F05252)}
+.mtb-leg-bar{height:4px;width:80px;border-radius:2px;background:linear-gradient(90deg,#2D55B9,#14B4A0,#C9A84C,#F05252)}
 .mtb-leg-labels{display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);width:80px}
 .mtb-leg-unit{font-family:'DM Mono',monospace;font-size:7px;color:var(--t3);text-align:center;letter-spacing:.5px;margin-top:1px}
 
@@ -1312,14 +1313,20 @@ function heatColor(area,mode){
   else if(mode==='yoy'){v=area.yoy;lo=5;hi=30;}
   else{v=area.txn;lo=2000;hi=25000;}
   const t=Math.max(0,Math.min(1,(v-lo)/(hi-lo)));
-  // green(34,200,122) → gold(201,168,76) → red(240,82,82)
-  if(t<0.5){
-    const u=t*2;
-    return[Math.round(34+(201-34)*u),Math.round(200+(168-200)*u),Math.round(122+(76-122)*u)];
-  } else {
-    const u=(t-0.5)*2;
-    return[Math.round(201+(240-201)*u),Math.round(168+(82-168)*u),Math.round(76+(82-76)*u)];
-  }
+  // 4-stop gradient: deep indigo → teal → gold → warm red
+  // Stops at t=0, 0.33, 0.66, 1.0
+  const STOPS=[
+    [45, 85,185],  // 0.00 — deep blue-indigo (affordable)
+    [20,180,160],  // 0.33 — teal (mid-market)
+    [201,168, 76], // 0.66 — gold (premium)
+    [232, 58, 58], // 1.00 — warm red (ultra luxury)
+  ];
+  const seg=t*3;
+  const i=Math.min(2,Math.floor(seg));
+  const u=seg-i;
+  const [r1,g1,b1]=STOPS[i];
+  const [r2,g2,b2]=STOPS[i+1];
+  return[Math.round(r1+(r2-r1)*u),Math.round(g1+(g2-g1)*u),Math.round(b1+(b2-b1)*u)];
 }
 
 /* ══════════════════════════════════════════════
@@ -1329,7 +1336,7 @@ function initMap(){dbg('initMap called');
   const style=getComputedStyle(document.documentElement).getPropertyValue('--map-style').trim();
   _map=new maplibregl.Map({
     container:'map',style,
-    center:[55.25,25.10],zoom:10.3,pitch:0,bearing:0,
+    center:[55.20,25.07],zoom:10.5,pitch:15,bearing:-8,
     minZoom:9,
     maxZoom:18,
     maxBounds:[[54.50,24.30],[56.40,25.80]],
@@ -1351,6 +1358,7 @@ function initMap(){dbg('initMap called');
     buildTicker();
     renderPanel();
     renderRightDefault();
+    applyBasemapOverrides();
     document.getElementById('zoom-ctrls').style.opacity='1';
     // Show/hide district labels based on zoom
     _map.on('zoom',()=>{
@@ -1398,7 +1406,9 @@ function addHeatmapLayers(){
     id:'area-fill',type:'fill',source:'areas',
     paint:{
       'fill-color':['get','col'],
-      'fill-opacity':['case',['boolean',['feature-state','hover'],false],0.45,0.15]
+      'fill-opacity':['case',['boolean',['feature-state','hover'],false],
+        0.55,
+        ['interpolate',['linear'],['zoom'],9,0.38,11,0.30,14,0.20]]
     }
   });
 
@@ -1407,8 +1417,8 @@ function addHeatmapLayers(){
     id:'area-line',type:'line',source:'areas',
     paint:{
       'line-color':['get','col'],
-      'line-width':['interpolate',['linear'],['zoom'],9,1,10,1.5,12,2,14,2.5],
-      'line-opacity':1.0
+      'line-width':['interpolate',['linear'],['zoom'],9,1.5,11,2,13,2.5,15,3],
+      'line-opacity':['interpolate',['linear'],['zoom'],9,1.0,13,0.8]
     }
   });
   // Inner bright highlight line (makes boundaries crisp even on dark basemap)
@@ -2040,7 +2050,7 @@ function toggleTheme(){
 let _presenting=false;
 function togglePresent(){_presenting=!_presenting;document.body.classList.toggle('present',_presenting);}
 
-function resetView(){_map&&_map.flyTo({center:[55.25,25.10],zoom:10.3,pitch:0,bearing:0,duration:1200});}
+function resetView(){_map&&_map.flyTo({center:[55.20,25.07],zoom:10.5,pitch:15,bearing:-8,duration:1200});}
 
 function showListingDetail(id){
   const allL=[...LISTINGS_BUY,...LISTINGS_RENT];
@@ -3048,6 +3058,46 @@ function fadeBasemap(){
       try{ _map.setPaintProperty(l.id, 'text-opacity', 0.2); }catch(e){}
     }
   });
+}
+
+
+/* After map loads, override MapTiler backdrop-dark colours to match RAQAM palette */
+function applyBasemapOverrides(){
+  if(!_map) return;
+  try {
+    // Background land: medium grey → deep navy
+    _map.setPaintProperty('Background','background-color','#060A1A');
+    // Residential areas: slightly lighter navy
+    _map.setPaintProperty('Residential','fill-color','#080D20');
+    // Landcover: match background
+    _map.setPaintProperty('Landcover','fill-color','#060A1A');
+    // Water: keep near-black but add slight blue tint
+    _map.setPaintProperty('Water','fill-color','#030610');
+    _map.setPaintProperty('Water shadow','fill-color','#020509');
+    // Roads: much dimmer — barely visible guides, not features
+    _map.setPaintProperty('Road network','line-color','rgba(255,255,255,0.06)');
+    _map.setPaintProperty('Road network','line-opacity',0.5);
+    // Remove path clutter
+    _map.setPaintProperty('Path minor','line-opacity',0);
+    _map.setPaintProperty('Path','line-opacity',0);
+    // Buildings: pure black
+    _map.setPaintProperty('Building','fill-color','#000000');
+    _map.setPaintProperty('Building','fill-opacity',0.8);
+    // Dim place labels (competing with our district labels)
+    _map.setPaintProperty('Place labels','text-opacity',0);
+    _map.setPaintProperty('Village labels','text-opacity',0);
+    _map.setPaintProperty('Town labels','text-opacity',0);
+    _map.setPaintProperty('Road labels','text-opacity',0);
+    // Keep country/city labels very faint for context
+    _map.setPaintProperty('City labels','text-color','rgba(255,255,255,0.15)');
+    _map.setPaintProperty('Country labels','text-color','rgba(255,255,255,0.12)');
+    // Land outline: dim border
+    _map.setPaintProperty('Land outline','line-color','rgba(255,255,255,0.08)');
+    // River: very subtle
+    _map.setPaintProperty('River','line-color','#030610');
+    // Aeroway: dim
+    _map.setPaintProperty('Aeroway','line-opacity',0.15);
+  } catch(e){ console.warn('basemap override:', e.message); }
 }
 
 /* ══════════════════════════════════════════════
