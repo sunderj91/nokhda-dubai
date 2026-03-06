@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Raqam · Dubai Real Estate Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.5.0/dist/maplibre-gl.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 /* ══════════ RESET & TOKENS ══════════ */
@@ -1605,7 +1605,10 @@ function heatColor(area,mode){
    MAP INIT
 ══════════════════════════════════════════════ */
 function initMap(){dbg('initMap called');
-  const style=getComputedStyle(document.documentElement).getPropertyValue('--map-style').trim();
+  const isDark=document.documentElement.dataset.theme!=='light';
+  const style=isDark?MAP_STYLE_DARK:MAP_STYLE_LIGHT;
+  dbg('style URL='+style.slice(0,60));
+  try{
   _map=new maplibregl.Map({
     container:'map',style,
     center:[55.20,25.07],zoom:10.5,pitch:15,bearing:-8,
@@ -1615,6 +1618,7 @@ function initMap(){dbg('initMap called');
     attributionControl:false
   });
   _map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
+  }catch(err){dbg('MAP CONSTRUCTOR ERR: '+err.message);console.error('Map init failed:',err);return;}
 
   _map.on('error',e=>dbg('MAP ERR:'+(e.error?.message||JSON.stringify(e)).slice(0,100)));
   _map.on('load',()=>{
@@ -2362,7 +2366,7 @@ function toggleTheme(){
   d.setAttribute('data-theme',dark?'light':'dark');
   document.getElementById('theme-btn').textContent=dark?'☾':'☀';
   if(_map){
-    const style=getComputedStyle(d).getPropertyValue('--map-style').trim();
+    const style=d.dataset.theme==='light'?MAP_STYLE_LIGHT:MAP_STYLE_DARK;
     _map.setStyle(style);
     _map.once('styledata',()=>{
       _map.addLayer({id:'3d-buildings',source:'carto',type:'fill-extrusion','source-layer':'building',filter:['==','extrude','true'],minzoom:15,paint:{'fill-extrusion-color':'#1a2a44','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.6}});
