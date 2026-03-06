@@ -1896,13 +1896,7 @@ function toggleLayer(id,on){
 /* ══════════════════════════════════════════════
    MAP CONTROLS ACCORDION
 ══════════════════════════════════════════════ */
-function toggleMC(){return;// toolbar replaces accordion
-  
-  const body=document.getElementById('mc-body');
-  const arrow=document.getElementById('mc-arrow');
-  body.classList.toggle('hide');
-  arrow.classList.toggle('open');
-}
+function toggleMC(){/* toolbar replaces accordion — noop */}
 
 /* ══════════════════════════════════════════════
    SELECTION
@@ -2322,10 +2316,12 @@ function setHeatMode(v){
     txn:{title:'TRANSACTION VOLUME',bar:'linear-gradient(90deg,#22C87A,#C9A84C,#F05252)',lbls:['2K','12K','25K+'],l:['Quiet <4K','Active 4–10K','Busy 10–18K','Hot >18K']},
   };
   const c=configs[v];
-  document.getElementById('leg-title').textContent=c.title;
-  document.getElementById('leg-bar').style.background=c.bar;
-  const lbls=document.getElementById('leg-lbls');
-  lbls.innerHTML=c.lbls.map(l=>`<span>${l}</span>`).join('');
+  // Update toolbar legend bar (replaces old map-ctrl legend)
+  const legBar=document.querySelector('.mtb-leg-bar');
+  if(legBar) legBar.style.background=c.bar;
+  // Update toolbar heatmap button label
+  const heatBtn=document.getElementById('lyr-areas');
+  if(heatBtn){const sp=heatBtn.querySelector('span:last-child');if(sp)sp.textContent=c.title.split(' ')[0];}
   ['leg-l1','leg-l2','leg-l3','leg-l4'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=c.l[i];});
   renderBody();
 }
@@ -3632,9 +3628,9 @@ window.addEventListener('load',()=>{
   // Set initial toggle positions (panels open by default)
   document.getElementById('lp-toggle').style.left='var(--lw)';
   document.getElementById('rp-toggle').style.right='var(--rw)';
-  // Map controls positioned relative to map-wrap (not global layout)
-  document.getElementById('map-ctrl').style.left='12px';
-  document.getElementById('src-note').style.left='12px';
+  // src-note positioning
+  const srcNote=document.getElementById('src-note');
+  if(srcNote) srcNote.style.left='12px';
   // Zoom fade in after map loads
   document.getElementById('zoom-ctrls').style.opacity='0';
   document.getElementById('zoom-ctrls').style.transition='opacity 1s';
