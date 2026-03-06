@@ -527,137 +527,6 @@ body.present #map{bottom:0!important}
 .rl-name{font-family:'DM Mono',monospace;font-size:8px;color:#A8A4A0;letter-spacing:.3px}
 .rl-short{font-family:'DM Mono',monospace;font-size:8px;color:#EDE9E3;letter-spacing:.5px;margin-right:4px}
 
-/* ══ LANDMARK MARKERS ══════════════════════════════════════════════════════ */
-.lm-marker{
-  cursor:pointer;
-  width:28px;height:28px;
-  display:flex;align-items:center;justify-content:center;
-  border-radius:50%;
-  border:1.5px solid rgba(255,255,255,0.2);
-  font-size:13px;
-  transition:transform .15s ease, box-shadow .15s ease;
-  box-shadow:0 2px 8px rgba(0,0,0,0.5);
-  backdrop-filter:blur(4px);
-}
-.lm-marker:hover{transform:scale(1.25);box-shadow:0 4px 20px rgba(0,0,0,0.7);}
-.lm-marker.small{width:22px;height:22px;font-size:10px;}
-
-/* Tooltip */
-.lm-tip{
-  position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
-  background:rgba(4,7,18,0.95);
-  border:1px solid rgba(255,255,255,0.12);
-  border-radius:8px;padding:8px 12px;
-  min-width:180px;max-width:240px;
-  pointer-events:none;opacity:0;
-  transition:opacity .15s;
-  z-index:900;white-space:normal;
-  box-shadow:0 8px 32px rgba(0,0,0,0.6);
-}
-.lm-marker:hover .lm-tip{opacity:1;}
-.lm-tip-cat{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;
-  text-transform:uppercase;opacity:.6;margin-bottom:3px;}
-.lm-tip-name{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;
-  color:#EDE9E3;line-height:1.3;margin-bottom:4px;}
-.lm-tip-note{font-family:'DM Mono',monospace;font-size:9px;color:rgba(168,164,160,0.85);
-  line-height:1.4;}
-
-/* Landmark category filter bar */
-#lm-filter{
-  position:absolute;bottom:60px;left:50%;transform:translateX(-50%);
-  display:none;flex-direction:row;gap:6px;
-  background:rgba(4,7,18,0.92);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;padding:6px 10px;
-  backdrop-filter:blur(16px);
-  z-index:300;white-space:nowrap;
-  box-shadow:0 4px 24px rgba(0,0,0,.5);
-}
-#lm-filter.show{display:flex;}
-.lm-cat-btn{
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.5px;
-  padding:3px 8px;border-radius:5px;cursor:pointer;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.04);color:rgba(168,164,160,0.8);
-  transition:all .15s;display:flex;align-items:center;gap:4px;
-}
-.lm-cat-btn:hover{background:rgba(255,255,255,.1);color:#EDE9E3;}
-.lm-cat-btn.active{color:#EDE9E3;border-color:rgba(255,255,255,.25);
-  background:rgba(255,255,255,.1);}
-.lm-cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
-
-/* Nearest landmarks in right panel */
-.lm-nearby{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.07);}
-.lm-nearby-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;
-  color:rgba(168,164,160,0.6);text-transform:uppercase;margin-bottom:8px;}
-.lm-nearby-item{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;
-  padding:7px 8px;border-radius:6px;background:rgba(255,255,255,.03);
-  border:1px solid rgba(255,255,255,.05);}
-.lm-nearby-icon{width:22px;height:22px;border-radius:50%;display:flex;
-  align-items:center;justify-content:center;font-size:10px;flex-shrink:0;margin-top:1px;}
-.lm-nearby-body{flex:1;min-width:0;}
-.lm-nearby-name{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;
-  color:#EDE9E3;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.lm-nearby-dist{font-family:'DM Mono',monospace;font-size:9px;
-  color:rgba(168,164,160,0.7);margin-top:1px;}
-.lm-nearby-note{font-family:'DM Mono',monospace;font-size:8.5px;
-  color:rgba(140,136,132,0.8);line-height:1.35;margin-top:2px;}
-
-/* ── Landmark markers ── */
-.lm-marker{cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
-.lm-dot{
-  width:26px;height:26px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  border:2px solid rgba(255,255,255,0.25);
-  transition:transform .15s ease, box-shadow .15s ease;
-  position:relative;
-}
-.lm-marker:hover .lm-dot{transform:scale(1.25)}
-.lm-icon{line-height:1;user-select:none}
-.lm-name{
-  font-family:'DM Mono',monospace;font-size:7.5px;font-weight:500;
-  color:rgba(237,233,227,0.75);
-  background:rgba(4,7,18,0.75);
-  border-radius:3px;padding:1px 4px;
-  white-space:nowrap;max-width:100px;
-  overflow:hidden;text-overflow:ellipsis;
-  display:none;
-}
-.lm-marker:hover .lm-name{display:block}
-
-/* ── Landmark popup ── */
-.lm-popup{padding:10px 13px}
-.lm-pop-cat{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.8px;text-transform:uppercase;margin-bottom:4px}
-.lm-pop-name{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;color:#EDE9E3;margin-bottom:5px;line-height:1.3}
-.lm-pop-note{font-family:'DM Mono',monospace;font-size:9.5px;color:rgba(168,164,160,0.9);line-height:1.5}
-
-/* ── Landmark category filter panel ── */
-#lm-filter{
-  position:absolute;right:12px;top:58px;
-  background:rgba(4,7,18,0.88);border:1px solid rgba(255,255,255,0.1);
-  border-radius:10px;padding:10px 12px;
-  backdrop-filter:blur(16px);
-  display:none;flex-direction:column;gap:6px;
-  z-index:300;min-width:160px;
-  box-shadow:0 4px 24px rgba(0,0,0,.5);
-}
-#lm-filter.show{display:flex}
-#lm-filter-title{
-  font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1.2px;
-  text-transform:uppercase;color:rgba(168,164,160,0.6);
-  margin-bottom:2px;
-}
-.lm-cat-btn{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
-  border-radius:5px;padding:5px 8px;cursor:pointer;
-  font-family:'DM Mono',monospace;font-size:10px;color:rgba(168,164,160,0.7);
-  transition:all .15s ease;text-align:left;width:100%;
-}
-.lm-cat-btn.active{background:rgba(255,255,255,0.09);color:#EDE9E3;border-color:rgba(255,255,255,0.18)}
-.lm-cat-btn:hover{background:rgba(255,255,255,0.07)}
-.lm-cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-
 </style>
 </head>
 <body>
@@ -723,33 +592,6 @@ body.present #map{bottom:0!important}
     <div id="map-wrap">
       <div id="map"></div>
 
-
-      <!-- Landmark category filter -->
-      <div id="lm-filter" class="show">
-        <div id="lm-filter-title">Filter Places</div>
-        <button class="lm-cat-btn active" onclick="toggleLandmarkCat('airport',this)">
-          <span class="lm-cat-dot" style="background:#60A5FA"></span>✈ Airports
-        </button>
-        <button class="lm-cat-btn active" onclick="toggleLandmarkCat('mall',this)">
-          <span class="lm-cat-dot" style="background:#F472B6"></span>🛍 Malls
-        </button>
-        <button class="lm-cat-btn active" onclick="toggleLandmarkCat('hospital',this)">
-          <span class="lm-cat-dot" style="background:#34D399"></span>⊕ Hospitals
-        </button>
-        <button class="lm-cat-btn" onclick="toggleLandmarkCat('school',this)">
-          <span class="lm-cat-dot" style="background:#A78BFA"></span>📚 Schools
-        </button>
-        <button class="lm-cat-btn active" onclick="toggleLandmarkCat('landmark',this)">
-          <span class="lm-cat-dot" style="background:#FBBF24"></span>◆ Landmarks
-        </button>
-        <button class="lm-cat-btn active" onclick="toggleLandmarkCat('beach',this)">
-          <span class="lm-cat-dot" style="background:#22D3EE"></span>〜 Beaches
-        </button>
-        <button class="lm-cat-btn" onclick="toggleLandmarkCat('freezone',this)">
-          <span class="lm-cat-dot" style="background:#FB923C"></span>⬡ Free Zones
-        </button>
-      </div>
-
       <!-- Roads legend (shows on hover of Roads pill) -->
       <div id="roads-legend-pop">
         <div class="rl-row"><div class="rl-line" style="background:#C8B86A"></div><span class="rl-short">E11</span><span class="rl-name">Sheikh Zayed Road</span></div>
@@ -759,33 +601,18 @@ body.present #map{bottom:0!important}
         <div class="rl-row"><div class="rl-line" style="background:#A06AC8"></div><span class="rl-short">E611</span><span class="rl-name">Emirates Road</span></div>
       </div>
 
-      <!-- Landmark category filter -->
-      <div id="lm-filter">
-        <button class="lm-cat-btn active" data-cat="all" onclick="lmFilter('all',this)">
-          <span class="lm-cat-dot" style="background:#EDE9E3"></span>All
-        </button>
-        <button class="lm-cat-btn" data-cat="airport" onclick="lmFilter('airport',this)">
-          <span class="lm-cat-dot" style="background:#60A5FA"></span>Airports
-        </button>
-        <button class="lm-cat-btn" data-cat="mall" onclick="lmFilter('mall',this)">
-          <span class="lm-cat-dot" style="background:#F472B6"></span>Malls
-        </button>
-        <button class="lm-cat-btn" data-cat="hospital" onclick="lmFilter('hospital',this)">
-          <span class="lm-cat-dot" style="background:#34D399"></span>Hospitals
-        </button>
-        <button class="lm-cat-btn" data-cat="school" onclick="lmFilter('school',this)">
-          <span class="lm-cat-dot" style="background:#A78BFA"></span>Schools
-        </button>
-        <button class="lm-cat-btn" data-cat="landmark" onclick="lmFilter('landmark',this)">
-          <span class="lm-cat-dot" style="background:#FBBF24"></span>Landmarks
-        </button>
-        <button class="lm-cat-btn" data-cat="beach" onclick="lmFilter('beach',this)">
-          <span class="lm-cat-dot" style="background:#22D3EE"></span>Beaches
-        </button>
-        <button class="lm-cat-btn" data-cat="freezone" onclick="lmFilter('freezone',this)">
-          <span class="lm-cat-dot" style="background:#FB923C"></span>Free Zones
-        </button>
-      </div>
+
+    <!-- Landmark category filter bar -->
+    <div id="lm-filter-bar" style="display:none;position:absolute;bottom:60px;left:50%;transform:translateX(-50%);flex-direction:row;gap:5px;background:rgba(4,7,18,.93);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:6px 10px;backdrop-filter:blur(16px);z-index:300;white-space:nowrap;box-shadow:0 4px 24px rgba(0,0,0,.5);">
+      <button class="lm-cat-btn active" data-cat="all" onclick="lmFilter('all',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.1);color:#EDE9E3;display:flex;align-items:center;gap:4px;">All</button>
+      <button class="lm-cat-btn" data-cat="airport" onclick="lmFilter('airport',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#60A5FA;flex-shrink:0"></span>Airports</button>
+      <button class="lm-cat-btn" data-cat="mall" onclick="lmFilter('mall',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#F472B6;flex-shrink:0"></span>Malls</button>
+      <button class="lm-cat-btn" data-cat="hospital" onclick="lmFilter('hospital',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#34D399;flex-shrink:0"></span>Hospitals</button>
+      <button class="lm-cat-btn" data-cat="school" onclick="lmFilter('school',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#A78BFA;flex-shrink:0"></span>Schools</button>
+      <button class="lm-cat-btn" data-cat="landmark" onclick="lmFilter('landmark',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#FBBF24;flex-shrink:0"></span>Landmarks</button>
+      <button class="lm-cat-btn" data-cat="beach" onclick="lmFilter('beach',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#22D3EE;flex-shrink:0"></span>Beaches</button>
+      <button class="lm-cat-btn" data-cat="freezone" onclick="lmFilter('freezone',this)" style="font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:5px;cursor:pointer;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);color:rgba(168,164,160,.8);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;border-radius:50%;background:#FB923C;flex-shrink:0"></span>Free Zones</button>
+    </div>
       <!-- Map toolbar — bottom strip -->
       <div id="map-toolbar">
         <!-- Left: layer pills -->
@@ -808,17 +635,14 @@ body.present #map{bottom:0!important}
           <button class="mtb-pill" id="lyr-yield" onclick="mtbToggle('yield',this)" title="High-yield 7.5%+ districts">
             <span class="mtb-swatch" style="background:linear-gradient(90deg,#22C87A,#C9A84C);border-radius:2px;height:4px"></span>Yield +
           </button>
-          <button class="mtb-pill active" id="lyr-landmarks" onclick="mtbToggle('landmarks',this);document.getElementById('lm-filter').classList.toggle('show',_layers.landmarks)" title="Key landmarks">
-            <span class="mtb-swatch" style="background:linear-gradient(135deg,#60A5FA,#F472B6,#34D399,#FBBF24);border-radius:50%;width:7px;height:7px;display:inline-block"></span>Places
-          </button>
           <button class="mtb-pill" id="lyr-txn" onclick="mtbToggle('txndots',this)" title="Transaction dot cloud">
             <span class="mtb-swatch" style="background:#4A9EFF;border-radius:50%"></span>Txn Dots
           </button>
           <button class="mtb-pill" id="lyr-future" onclick="mtbToggle('future',this)" title="Announced mega-projects">
             <span class="mtb-swatch" style="background:#E8304A;border-radius:50%;width:7px;height:7px;outline:2px solid rgba(232,48,74,0.3);outline-offset:1px"></span>Future
           </button>
-          <button class="mtb-pill" id="lyr-lm" onclick="mtbToggle('landmarks',this)" title="Key landmarks — airports, malls, hospitals, schools">
-            <span class="mtb-swatch" style="background:linear-gradient(135deg,#60A5FA,#F472B6,#34D399,#FBBF24);border-radius:50%;width:8px;height:8px;flex-shrink:0"></span>POI
+          <button class="mtb-pill active" id="lyr-lm" onclick="mtbToggle('landmarks',this)" title="Key landmarks — airports, malls, hospitals, schools, beaches, free zones">
+            <span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:conic-gradient(#60A5FA 0%,#F472B6 25%,#34D399 50%,#FBBF24 75%,#60A5FA 100%);flex-shrink:0;margin-right:2px"></span>POI
           </button>
           <button class="mtb-pill" id="lyr-bldg" onclick="mtbToggle('buildings',this)" title="3D building extrusions">
             <span class="mtb-swatch mtb-bldg"></span>3D
@@ -896,9 +720,9 @@ body.present #map{bottom:0!important}
           <div class="rp-sec-title">Active Listings <span id="rp-list-label" style="font-size:7px;color:var(--t3)">All Dubai</span></div>
           <div id="rp-listings-list"></div>
         </div>
-        <div class="rp-sec" id="rp-landmarks-sec" style="display:none">
+        <div class="rp-sec" id="rp-lm-sec" style="display:none">
           <div class="rp-sec-title">Nearby Landmarks</div>
-          <div id="rp-landmarks-list"></div>
+          <div id="rp-lm-list"></div>
         </div>
         <div class="rp-sec">
           <button class="cta-btn" onclick="document.getElementById('port-modal').classList.add('show')">⬡ Run Portfolio Simulator</button>
@@ -1168,83 +992,6 @@ const TRAM_STOPS=[
 ];
 
 
-
-/* ══════════════════════════════════════════════
-   KEY LANDMARKS — Dubai Investment Context
-   Categories: airport | mall | hospital | school | landmark | beach | freezone
-══════════════════════════════════════════════ */
-const LANDMARKS=[
-  /* ── AIRPORTS ─────────────────────────────── */
-  {id:'dxb',    cat:'airport',  name:'Dubai Intl Airport (DXB)',     lat:25.2532,lng:55.3657, note:"World's busiest intl airport · Direct demand driver for Deira/Creek/Mirdif"},
-  {id:'dwc',    cat:'airport',  name:'Al Maktoum Intl (DWC)',        lat:24.8964,lng:55.1614, note:'Future mega-hub · Key demand driver for Dubai South & Expo City'},
-
-  /* ── MALLS ─────────────────────────────────── */
-  {id:'dxbmall',cat:'mall',     name:'Dubai Mall',                   lat:25.1975,lng:55.2796, note:"World's largest mall · Drives Downtown & Business Bay premiums"},
-  {id:'moe',    cat:'mall',     name:'Mall of the Emirates',         lat:25.1181,lng:55.2003, note:'Anchors Al Barsha & Dubai Hills catchment'},
-  {id:'citywlk',cat:'mall',     name:'City Walk',                    lat:25.2068,lng:55.2368, note:'Lifestyle destination · Jumeirah 1 premium driver'},
-  {id:'dfc',    cat:'mall',     name:'Dubai Festival City',          lat:25.2248,lng:55.3548, note:'Mixed-use hub · Festival City & Ras Al Khor adjacency'},
-  {id:'mrd',    cat:'mall',     name:'Mirdif City Centre',           lat:25.2168,lng:55.4108, note:'Anchors Mirdif & Warqa catchment'},
-  {id:'ibn',    cat:'mall',     name:'Ibn Battuta Mall',             lat:25.0438,lng:55.1218, note:'Anchors JBR/JLT/Al Furjan corridor'},
-  {id:'marina_mall',cat:'mall', name:'Marina Mall',                  lat:25.0778,lng:55.1398, note:'Serves Dubai Marina & JBR residents'},
-  {id:'db_isl', cat:'mall',     name:'Nakheel Mall (Palm)',          lat:25.1198,lng:55.1388, note:'Palm Jumeirah retail anchor'},
-  {id:'wafi',   cat:'mall',     name:'Wafi Mall',                    lat:25.2258,lng:55.3128, note:'Oud Metha premium lifestyle hub'},
-  {id:'gdrg',   cat:'mall',     name:'Dragon Mart',                  lat:25.1778,lng:55.4148, note:"Largest Chinese trading hub outside China · Int'l City anchor"},
-
-  /* ── HOSPITALS ─────────────────────────────── */
-  {id:'clev',   cat:'hospital', name:'Cleveland Clinic Abu Dhabi',   lat:25.1168,lng:55.1748, note:'World-class medical · Draws medical tourism to Marina catchment'},
-  {id:'medinc', cat:'hospital', name:'Mediclinic City Hospital',     lat:25.1938,lng:55.2778, note:'DHA-registered · Serves Downtown & DIFC'},
-  {id:'ameri',  cat:'hospital', name:'American Hospital Dubai',      lat:25.2228,lng:55.3088, note:'JCI-accredited · Bur Dubai/Umm Hurair anchor'},
-  {id:'rashid', cat:'hospital', name:'Rashid Hospital',              lat:25.2348,lng:55.3178, note:'Major gov hospital · Bur Dubai healthcare hub'},
-  {id:'dhc',    cat:'hospital', name:'Dubai Healthcare City',        lat:25.2288,lng:55.3258, note:'Dedicated medical free zone · 150+ medical facilities'},
-  {id:'nmc',    cat:'hospital', name:'NMC Royal Hospital',           lat:25.0538,lng:55.2178, note:'Sports City & Al Barsha catchment'},
-  {id:'kings',  cat:'hospital', name:"King's College Hospital",     lat:25.1638,lng:55.2348, note:'Dubai Hills Estate anchor · Drives DH premium'},
-
-  /* ── SCHOOLS / UNIVERSITIES ─────────────────── */
-  {id:'repton', cat:'school',   name:'Repton School Dubai',          lat:25.2008,lng:55.4058, note:"Top-rated British curriculum · Mirdif/Int'l City family demand"},
-  {id:'gems_wl',cat:'school',   name:'GEMS Wellington Academy',      lat:25.0568,lng:55.2188, note:'Sports City campus · Family buyer magnet'},
-  {id:'aaiss',  cat:'school',   name:'American School of Dubai',     lat:25.0948,lng:55.1768, note:'Al Barsha · Drives villa premium in catchment'},
-  {id:'dubi_u', cat:'school',   name:'Dubai Knowledge Park',         lat:25.1068,lng:55.1738, note:'University hub · Tecom/Media City education cluster'},
-  {id:'nyu',    cat:'school',   name:'NYU Abu Dhabi (Dubai Campus)', lat:25.1878,lng:55.2728, note:'Downtown Dubai academic anchor'},
-  {id:'hertuk', cat:'school',   name:'Heriot-Watt University',       lat:25.0528,lng:55.2298, note:'Sports City · Student rental demand driver'},
-
-  /* ── ICONIC LANDMARKS ───────────────────────── */
-  {id:'burjkh', cat:'landmark', name:'Burj Khalifa',                 lat:25.1972,lng:55.2744, note:"World's tallest · Defines Downtown premium, AED 3,500+ PSF"},
-  {id:'burjar', cat:'landmark', name:'Burj Al Arab',                 lat:25.1412,lng:55.1853, note:'Icon · Jumeirah Beach adjacency premium'},
-  {id:'framee', cat:'landmark', name:'Dubai Frame',                  lat:25.2353,lng:55.3008, note:'Zabeel Park landmark · Karama/Bur Dubai context'},
-  {id:'creekhb',cat:'landmark', name:'Dubai Creek Tower (U/C)',      lat:25.2198,lng:55.3568, note:'Under construction · Creek Harbour centrepiece, Emaar'},
-  {id:'opera',  cat:'landmark', name:'Dubai Opera',                  lat:25.1958,lng:55.2778, note:'Downtown cultural anchor · Drives BLVD premium'},
-  {id:'miracle',cat:'landmark', name:'Dubai Miracle Garden',         lat:25.0598,lng:55.2448, note:'Arjan tourist draw · Supports short-term rental yield'},
-  {id:'imgwrld',cat:'landmark', name:'IMG Worlds of Adventure',      lat:25.0798,lng:55.3018, note:'Largest indoor theme park · Global Village catchment'},
-  {id:'globvil',cat:'landmark', name:'Global Village',               lat:25.0698,lng:55.3068, note:'Seasonal draw · Dubailand/Arabian Ranches proximity'},
-  {id:'expo',   cat:'landmark', name:'Expo City Dubai',              lat:24.9678,lng:55.1568, note:'Legacy district · 4.38km² mixed-use redevelopment'},
-  {id:'musdum', cat:'landmark', name:'Museum of the Future',         lat:25.2193,lng:55.2822, note:'DIFC/SZR icon · Boosts Downtown/DIFC premium'},
-
-  /* ── BEACHES ────────────────────────────────── */
-  {id:'jbr_bch',cat:'beach',    name:'JBR Beach / The Walk',         lat:25.0788,lng:55.1318, note:'1.7km public beach · Drives JBR/Marina rental yields'},
-  {id:'mer_bch',cat:'beach',    name:'Bluewaters / Ain Dubai',       lat:25.0838,lng:55.1198, note:'Bluewaters Island attraction · Supports premium rentals'},
-  {id:'kite_bch',cat:'beach',   name:'Kite Beach',                   lat:25.1548,lng:55.2038, note:'Popular public beach · Umm Suqeim lifestyle premium'},
-  {id:'palm_bch',cat:'beach',   name:'Palm West Beach',              lat:25.1158,lng:55.1258, note:'Sunset destination · Supports Palm short-term rentals'},
-
-  /* ── FREE ZONES / BUSINESS HUBS ────────────── */
-  {id:'difc_z', cat:'freezone', name:'DIFC Free Zone',               lat:25.2178,lng:55.2798, note:'Financial hub · 27,000+ professionals, AED 3,100 PSF'},
-  {id:'dmcc',   cat:'freezone', name:'DMCC Free Zone (JLT)',         lat:25.0688,lng:55.1498, note:"World's top free zone · 22,000+ companies, drives JLT demand"},
-  {id:'dso_fz', cat:'freezone', name:'Dubai Silicon Oasis',          lat:25.1198,lng:55.3748, note:'Tech free zone · DSO residential demand, 9.1% avg yield'},
-  {id:'dip',    cat:'freezone', name:'Dubai Ind. Park / Jebel Ali',  lat:24.9798,lng:55.1218, note:'Industrial hub · Dubai South workforce demand driver'},
-  {id:'dmc',    cat:'freezone', name:'Dubai Media City',             lat:25.1028,lng:55.1568, note:'1,500+ media companies · Drives Marina/JLT demand'},
-  {id:'dtec',   cat:'freezone', name:'Dubai Internet City',          lat:25.0968,lng:55.1618, note:'Tech hub · 1,600+ companies including Microsoft, Google'},
-  {id:'dhcc',   cat:'freezone', name:'Dubai Healthcare City',        lat:25.2298,lng:55.3268, note:'Medical free zone · 6,500+ professionals onsite'},
-];
-
-/* Icon map per category */
-const LM_ICONS={
-  airport:  {emoji:'✈', col:'#60A5FA', size:14}, // blue
-  mall:     {emoji:'🛍', col:'#F472B6', size:12}, // pink
-  hospital: {emoji:'⊕', col:'#34D399', size:12}, // green
-  school:   {emoji:'📚', col:'#A78BFA', size:11}, // purple
-  landmark: {emoji:'◆', col:'#FBBF24', size:12}, // amber
-  beach:    {emoji:'〜', col:'#22D3EE', size:11}, // cyan
-  freezone: {emoji:'⬡', col:'#FB923C', size:11}, // orange
-};
 /* ══════════════════════════════════════════════
    FUTURE / ANNOUNCED MEGA-PROJECTS
 ══════════════════════════════════════════════ */
@@ -1607,7 +1354,7 @@ function heatColor(area,mode){
 function initMap(){dbg('initMap called');
   const isDark=document.documentElement.dataset.theme!=='light';
   const style=isDark?MAP_STYLE_DARK:MAP_STYLE_LIGHT;
-  dbg('style URL='+style.slice(0,60));
+  dbg('style='+style.slice(0,50));
   try{
   _map=new maplibregl.Map({
     container:'map',style,
@@ -1618,7 +1365,7 @@ function initMap(){dbg('initMap called');
     attributionControl:false
   });
   _map.addControl(new maplibregl.AttributionControl({compact:true}),'bottom-right');
-  }catch(err){dbg('MAP CONSTRUCTOR ERR: '+err.message);console.error('Map init failed:',err);return;}
+  }catch(err){dbg('MAP INIT ERR:'+err.message);console.error(err);return;}
 
   _map.on('error',e=>dbg('MAP ERR:'+(e.error?.message||JSON.stringify(e)).slice(0,100)));
   _map.on('load',()=>{
@@ -1630,7 +1377,7 @@ function initMap(){dbg('initMap called');
     buildMetroLayer();
     build2040Layer();
     buildFutureProjectsLayer();
-    buildLandmarksLayer();
+    buildLandmarks();
     fadeBasemap();
     buildTicker();
     renderPanel();
@@ -1641,7 +1388,6 @@ function initMap(){dbg('initMap called');
     _map.on('zoom',()=>{
       const z=_map.getZoom();
       _markers.forEach(m=>{const el=m.getElement();if(el)el.style.opacity=z>=10.5?'1':'0';});
-      updateLandmarkZoom();
     });
   });
 }
@@ -1884,14 +1630,11 @@ function toggleLayer(id,on){
   if(id==='zones'){['zones-fill','zones-line','zones-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}}); }
   if(id==='txndots'){if(on&&_map)buildTxnLayer();else try{if(_map&&_map.getLayer('txn-dots'))_map.setLayoutProperty('txn-dots','visibility','none');}catch(e){}}
   if(id==='landmarks'){
-    _lmMarkers.forEach(m=>{
-      const show=on&&(_lmActiveCat==='all'||m._lmCat===_lmActiveCat);
-      m._lmEl.style.display=show?'':'none';
-    });
-    const filt=document.getElementById('lm-filter');
-    if(filt) filt.classList.toggle('show',on);
+    _lmMarkers.forEach(m=>{m._lmWrap.style.display="";});
+    _lmZoomFilter();
+    const lmBar=document.getElementById("lm-filter-bar");
+    if(lmBar) lmBar.style.display=on?"flex":"none";
   }
-  if(id==='landmarks'){buildLandmarksLayer();document.getElementById('lm-filter').classList.toggle('show',_layers.landmarks);}
   if(id==='yield'){['yield-glow','yield-line','yield-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});}
   if(id==='roads')['roads-glow','roads-casing','roads-fill','roads-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
   if(id==='future')['future-halo','future-dot','future-labels'].forEach(l=>{try{if(_map&&_map.getLayer(l))_map.setLayoutProperty(l,'visibility',vis);}catch(e){}});
@@ -1900,7 +1643,7 @@ function toggleLayer(id,on){
 /* ══════════════════════════════════════════════
    MAP CONTROLS ACCORDION
 ══════════════════════════════════════════════ */
-function toggleMC(){/* toolbar replaces accordion — noop */}
+function toggleMC(){/* toolbar replaces accordion */}
 
 /* ══════════════════════════════════════════════
    SELECTION
@@ -1994,27 +1737,8 @@ function showAreaDetail(a){
         <div class="tr-date">${t.date.slice(5)}</div>
       </div>
     </div>`).join('');
-  // Nearest landmarks
-  const lmSec=document.getElementById('rp-landmarks-sec');
-  const lmList=document.getElementById('rp-landmarks-list');
-  if(lmSec&&lmList){
-    const nearest=getNearestLandmarks(a.lat,a.lng,6);
-    lmSec.style.display='';
-    lmList.innerHTML=nearest.map(lm=>{
-      const ic=LM_ICONS[lm.cat];
-      const d=lm.dist<1?Math.round(lm.dist*1000)+'m away':lm.dist.toFixed(1)+'km away';
-      return `<div class="lm-nearby-item">
-        <div class="lm-nearby-icon" style="background:${ic.col}22;border:1px solid ${ic.col}44">
-          <span style="color:${ic.col};font-size:11px">${ic.emoji}</span>
-        </div>
-        <div class="lm-nearby-body">
-          <div class="lm-nearby-name">${lm.name}</div>
-          <div class="lm-nearby-dist">${d} · <span style="text-transform:uppercase;font-size:8px;color:${ic.col}">${lm.cat}</span></div>
-          <div class="lm-nearby-note">${lm.note}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }
+  // Nearby landmarks
+  renderNearbyLandmarks(a);
   // Listings for this zone
   const zoneListings=[...LISTINGS_BUY,...LISTINGS_RENT].filter(l=>l.areaId===a.id);
   document.getElementById('rp-list-label').textContent=a.name;
@@ -2071,7 +1795,7 @@ function showProjectDetail(p){
 }
 
 function renderRightDefault(){
-  const lmSec=document.getElementById('rp-landmarks-sec');if(lmSec)lmSec.style.display='none';
+  const lmS=document.getElementById('rp-lm-sec');if(lmS)lmS.style.display='none';
   document.getElementById('rp-eyebrow').textContent='DUBAI MARKET OVERVIEW';
   document.getElementById('rp-title').textContent='Select an Area';
   document.getElementById('rp-title').style.fontSize='16px';
@@ -2280,31 +2004,7 @@ function toggleAreaFilter(el,f){
   renderBody();
 }
 
-function onSearch(v){
-  _search=v;
-  renderBody();
-  // Also search landmarks — fly to match and highlight
-  if(v.length>=3){
-    const q=v.toLowerCase();
-    const lmMatch=LANDMARKS.find(l=>l.name.toLowerCase().includes(q)||l.note.toLowerCase().includes(q));
-    if(lmMatch){
-      _map.flyTo({center:[lmMatch.lng,lmMatch.lat],zoom:13.5,duration:900});
-      // Highlight the matching marker
-      document.querySelectorAll('.lm-marker').forEach(el=>{
-        const match=el.dataset.id===lmMatch.id;
-        el.querySelector('.lm-dot').style.transform=match?'scale(1.4)':'';
-        el.querySelector('.lm-dot').style.filter=match?'brightness(1.5)':'';
-        if(match) el.querySelector('.lm-name').style.display='block';
-      });
-      return;
-    }
-    // Reset highlights if no landmark match
-    document.querySelectorAll('.lm-dot').forEach(el=>{
-      el.style.transform=''; el.style.filter='';
-    });
-    document.querySelectorAll('.lm-name').forEach(el=>el.style.display='');
-  }
-}
+function onSearch(v){_search=v;renderBody();}
 
 /* ══════════════════════════════════════════════
    HEATMAP MODE
@@ -2320,12 +2020,7 @@ function setHeatMode(v){
     txn:{title:'TRANSACTION VOLUME',bar:'linear-gradient(90deg,#22C87A,#C9A84C,#F05252)',lbls:['2K','12K','25K+'],l:['Quiet <4K','Active 4–10K','Busy 10–18K','Hot >18K']},
   };
   const c=configs[v];
-  // Update toolbar legend bar (replaces old map-ctrl legend)
-  const legBar=document.querySelector('.mtb-leg-bar');
-  if(legBar) legBar.style.background=c.bar;
-  // Update toolbar heatmap button label
-  const heatBtn=document.getElementById('lyr-areas');
-  if(heatBtn){const sp=heatBtn.querySelector('span:last-child');if(sp)sp.textContent=c.title.split(' ')[0];}
+  const legBar=document.querySelector('.mtb-leg-bar');if(legBar)legBar.style.background=c.bar;
   ['leg-l1','leg-l2','leg-l3','leg-l4'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=c.l[i];});
   renderBody();
 }
@@ -3431,194 +3126,155 @@ function applyBasemapOverrides(){
 
 
 /* ══════════════════════════════════════════════
-   LANDMARKS LAYER — POI markers with category filter
+   LANDMARKS MODULE v1.0
+   Self-contained — data, render, filter
 ══════════════════════════════════════════════ */
-function buildLandmarksLayer(){
+const LM_DATA=[
+  // AIRPORTS
+  {id:"dxb",cat:"airport",name:"Dubai Intl Airport",short:"DXB",lat:25.2532,lng:55.3657,note:"Top 3 busiest airport globally. Key demand driver for Deira, Creek, Mirdif."},
+  {id:"dwc",cat:"airport",name:"Al Maktoum Intl (DWC)",short:"DWC",lat:24.8960,lng:55.1614,note:"Future mega-hub. Primary driver of Dubai South and Expo City demand."},
+  // MALLS
+  {id:"dxbmall",cat:"mall",name:"Dubai Mall",short:"Mall",lat:25.1972,lng:55.2796,note:"Largest mall globally. Anchors Downtown and Business Bay premium pricing."},
+  {id:"moe",cat:"mall",name:"Mall of the Emirates",short:"MoE",lat:25.1181,lng:55.2003,note:"Ski Dubai, 630+ stores. Anchors Al Barsha and Dubai Hills catchment."},
+  {id:"citywlk",cat:"mall",name:"City Walk",short:"CityWlk",lat:25.2068,lng:55.2368,note:"Open-air lifestyle retail. Jumeirah 1 premium lifestyle driver."},
+  {id:"dfc",cat:"mall",name:"Dubai Festival City",short:"DFC",lat:25.2248,lng:55.3548,note:"Creek-side mixed-use hub. Key amenity for Ras Al Khor area."},
+  {id:"ibn",cat:"mall",name:"Ibn Battuta Mall",short:"Ibn Bat",lat:25.0438,lng:55.1218,note:"JBR, JLT and Al Furjan corridor anchor."},
+  {id:"marinamall",cat:"mall",name:"Dubai Marina Mall",short:"Marina M",lat:25.0778,lng:55.1398,note:"Serves Dubai Marina and JBR residents."},
+  {id:"nakheel",cat:"mall",name:"Nakheel Mall (Palm)",short:"Nakheel",lat:25.1198,lng:55.1388,note:"Palm Jumeirah trunk retail anchor."},
+  {id:"wafi",cat:"mall",name:"Wafi Mall",short:"Wafi",lat:25.2258,lng:55.3128,note:"Oud Metha premium lifestyle hub."},
+  {id:"dragon",cat:"mall",name:"Dragon Mart",short:"Dragon",lat:25.1778,lng:55.4148,note:"Largest Chinese trading hub outside China. International City anchor."},
+  // HOSPITALS
+  {id:"clev",cat:"hospital",name:"Cleveland Clinic",short:"CC",lat:25.1168,lng:55.1748,note:"World-class medical hub. Draws medical tourism to Marina catchment."},
+  {id:"medinc",cat:"hospital",name:"Mediclinic City Hospital",short:"Mediclinic",lat:25.1938,lng:55.2778,note:"DHA-registered. Serves Downtown and DIFC."},
+  {id:"ameri",cat:"hospital",name:"American Hospital Dubai",short:"AHD",lat:25.2228,lng:55.3088,note:"JCI-accredited. Bur Dubai and Umm Hurair anchor."},
+  {id:"rashid",cat:"hospital",name:"Rashid Hospital",short:"Rashid",lat:25.2348,lng:55.3178,note:"Major government hospital. Bur Dubai healthcare hub."},
+  {id:"dhc",cat:"hospital",name:"Dubai Healthcare City",short:"DHC",lat:25.2288,lng:55.3258,note:"Dedicated medical free zone with 150+ facilities."},
+  {id:"kings",cat:"hospital",name:"King College Hospital Dubai",short:"Kings",lat:25.1638,lng:55.2348,note:"Dubai Hills Estate anchor. Key driver of DH premium pricing."},
+  // SCHOOLS
+  {id:"repton",cat:"school",name:"Repton School Dubai",short:"Repton",lat:25.2008,lng:55.4058,note:"Top-rated British curriculum. Mirdif family demand driver."},
+  {id:"gemswl",cat:"school",name:"GEMS Wellington Academy",short:"GEMS",lat:25.0568,lng:55.2188,note:"Sports City campus. Key magnet for family buyers."},
+  {id:"asd",cat:"school",name:"American School of Dubai",short:"ASD",lat:25.0948,lng:55.1768,note:"Al Barsha. Drives villa premium in catchment area."},
+  {id:"dkp",cat:"school",name:"Dubai Knowledge Park",short:"DKP",lat:25.1068,lng:55.1738,note:"University cluster hub. Tecom and Media City education zone."},
+  {id:"hertuk",cat:"school",name:"Heriot-Watt University",short:"HWU",lat:25.0528,lng:55.2298,note:"Sports City campus. Student rental demand driver."},
+  // LANDMARKS
+  {id:"burjkh",cat:"landmark",name:"Burj Khalifa",short:"Burj K",lat:25.1972,lng:55.2744,note:"Tallest building globally at 828m. Defines Downtown premium above AED 3,500 psf."},
+  {id:"burjar",cat:"landmark",name:"Burj Al Arab",short:"Burj Al",lat:25.1412,lng:55.1853,note:"Iconic 7-star hotel. Jumeirah Beach adjacency premium."},
+  {id:"frame",cat:"landmark",name:"Dubai Frame",short:"Frame",lat:25.2353,lng:55.3008,note:"Zabeel Park gateway landmark. Karama and Bur Dubai context."},
+  {id:"opera",cat:"landmark",name:"Dubai Opera",short:"Opera",lat:25.1958,lng:55.2778,note:"Downtown cultural anchor. Drives Boulevard premium."},
+  {id:"expo",cat:"landmark",name:"Expo City Dubai",short:"Expo",lat:24.9678,lng:55.1568,note:"Post-Expo 2020 legacy district. 4.38 sq km mixed-use redevelopment."},
+  {id:"motf",cat:"landmark",name:"Museum of the Future",short:"MoF",lat:25.2193,lng:55.2822,note:"DIFC icon. Boosts Downtown and DIFC premium."},
+  {id:"miracle",cat:"landmark",name:"Dubai Miracle Garden",short:"Miracle",lat:25.0598,lng:55.2448,note:"Seasonal tourist draw. Supports short-term rental yields in Arjan."},
+  // BEACHES
+  {id:"jbrbch",cat:"beach",name:"JBR Beach",short:"JBR",lat:25.0788,lng:55.1318,note:"1.7km public beach. Drives JBR and Marina short-term rental yields."},
+  {id:"kite",cat:"beach",name:"Kite Beach",short:"Kite",lat:25.1548,lng:55.2038,note:"Popular watersports beach. Umm Suqeim lifestyle premium driver."},
+  {id:"palmw",cat:"beach",name:"Palm West Beach",short:"Palm W",lat:25.1158,lng:55.1258,note:"Sunset destination. Supports Palm short-term rental demand."},
+  {id:"lamer",cat:"beach",name:"La Mer Beach",short:"La Mer",lat:25.2345,lng:55.2734,note:"Jumeirah 1 retail and beach lifestyle hub."},
+  // FREE ZONES
+  {id:"difcz",cat:"freezone",name:"DIFC Free Zone",short:"DIFC",lat:25.2178,lng:55.2798,note:"Middle East financial hub. 27,000+ professionals. AED 3,100 avg psf."},
+  {id:"dmcc",cat:"freezone",name:"DMCC Free Zone (JLT)",short:"DMCC",lat:25.0688,lng:55.1498,note:"Ranked top free zone globally. 22,000+ companies. Drives JLT demand."},
+  {id:"dsofz",cat:"freezone",name:"Dubai Silicon Oasis",short:"DSO",lat:25.1198,lng:55.3748,note:"Tech free zone. 500+ companies. DSO residential demand at 9.1% avg yield."},
+  {id:"dmc",cat:"freezone",name:"Dubai Media City",short:"DMC",lat:25.1028,lng:55.1568,note:"1,500+ media companies. Regional HQs drive Marina and JLT demand."},
+  {id:"dic",cat:"freezone",name:"Dubai Internet City",short:"DIC",lat:25.0968,lng:55.1618,note:"Tech hub with Microsoft, Google, Meta. 1,600+ companies."},
+  {id:"jafza",cat:"freezone",name:"Jebel Ali Free Zone",short:"JAFZA",lat:24.9851,lng:55.0695,note:"Largest free zone globally. Workforce demand driver for Dubai South."},
+];
+
+const LM_CATS={
+  airport:  {col:"#60A5FA",emoji:"✈",label:"Airports"},
+  mall:     {col:"#F472B6",emoji:"🛍",label:"Malls"},
+  hospital: {col:"#34D399",emoji:"✚",label:"Hospitals"},
+  school:   {col:"#A78BFA",emoji:"◎",label:"Schools"},
+  landmark: {col:"#FBBF24",emoji:"★",label:"Landmarks"},
+  beach:    {col:"#22D3EE",emoji:"〜",label:"Beaches"},
+  freezone: {col:"#FB923C",emoji:"⬡",label:"Free Zones"},
+};
+
+let _lmMarkers=[];
+let _lmActiveCat="all";
+
+/* Build all landmark markers */
+function buildLandmarks(){
   if(!_map) return;
-  // Clear existing
   _lmMarkers.forEach(m=>m.remove());
   _lmMarkers=[];
-
-  const vis=_layers.landmarks;
-
-  LANDMARKS.forEach(lm=>{
-    const ic=LM_ICONS[lm.cat];
-    if(!ic) return;
-
-    // Wrapper div (holds marker + tooltip)
-    const wrap=document.createElement('div');
-    wrap.style.cssText='position:relative;';
-
-    // Marker dot
-    const el=document.createElement('div');
-    el.className='lm-marker'+(ic.size<=11?' small':'');
-    el.dataset.cat=lm.cat;
-    el.style.background=ic.col+'22'; // colour with 13% alpha bg
-    el.style.borderColor=ic.col+'55';
-    el.innerHTML=`<span style="color:${ic.col};font-style:normal;line-height:1">${ic.emoji}</span>`;
-
-    // Tooltip
-    const tip=document.createElement('div');
-    tip.className='lm-tip';
-    tip.innerHTML=`
-      <div class="lm-tip-cat" style="color:${ic.col}">${lm.cat.toUpperCase()}</div>
-      <div class="lm-tip-name">${lm.name}</div>
-      <div class="lm-tip-note">${lm.note}</div>`;
-
-    el.appendChild(tip);
-    wrap.appendChild(el);
-
-    // Hide if layer off OR category filtered
-    if(!vis || (_lmActiveCat!=='all' && _lmActiveCat!==lm.cat)){
-      wrap.style.display='none';
-    }
-
-    const marker=new maplibregl.Marker({element:wrap,anchor:'center'})
-      .setLngLat([lm.lng,lm.lat])
-      .addTo(_map);
-
+  LM_DATA.forEach(lm=>{
+    const cat=LM_CATS[lm.cat];
+    if(!cat) return;
+    const wrap=document.createElement("div");
+    wrap.style.cssText="position:relative;cursor:pointer;";
+    const dot=document.createElement("div");
+    dot.className="lm-dot";
+    dot.dataset.cat=lm.cat;
+    dot.style.cssText=`width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;background:${cat.col}18;border:1.5px solid ${cat.col}55;box-shadow:0 2px 8px rgba(0,0,0,.5);transition:transform .15s;`;
+    dot.innerHTML=`<span style="color:${cat.col};line-height:1">${cat.emoji}</span>`;
+    // tooltip
+    const tip=document.createElement("div");
+    tip.className="lm-tip";
+    tip.style.cssText="position:absolute;bottom:32px;left:50%;transform:translateX(-50%);background:rgba(4,7,18,.94);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:8px 11px;min-width:175px;max-width:230px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:900;white-space:normal;box-shadow:0 8px 24px rgba(0,0,0,.6);";
+    tip.innerHTML=`<div style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:${cat.col};margin-bottom:3px">${lm.cat}</div><div style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;color:#EDE9E3;margin-bottom:4px;line-height:1.3">${lm.name}</div><div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(168,164,160,.85);line-height:1.4">${lm.note}</div>`;
+    dot.addEventListener("mouseenter",()=>{tip.style.opacity="1";dot.style.transform="scale(1.25)";});
+    dot.addEventListener("mouseleave",()=>{tip.style.opacity="0";dot.style.transform="scale(1)";});
+    wrap.appendChild(dot);
+    wrap.appendChild(tip);
+    // visibility
+    const show=_layers.landmarks&&(_lmActiveCat==="all"||_lmActiveCat===lm.cat);
+    wrap.style.display=show?"":"none";
+    const marker=new maplibregl.Marker({element:wrap,anchor:"center"}).setLngLat([lm.lng,lm.lat]).addTo(_map);
     marker._lmCat=lm.cat;
-    marker._lmEl=wrap;
+    marker._lmWrap=wrap;
     _lmMarkers.push(marker);
   });
+  // zoom-based density filter
+  _map.on("zoom",_lmZoomFilter);
+  _lmZoomFilter();
 }
 
-/* Filter by category */
-function lmFilter(cat, btn){
-  _lmActiveCat=cat;
-  // Update button states
-  document.querySelectorAll('.lm-cat-btn').forEach(b=>{
-    b.classList.toggle('active', b.dataset.cat===cat);
-  });
-  // Show/hide markers
+function _lmZoomFilter(){
+  if(!_map) return;
+  const z=_map.getZoom();
   _lmMarkers.forEach(m=>{
-    const show=_layers.landmarks && (cat==='all' || m._lmCat===cat);
-    m._lmEl.style.display=show?'':'none';
+    if(!_layers.landmarks){m._lmWrap.style.display="none";return;}
+    if(_lmActiveCat!=="all"&&_lmActiveCat!==m._lmCat){m._lmWrap.style.display="none";return;}
+    // At low zoom show only airports + landmarks; at mid show all except schools
+    const alwaysShow=["airport","landmark"].includes(m._lmCat);
+    const midShow=["mall","hospital","beach","freezone"].includes(m._lmCat);
+    if(z<10.5&&!alwaysShow) m._lmWrap.style.display="none";
+    else if(z<12&&!alwaysShow&&!midShow) m._lmWrap.style.display="none";
+    else m._lmWrap.style.display="";
   });
 }
 
-/* Distance from point to landmark in km */
-function lmDistance(lat1,lng1,lat2,lng2){
-  const R=6371;
-  const dLat=(lat2-lat1)*Math.PI/180;
-  const dLng=(lng2-lng1)*Math.PI/180;
+function lmFilter(cat,btn){
+  _lmActiveCat=cat;
+  document.querySelectorAll(".lm-cat-btn").forEach(b=>b.classList.toggle("active",b.dataset.cat===cat));
+  _lmZoomFilter();
+}
+
+/* Haversine distance km */
+function lmDist(lat1,lng1,lat2,lng2){
+  const R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180;
   const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
   return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
-/* Get nearest N landmarks to a point, optionally filtered by category */
-function getNearestLandmarks(lat,lng,n=5,cat=null){
-  return LANDMARKS
-    .filter(lm=>!cat||lm.cat===cat)
-    .map(lm=>({...lm,dist:lmDistance(lat,lng,lm.lat,lm.lng)}))
-    .sort((a,b)=>a.dist-b.dist)
-    .slice(0,n);
-}
-
-
-/* Render nearest landmarks HTML for right panel */
-function renderNearestLandmarks(area){
-  const nearest = getNearestLandmarks(area.lat, area.lng, 6);
-  if(!nearest.length) return '';
-  const rows = nearest.map(lm=>{
-    const ic = LM_ICONS[lm.cat];
-    const distStr = lm.dist<1 ? Math.round(lm.dist*1000)+'m' : lm.dist.toFixed(1)+'km';
-    return `<div class="lm-nearby-item">
-      <div class="lm-nearby-icon" style="background:${ic.col}22;border:1px solid ${ic.col}44">
-        <span style="color:${ic.col}">${ic.emoji}</span>
-      </div>
-      <div class="lm-nearby-body">
-        <div class="lm-nearby-name">${lm.name}</div>
-        <div class="lm-nearby-dist">${distStr} away · ${lm.cat}</div>
-        <div class="lm-nearby-note">${lm.note}</div>
+/* Render 6 nearest landmarks into right panel */
+function renderNearbyLandmarks(area){
+  const sec=document.getElementById("rp-lm-sec");
+  const list=document.getElementById("rp-lm-list");
+  if(!sec||!list) return;
+  const nearest=LM_DATA.map(lm=>({...lm,dist:lmDist(area.lat,area.lng,lm.lat,lm.lng)}))
+    .sort((a,b)=>a.dist-b.dist).slice(0,6);
+  sec.style.display="";
+  list.innerHTML=nearest.map(lm=>{
+    const cat=LM_CATS[lm.cat];
+    const d=lm.dist<1?Math.round(lm.dist*1000)+"m":lm.dist.toFixed(1)+"km";
+    return `<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;padding:7px 8px;border-radius:6px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05)">
+      <div style="width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;background:${cat.col}18;border:1px solid ${cat.col}44">${cat.emoji}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'DM Sans',sans-serif;font-size:10px;font-weight:600;color:#EDE9E3;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${lm.name}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(168,164,160,.7);margin-top:1px">${d} · <span style="color:${cat.col};text-transform:uppercase;font-size:8px">${lm.cat}</span></div>
       </div>
     </div>`;
-  }).join('');
-  return `<div class="lm-nearby">
-    <div class="lm-nearby-title">Nearby Landmarks</div>
-    ${rows}
-  </div>`;
-}
-
-
-/* ══════════════════════════════════════════════
-   LANDMARKS LAYER
-══════════════════════════════════════════════ */
-let _lmMarkers=[];
-let _lmActive={airport:true,mall:true,hospital:true,school:false,landmark:true,beach:true,freezone:false};
-let _lmPop=null;
-
-function buildLandmarksLayer(){
-  // Remove existing
-  _lmMarkers.forEach(m=>m.remove());
-  _lmMarkers=[];
-  if(_lmPop){_lmPop.remove();_lmPop=null;}
-
-  if(!_layers.landmarks||!_map) return;
-
-  LANDMARKS.forEach(lm=>{
-    if(!_lmActive[lm.cat]) return;
-    const ic=LM_ICONS[lm.cat];
-
-    // Create marker element
-    const el=document.createElement('div');
-    el.className='lm-marker';
-    el.dataset.cat=lm.cat;
-    el.dataset.id=lm.id;
-    el.innerHTML=`
-      <div class="lm-dot" style="background:${ic.col};box-shadow:0 0 8px ${ic.col}55">
-        <span class="lm-icon" style="font-size:${ic.size-2}px">${ic.emoji}</span>
-      </div>
-      <div class="lm-name">${lm.name.split('(')[0].trim()}</div>`;
-
-    // Hover popup
-    el.addEventListener('mouseenter', e=>{
-      if(_lmPop) _lmPop.remove();
-      const catLabel={airport:'Airport',mall:'Mall',hospital:'Hospital',
-        school:'Education',landmark:'Landmark',beach:'Beach',freezone:'Free Zone'}[lm.cat];
-      _lmPop=new maplibregl.Popup({closeButton:false,offset:[0,-28],maxWidth:'220px',anchor:'bottom'})
-        .setLngLat([lm.lng,lm.lat])
-        .setHTML(`<div class="lm-popup">
-          <div class="lm-pop-cat" style="color:${ic.col}">${ic.emoji} ${catLabel}</div>
-          <div class="lm-pop-name">${lm.name}</div>
-          <div class="lm-pop-note">${lm.note}</div>
-        </div>`)
-        .addTo(_map);
-    });
-    el.addEventListener('mouseleave',()=>{
-      setTimeout(()=>{if(_lmPop){_lmPop.remove();_lmPop=null;}},200);
-    });
-
-    const marker=new maplibregl.Marker({element:el,anchor:'bottom'})
-      .setLngLat([lm.lng,lm.lat])
-      .addTo(_map);
-    _lmMarkers.push(marker);
-  });
-}
-
-function toggleLandmarkCat(cat, btn){
-  _lmActive[cat]=!_lmActive[cat];
-  btn.classList.toggle('active',_lmActive[cat]);
-  // Remove and rebuild only affected markers
-  buildLandmarksLayer();
-}
-
-
-/* Landmark zoom visibility */
-function updateLandmarkZoom(){
-  const z=_map.getZoom();
-  document.querySelectorAll('.lm-marker').forEach(el=>{
-    const cat=el.dataset.cat;
-    // At low zoom, only show airports + major landmarks
-    if(z<11 && !['airport','landmark'].includes(cat)){
-      el.style.opacity='0';el.style.pointerEvents='none';
-    } else {
-      el.style.opacity='1';el.style.pointerEvents='auto';
-    }
-    // Show names at high zoom
-    const nameEl=el.querySelector('.lm-name');
-    if(nameEl) nameEl.style.display=z>=13?'block':'';
-  });
+  }).join("");
 }
 
 /* ══════════════════════════════════════════════
@@ -3632,9 +3288,8 @@ window.addEventListener('load',()=>{
   // Set initial toggle positions (panels open by default)
   document.getElementById('lp-toggle').style.left='var(--lw)';
   document.getElementById('rp-toggle').style.right='var(--rw)';
-  // src-note positioning
-  const srcNote=document.getElementById('src-note');
-  if(srcNote) srcNote.style.left='12px';
+  // Map controls positioned relative to map-wrap (not global layout)
+  document.getElementById('src-note').style.left='12px';
   // Zoom fade in after map loads
   document.getElementById('zoom-ctrls').style.opacity='0';
   document.getElementById('zoom-ctrls').style.transition='opacity 1s';
