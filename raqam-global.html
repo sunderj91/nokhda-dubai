@@ -54,15 +54,15 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
 .layer-div{height:1px;background:var(--border);margin:6px 16px}
 
 /* ── Right stats ── */
-#stats-panel{position:fixed;right:20px;top:50%;transform:translateY(-50%);width:220px;z-index:100;padding:16px;display:flex;flex-direction:column;gap:14px}
-.st{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
-.sb{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-.02em}
-.ss{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text2);margin-top:3px}
-.sr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+#stats-panel{position:fixed;right:20px;top:50%;transform:translateY(-50%);width:200px;z-index:100;padding:11px 12px;display:flex;flex-direction:column;gap:8px}
+.st{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
+.sb{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-.02em}
+.ss{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text2);margin-top:2px}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
 .sr:last-child{border-bottom:none;padding-bottom:0}
-.srl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
-.srv{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--text)}
-.sd{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500}
+.srl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
+.srv{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--text)}
+.sd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500}
 .sd.up{color:var(--green)} .sd.dn{color:var(--red)}
 .mbar{height:3px;border-radius:2px;background:var(--border);margin-top:5px;overflow:hidden}
 .mbar-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width 1.5s cubic-bezier(.4,0,.2,1)}
@@ -196,7 +196,7 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
     <div class="sr"><div><div class="srl">Avg Yield</div><div class="srv">7.4%</div></div><div class="sd up">▲ 0.6pp</div></div>
     <div class="sr"><div><div class="srl">Listings</div><div class="srv">226,489</div></div><div class="sd dn">▼ 3.1%</div></div>
     <div>
-      <div class="srl" style="margin-bottom:5px">UAE Health Score</div>
+      <div class="srl" style="margin-bottom:4px">UAE Health Score</div>
       <div class="mbar"><div class="mbar-f" style="width:88%"></div></div>
       <div style="display:flex;justify-content:space-between;margin-top:4px">
         <span class="srl">Weak</span>
@@ -205,18 +205,19 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
     </div>
   </div>
   <!-- Live counter -->
-  <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:center;justify-content:space-between">
-    <div>
-      <div class="st">Transactions Today</div>
-      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.02em" id="gc-num">18,247</div>
-      <div class="ss">across 89 markets</div>
+  <div style="border-top:1px solid var(--border);padding-top:8px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div>
+        <div class="st" style="margin-bottom:1px">Transactions Today</div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.02em" id="gc-num">18,247</div>
+        <div class="ss">across 89 markets</div>
+      </div>
     </div>
-    <div style="width:1px;height:36px;background:var(--border)"></div>
-    <a href="index.html" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:var(--accent2);border:1px solid rgba(0,212,255,.22);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,0.18)'" onmouseout="this.style.background='var(--accent2)'">
-      <span style="font-size:18px">🇦🇪</span>
+    <a href="index.html" target="_blank" style="display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:8px;background:var(--accent2);border:1px solid rgba(0,212,255,.22);text-decoration:none;transition:all .2s;width:100%;box-sizing:border-box" onmouseover="this.style.background='rgba(0,212,255,0.18)'" onmouseout="this.style.background='var(--accent2)'">
+      <span style="font-size:15px">🇦🇪</span>
       <div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Deep Dive</div>
-        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--accent)">RAQAM Dubai →</div>
+        <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--accent)">RAQAM Dubai →</div>
       </div>
     </a>
   </div>
@@ -400,6 +401,9 @@ function initGlobe() {
 
   // Hide loading when globe is actually ready
   globe.onGlobeReady(() => {
+    clearInterval(window._statusTimer);
+    const statusEl = document.getElementById('load-status');
+    if (statusEl) statusEl.style.display = 'none';
     const l = document.getElementById('loading');
     if (l) { l.classList.add('fade'); setTimeout(() => { l.style.display = 'none'; }, 700); }
   });
@@ -718,13 +722,13 @@ function buildLegend() {
    BOOT
 ══════════════════════════════════════════════ */
 window.addEventListener('load', () => {
-  const statuses = ['Initialising globe engine...','Loading earth textures...','Parsing 177 country boundaries...','Computing RE health scores...','Connecting market feeds...','Ready.'];
+  const statuses = ['Initialising globe engine...','Loading earth textures...','Parsing 177 country boundaries...','Computing RE health scores...','Connecting market feeds...'];
   let si = 0;
   const statusEl = document.getElementById('load-status');
-  const t = setInterval(() => {
+  window._statusTimer = setInterval(() => {
     si++;
-    if (si < statuses.length) statusEl.textContent = statuses[si];
-    else clearInterval(t);
+    if (si < statuses.length && statusEl) statusEl.textContent = statuses[si];
+    else clearInterval(window._statusTimer);
   }, 380);
 
   buildTicker();
@@ -736,8 +740,9 @@ window.addEventListener('load', () => {
       initGlobe();
       // Loading screen hidden via globe.onGlobeReady() callback
     } catch(err) {
-      document.getElementById('load-status').textContent = 'Error: ' + err.message;
-      document.getElementById('load-status').style.color = '#FF4455';
+      // Silently recover — hide loading screen on error too
+      const lErr = document.getElementById('loading');
+      if (lErr) { lErr.classList.add('fade'); setTimeout(() => { lErr.style.display = 'none'; }, 700); }
       console.error('Globe init failed:', err);
     }
   }, 400);
