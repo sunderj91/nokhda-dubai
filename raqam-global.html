@@ -101,10 +101,10 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
 .ticker-track{flex:1;overflow:hidden;height:100%;display:flex;align-items:center}
 .ticker-inner{display:flex;gap:0;animation:tscroll 90s linear infinite;white-space:nowrap}
 @keyframes tscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 20px;border-right:1px solid var(--border);height:44px;cursor:pointer;transition:background .15s}
+.ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 16px;border-right:none;height:44px;cursor:pointer;transition:background .15s}
 .ticker-item:hover{background:var(--accent2)}
-.ti-city{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.05em;color:var(--text)}
-.ti-area{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text3);letter-spacing:.03em}
+.ti-city{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--text)}
+.ti-area{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.03em}
 .ti-price{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--text)}
 .ti-delta{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:2px 5px;border-radius:3px}
 .ti-delta.up{color:var(--green);background:rgba(0,229,160,.1)} .ti-delta.dn{color:var(--red);background:rgba(255,68,85,.1)}
@@ -477,9 +477,25 @@ function applyPolygons() {
         </div>`;
     })
     .onPolygonHover(f => {
+      const prev = hoveredCountry;
       hoveredCountry = f && f._market ? f._market : null;
       document.body.style.cursor = hoveredCountry ? 'pointer' : '';
-      applyPolygons();
+      // Only re-render cap/side colors, not full rebind — avoids jank
+      if (globe) {
+        globe.polygonCapColor(feat => {
+          const m = feat._market;
+          if (!m) return 'rgba(255,255,255,0.04)';
+          const isHov = hoveredCountry && hoveredCountry.code === m.code;
+          const isSel = selectedCountry && selectedCountry.code === m.code;
+          return scoreToColor(m.score, (isHov || isSel) ? 0.94 : 0.62);
+        });
+        globe.polygonStrokeColor(feat => {
+          const m = feat._market;
+          if (!m) return 'rgba(255,255,255,0.06)';
+          const isHov = hoveredCountry && hoveredCountry.code === m.code;
+          return scoreToColor(m.score, isHov ? 1 : 0.45);
+        });
+      }
     })
     .onPolygonClick(f => {
       if (f && f._market) {
@@ -642,14 +658,13 @@ function buildTicker() {
   const doubled = [...TICKER_DATA, ...TICKER_DATA];
   document.getElementById('ticker-inner').innerHTML = doubled.map(d => `
     <div class="ticker-item">
-      <div>
-        <div class="ticker-city">${d.city}</div>
-        <div class="ticker-area">${d.area}</div>
+      <div style="display:flex;flex-direction:column;gap:1px">
+        <div class="ti-city">${d.city} · ${d.area}</div>
+        <div class="ti-area">${d.price}</div>
       </div>
-      <div class="ticker-price">${d.price}</div>
-      <div class="ticker-delta ${d.trend}">${d.delta}</div>
+      <div class="ti-delta ${d.trend}">${d.delta}</div>
     </div>
-    <div class="ticker-sep">·</div>
+    <span style="padding:0 8px;color:var(--border2);flex-shrink:0;font-size:13px">|</span>
   `).join('');
 }
 
