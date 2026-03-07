@@ -6,8 +6,7 @@
 <title>RAQAM GLOBAL · Real Estate Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl/dist/globe.gl.min.js"></script>
 <style>
 :root{--bg:#03060F;--bg2:#080D1A;--panel:rgba(8,13,26,0.86);--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);--text:#E8EDF5;--text2:rgba(232,237,245,0.5);--text3:rgba(232,237,245,0.28);--accent:#00D4FF;--accent2:rgba(0,212,255,0.1);--green:#00E5A0;--red:#FF4455;--blur:blur(18px) saturate(1.6)}
 [data-theme="light"]{--bg:#EEF1F8;--bg2:#E4E8F2;--panel:rgba(255,255,255,0.9);--border:rgba(0,0,0,0.07);--border2:rgba(0,0,0,0.13);--text:#0A0F1E;--text2:rgba(10,15,30,0.52);--text3:rgba(10,15,30,0.28);--accent:#0052CC;--accent2:rgba(0,82,204,0.09);--green:#00A86B;--red:#D93025;--blur:blur(18px) saturate(1.4)}
@@ -372,6 +371,9 @@ let worldGeoLoaded = false;
    INIT GLOBE
 ══════════════════════════════════════════════ */
 function initGlobe() {
+  if (typeof Globe === 'undefined') {
+    throw new Error('Globe.gl library not loaded — check CDN');
+  }
   const isDark = document.documentElement.dataset.theme !== 'light';
 
   globe = Globe()
@@ -390,6 +392,12 @@ function initGlobe() {
   const setSize = () => globe.width(window.innerWidth).height(window.innerHeight - 44);
   setSize();
   window.addEventListener('resize', setSize);
+
+  // Hide loading when globe is actually ready
+  globe.onGlobeReady(() => {
+    const l = document.getElementById('loading');
+    if (l) { l.classList.add('fade'); setTimeout(() => { l.style.display = 'none'; }, 700); }
+  });
 
   // Controls
   globe.controls().autoRotate = true;
@@ -703,12 +711,14 @@ window.addEventListener('load', () => {
   animateCounter();
 
   setTimeout(() => {
-    initGlobe();
-    setTimeout(() => {
-      const l = document.getElementById('loading');
-      l.classList.add('fade');
-      setTimeout(() => { l.style.display = 'none'; }, 800);
-    }, 2000);
+    try {
+      initGlobe();
+      // Loading screen hidden via globe.onGlobeReady() callback
+    } catch(err) {
+      document.getElementById('load-status').textContent = 'Error: ' + err.message;
+      document.getElementById('load-status').style.color = '#FF4455';
+      console.error('Globe init failed:', err);
+    }
   }, 400);
 });
 
