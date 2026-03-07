@@ -103,10 +103,10 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
 @keyframes tscroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .ticker-item{display:inline-flex;align-items:center;gap:10px;padding:0 16px;border-right:none;height:44px;cursor:pointer;transition:background .15s}
 .ticker-item:hover{background:var(--accent2)}
-.ti-city{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--text)}
-.ti-area{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.03em}
-.ti-price{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--text)}
-.ti-delta{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;padding:2px 5px;border-radius:3px}
+.ti-city{font-family:'IBM Plex Mono','Noto Sans Mono',monospace;font-size:10px;font-weight:500;letter-spacing:.04em;color:var(--text)}
+.ti-area{font-family:'IBM Plex Mono','Noto Sans Mono',monospace;font-size:9px;color:var(--text2);letter-spacing:.03em}
+.ti-price{font-family:'IBM Plex Mono','Noto Sans Mono',monospace;font-size:11px;font-weight:500;color:var(--text)}
+.ti-delta{font-family:'IBM Plex Mono','Noto Sans Mono',monospace;font-size:10px;font-weight:500;padding:2px 5px;border-radius:3px}
 .ti-delta.up{color:var(--green);background:rgba(0,229,160,.1)} .ti-delta.dn{color:var(--red);background:rgba(255,68,85,.1)}
 .ti-sep{padding:0 6px;color:var(--border2);font-size:16px}
 
@@ -230,7 +230,7 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
 </div>
 
 <!-- UAE LINK -->
-<a id="uae-btn" href="dubai-realestate-tracker.html" target="_blank">
+<a id="uae-btn" href="index.html" target="_blank">
   <div class="uf">🇦🇪</div>
   <div><div class="ul">Deep Dive</div><div class="un">RAQAM Dubai →</div></div>
 </a>
@@ -301,25 +301,25 @@ const TICKER_DATA = [
   {city:"Singapore",area:"Marina Bay",price:"S$4,200,000",psf:"S$3,100/ft²",trend:"up",delta:"+9.8%"},
   {city:"Dubai",area:"Business Bay",price:"AED 2,100,000",psf:"AED 2,240",trend:"up",delta:"+8.7%"},
   {city:"New York",area:"Manhattan",price:"$2,840,000",psf:"$1,890/ft²",trend:"up",delta:"+3.4%"},
-  {city:"Tokyo",area:"Minato",price:"¥182,000,000",psf:"¥1.4M/㎡",trend:"up",delta:"+14.2%"},
+  {city:"Tokyo",area:"Minato",price:"¥182,000,000",psf:"¥1.4M//sqm",trend:"up",delta:"+14.2%"},
   {city:"Dubai",area:"Palm Jumeirah",price:"AED 12,500,000",psf:"AED 4,100",trend:"up",delta:"+18.6%"},
-  {city:"Sydney",area:"CBD",price:"A$2,400,000",psf:"A$18,400/㎡",trend:"up",delta:"+6.8%"},
-  {city:"Paris",area:"8th Arr.",price:"€3,200,000",psf:"€14,800/㎡",trend:"dn",delta:"-1.4%"},
+  {city:"Sydney",area:"CBD",price:"A$2,400,000",psf:"A$18,400//sqm",trend:"up",delta:"+6.8%"},
+  {city:"Paris",area:"8th Arr.",price:"€3,200,000",psf:"€14,800//sqm",trend:"dn",delta:"-1.4%"},
   {city:"Mumbai",area:"Bandra",price:"₹48,000,000",psf:"₹48,000/ft²",trend:"up",delta:"+22.1%"},
   {city:"Dubai",area:"Dubai Marina",price:"AED 1,850,000",psf:"AED 2,100",trend:"up",delta:"+7.4%"},
-  {city:"Frankfurt",area:"Westend",price:"€1,980,000",psf:"€7,800/㎡",trend:"dn",delta:"-5.2%"},
+  {city:"Frankfurt",area:"Westend",price:"€1,980,000",psf:"€7,800//sqm",trend:"dn",delta:"-5.2%"},
   {city:"Abu Dhabi",area:"Al Reem Island",price:"AED 2,400,000",psf:"AED 1,650",trend:"up",delta:"+11.8%"},
-  {city:"Lisbon",area:"Chiado",price:"€980,000",psf:"€6,200/㎡",trend:"up",delta:"+16.4%"},
-  {city:"Seoul",area:"Gangnam",price:"₩2,400,000,000",psf:"₩12.4M/㎡",trend:"up",delta:"+4.8%"},
+  {city:"Lisbon",area:"Chiado",price:"€980,000",psf:"€6,200//sqm",trend:"up",delta:"+16.4%"},
+  {city:"Seoul",area:"Gangnam",price:"₩2,400,000,000",psf:"₩12.4M//sqm",trend:"up",delta:"+4.8%"},
   {city:"Toronto",area:"Downtown",price:"C$1,200,000",psf:"C$1,140/ft²",trend:"up",delta:"+2.4%"},
-  {city:"Amsterdam",area:"Centrum",price:"€890,000",psf:"€7,400/㎡",trend:"up",delta:"+8.2%"},
+  {city:"Amsterdam",area:"Centrum",price:"€890,000",psf:"€7,400//sqm",trend:"up",delta:"+8.2%"},
   {city:"Dubai",area:"JVC",price:"AED 680,000",psf:"AED 1,140",trend:"up",delta:"+6.1%"},
-  {city:"Barcelona",area:"Eixample",price:"€680,000",psf:"€4,800/㎡",trend:"up",delta:"+14.8%"},
-  {city:"Ho Chi Minh",area:"District 1",price:"$480,000",psf:"$4,200/㎡",trend:"up",delta:"+18.4%"},
+  {city:"Barcelona",area:"Eixample",price:"€680,000",psf:"€4,800//sqm",trend:"up",delta:"+14.8%"},
+  {city:"Ho Chi Minh",area:"District 1",price:"$480,000",psf:"$4,200//sqm",trend:"up",delta:"+18.4%"},
   {city:"Riyadh",area:"King Abdullah District",price:"SAR 1,800,000",psf:"SAR 3,400",trend:"up",delta:"+14.2%"},
   {city:"Doha",area:"The Pearl",price:"QAR 2,400,000",psf:"QAR 1,600",trend:"up",delta:"+11.4%"},
-  {city:"Berlin",area:"Mitte",price:"€980,000",psf:"€7,200/㎡",trend:"dn",delta:"-3.8%"},
-  {city:"Madrid",area:"Salamanca",price:"€1,240,000",psf:"€5,800/㎡",trend:"up",delta:"+12.4%"},
+  {city:"Berlin",area:"Mitte",price:"€980,000",psf:"€7,200//sqm",trend:"dn",delta:"-3.8%"},
+  {city:"Madrid",area:"Salamanca",price:"€1,240,000",psf:"€5,800//sqm",trend:"up",delta:"+12.4%"},
 ];
 
 const VIEW_PRESETS = {
@@ -432,17 +432,17 @@ function applyPolygons() {
     .polygonAltitude(f => {
       const m = f._market;
       if (!m) return 0.001;
-      // UAE gets extra altitude
-      if (m.code === 'AE') return 0.018;
-      return 0.004 + (m.score / 100) * 0.014;
+      if (m.code === 'AE') return 0.02;
+      const isHov = hoveredCountry && hoveredCountry.code === m.code;
+      const isSel = selectedCountry && selectedCountry.code === m.code;
+      const base = 0.005 + (m.score / 100) * 0.012;
+      return (isHov || isSel) ? base * 1.6 : base;
     })
     .polygonCapColor(f => {
       const m = f._market;
       if (!m) return 'rgba(255,255,255,0.04)';
-      const isHovered = hoveredCountry && hoveredCountry.code === m.code;
-      const isSelected = selectedCountry && selectedCountry.code === m.code;
-      if (isHovered || isSelected) return scoreToColor(m.score, 0.92);
-      return scoreToColor(m.score, 0.62);
+      const isSel = selectedCountry && selectedCountry.code === m.code;
+      return scoreToColor(m.score, isSel ? 0.92 : 0.65);
     })
     .polygonSideColor(f => {
       const m = f._market;
@@ -452,9 +452,7 @@ function applyPolygons() {
     .polygonStrokeColor(f => {
       const m = f._market;
       if (!m) return 'rgba(255,255,255,0.06)';
-      const isHovered = hoveredCountry && hoveredCountry.code === m.code;
-      if (isHovered) return scoreToColor(m.score, 1);
-      return scoreToColor(m.score, 0.45);
+      return scoreToColor(m.score, 0.5);
     })
     .polygonLabel(f => {
       const m = f._market;
@@ -476,26 +474,10 @@ function applyPolygons() {
           </div>
         </div>`;
     })
+    .polygonTransitionDuration(0)
     .onPolygonHover(f => {
-      const prev = hoveredCountry;
       hoveredCountry = f && f._market ? f._market : null;
       document.body.style.cursor = hoveredCountry ? 'pointer' : '';
-      // Only re-render cap/side colors, not full rebind — avoids jank
-      if (globe) {
-        globe.polygonCapColor(feat => {
-          const m = feat._market;
-          if (!m) return 'rgba(255,255,255,0.04)';
-          const isHov = hoveredCountry && hoveredCountry.code === m.code;
-          const isSel = selectedCountry && selectedCountry.code === m.code;
-          return scoreToColor(m.score, (isHov || isSel) ? 0.94 : 0.62);
-        });
-        globe.polygonStrokeColor(feat => {
-          const m = feat._market;
-          if (!m) return 'rgba(255,255,255,0.06)';
-          const isHov = hoveredCountry && hoveredCountry.code === m.code;
-          return scoreToColor(m.score, isHov ? 1 : 0.45);
-        });
-      }
     })
     .onPolygonClick(f => {
       if (f && f._market) {
@@ -579,7 +561,7 @@ function showCountryCard(m) {
         <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;color:${trend?'var(--green)':'var(--red)'}">${trend?'▲ Growing':'▼ Declining'}</div>
       </div>
     </div>
-    ${m.code==='AE'?`<a href="dubai-realestate-tracker.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;height:36px;border-radius:9px;background:var(--accent);border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#000;font-weight:600;text-decoration:none;margin-top:2px">Open Dubai Dashboard →</a>`:''}
+    ${m.code==='AE'?`<a href="index.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;height:36px;border-radius:9px;background:var(--accent);border:none;cursor:pointer;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:#000;font-weight:600;text-decoration:none;margin-top:2px">Open Dubai Dashboard →</a>`:''}
   `;
   card.classList.add('visible');
 }
