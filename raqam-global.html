@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RAQAM GLOBAL · Real Estate Intelligence</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/globe.gl@2.30.0/dist/globe.gl.min.js"></script>
+
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════════ */
+:root {
+  --bg:        #03060F;
+  --bg2:       #080D1A;
+  --panel:     rgba(8,13,26,0.82);
+  --border:    rgba(255,255,255,0.07);
+  --border2:   rgba(255,255,255,0.13);
+  --text:      #E8EDF5;
+  --text2:     rgba(232,237,245,0.5);
+  --text3:     rgba(232,237,245,0.28);
+  --accent:    #00D4FF;
+  --accent2:   rgba(0,212,255,0.12);
+  --green:     #00E5A0;
+  --red:       #FF4455;
+  --gold:      #F5C842;
+  --uae:       rgba(0,212,255,0.22);
+  --glow:      rgba(0,212,255,0.35);
+  --blur:      blur(18px) saturate(1.6);
+}
+[data-theme="light"] {
+  --bg:        #F0F3F9;
+  --bg2:       #E6EAF3;
+  --panel:     rgba(255,255,255,0.88);
+  --border:    rgba(0,0,0,0.07);
+  --border2:   rgba(0,0,0,0.13);
+  --text:      #0A0F1E;
+  --text2:     rgba(10,15,30,0.52);
+  --text3:     rgba(10,15,30,0.28);
+  --accent:    #0052CC;
+  --accent2:   rgba(0,82,204,0.1);
+  --green:     #00A86B;
+  --red:       #D93025;
+  --gold:      #B8860B;
+  --uae:       rgba(0,82,204,0.15);
+  --glow:      rgba(0,82,204,0.25);
+  --blur:      blur(18px) saturate(1.4);
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); transition: background 0.4s; }
+body { font-family: 'IBM Plex Sans', sans-serif; color: var(--text); }
+
+/* ═══════════════════════════════════════════
+   GLOBE CONTAINER
+═══════════════════════════════════════════ */
+#globe-wrap {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.4s;
+}
+#globe-wrap canvas { display: block; }
+
+/* ═══════════════════════════════════════════
+   GLASS PANEL BASE
+═══════════════════════════════════════════ */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-radius: 14px;
+  transition: background 0.4s, border 0.4s;
+}
+
+/* ═══════════════════════════════════════════
+   TOP BAR
+═══════════════════════════════════════════ */
+#topbar {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 6px;
+  height: 46px;
+  border-radius: 23px;
+  z-index: 100;
+  white-space: nowrap;
+}
+#topbar .logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 14px 0 10px;
+  border-right: 1px solid var(--border2);
+  margin-right: 6px;
+}
+#topbar .logo-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 11px;
+  color: #000;
+  letter-spacing: -0.5px;
+  flex-shrink: 0;
+}
+#topbar .logo-text {
+  font-family: 'Syne', sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+#topbar .logo-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+.top-pills {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  padding: 0 6px;
+}
+.top-pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text2);
+  padding: 5px 12px;
+  border-radius: 18px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  transition: all 0.2s;
+}
+.top-pill:hover, .top-pill.active {
+  background: var(--accent2);
+  color: var(--accent);
+}
+.top-pill.active {
+  border: 1px solid rgba(0,212,255,0.25);
+}
+[data-theme="light"] .top-pill.active {
+  border-color: rgba(0,82,204,0.25);
+}
+.top-sep { width: 1px; height: 20px; background: var(--border2); margin: 0 4px; }
+
+/* live dot */
+.live-dot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  color: var(--green);
+  text-transform: uppercase;
+  border-left: 1px solid var(--border2);
+  margin-left: 4px;
+}
+.live-dot::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-green 2s infinite;
+}
+@keyframes pulse-green {
+  0%,100%{ opacity:1; transform:scale(1); }
+  50%{ opacity:0.4; transform:scale(1.4); }
+}
+
+/* theme toggle */
+.theme-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid var(--border2);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text2);
+  font-size: 14px;
+  transition: all 0.2s;
+  margin-left: 6px;
+  flex-shrink: 0;
+}
+.theme-btn:hover { background: var(--accent2); color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   LEFT LAYER PANEL
+═══════════════════════════════════════════ */
+#layers-panel {
+  position: fixed;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 210px;
+  z-index: 100;
+  padding: 16px 0;
+  overflow: hidden;
+}
+.layers-header {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  padding: 0 16px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.layer-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0;
+  position: relative;
+}
+.layer-item:hover { background: var(--accent2); }
+.layer-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 0 2px 2px 0;
+}
+.layer-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border2);
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+.layer-item.active .layer-check {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.layer-check-inner {
+  width: 7px;
+  height: 5px;
+  border-left: 1.5px solid #000;
+  border-bottom: 1.5px solid #000;
+  transform: rotate(-45deg) translate(0.5px,-1px);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.layer-item.active .layer-check-inner { opacity: 1; }
+.layer-icon { font-size: 13px; flex-shrink: 0; width: 18px; text-align: center; }
+.layer-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text2);
+  flex: 1;
+  transition: color 0.15s;
+}
+.layer-item.active .layer-label { color: var(--text); }
+.layer-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  padding: 2px 5px;
+  border-radius: 3px;
+  background: var(--accent2);
+  color: var(--accent);
+  letter-spacing: 0.05em;
+}
+.layer-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 6px 16px;
+}
+
+/* ═══════════════════════════════════════════
+   RIGHT STATS PANEL
+═══════════════════════════════════════════ */
+#stats-panel {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 230px;
+  z-index: 100;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.stats-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 4px;
+}
+.stat-big {
+  font-family: 'Syne', sans-serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.stat-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: var(--text2);
+  margin-top: 4px;
+}
+.stat-delta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.stat-delta.up { color: var(--green); }
+.stat-delta.dn { color: var(--red); }
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.stat-row:last-child { border-bottom: none; padding-bottom: 0; }
+.stat-row-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.stat-row-value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+.market-bar {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--border);
+  margin-top: 6px;
+  overflow: hidden;
+}
+.market-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--green));
+  transition: width 1.5s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ═══════════════════════════════════════════
+   BOTTOM TICKER
+═══════════════════════════════════════════ */
+#ticker-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  z-index: 100;
+  overflow: hidden;
+  transition: background 0.4s, border 0.4s;
+}
+.ticker-label {
+  flex-shrink: 0;
+  padding: 0 16px;
+  border-right: 1px solid var(--border2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--accent2);
+}
+.ticker-label::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-green 2s infinite;
+}
+.ticker-track {
+  flex: 1;
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.ticker-inner {
+  display: flex;
+  gap: 0;
+  animation: ticker-scroll 80s linear infinite;
+  white-space: nowrap;
+}
+@keyframes ticker-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px;
+  border-right: 1px solid var(--border);
+  height: 44px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.ticker-item:hover { background: var(--accent2); }
+.ticker-city {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+.ticker-area {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--text3);
+  letter-spacing: 0.04em;
+}
+.ticker-price {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+}
+.ticker-delta {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.ticker-delta.up { color: var(--green); background: rgba(0,229,160,0.1); }
+.ticker-delta.dn { color: var(--red);   background: rgba(255,68,85,0.1); }
+.ticker-sep {
+  padding: 0 8px;
+  color: var(--border2);
+  font-size: 18px;
+  font-weight: 100;
+}
+
+/* ═══════════════════════════════════════════
+   COUNTRY CARD (hover popup)
+═══════════════════════════════════════════ */
+#country-card {
+  position: fixed;
+  z-index: 200;
+  width: 240px;
+  padding: 16px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  transform: translateY(-8px);
+}
+#country-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.cc-flag { font-size: 22px; margin-bottom: 8px; }
+.cc-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.cc-region {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 12px;
+}
+.cc-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.cc-metric {
+  background: var(--accent2);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.cc-metric-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 3px;
+}
+.cc-metric-value {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+.cc-metric-value.up { color: var(--green); }
+.cc-metric-value.dn { color: var(--red); }
+.cc-cta {
+  margin-top: 12px;
+  width: 100%;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--accent);
+  border: none;
+  cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #000;
+  font-weight: 500;
+  transition: opacity 0.15s;
+  pointer-events: auto;
+}
+.cc-cta:hover { opacity: 0.85; }
+
+/* ═══════════════════════════════════════════
+   UAE DEEP DIVE BUTTON
+═══════════════════════════════════════════ */
+#uae-btn {
+  position: fixed;
+  bottom: 58px;
+  right: 20px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,212,255,0.3);
+  background: rgba(0,212,255,0.08);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+[data-theme="light"] #uae-btn {
+  border-color: rgba(0,82,204,0.3);
+  background: rgba(0,82,204,0.08);
+}
+#uae-btn:hover {
+  background: var(--accent2);
+  border-color: var(--accent);
+  transform: translateX(-3px);
+}
+#uae-btn .uae-flag { font-size: 18px; }
+#uae-btn .uae-text { display: flex; flex-direction: column; }
+#uae-btn .uae-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+#uae-btn .uae-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+}
+#uae-btn .uae-arrow {
+  font-size: 14px;
+  color: var(--accent);
+  margin-left: 4px;
+}
+
+/* ═══════════════════════════════════════════
+   ZOOM CONTROLS
+═══════════════════════════════════════════ */
+#zoom-ctrl {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 100;
+  margin-right: 248px;
+}
+.zoom-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  border: 1px solid var(--border2);
+  background: var(--panel);
+  backdrop-filter: var(--blur);
+  color: var(--text2);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  line-height: 1;
+  font-weight: 300;
+}
+.zoom-btn:hover { background: var(--accent2); color: var(--accent); border-color: var(--accent); }
+
+/* ═══════════════════════════════════════════
+   REGION PRESETS
+═══════════════════════════════════════════ */
+#region-pills {
+  position: fixed;
+  top: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 100;
+}
+.region-pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text2);
+  padding: 6px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  backdrop-filter: var(--blur);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.region-pill:hover, .region-pill.active {
+  background: var(--accent2);
+  color: var(--accent);
+  border-color: rgba(0,212,255,0.3);
+}
+[data-theme="light"] .region-pill.active {
+  border-color: rgba(0,82,204,0.3);
+}
+
+/* ═══════════════════════════════════════════
+   GLOBAL COUNTER (top-right)
+═══════════════════════════════════════════ */
+#global-counter {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 100;
+  padding: 8px 16px;
+  border-radius: 10px;
+  text-align: right;
+}
+.gc-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.gc-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+.gc-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: var(--text2);
+}
+
+/* ═══════════════════════════════════════════
+   LOADING SCREEN
+═══════════════════════════════════════════ */
+#loading {
+  position: fixed;
+  inset: 0;
+  background: #03060F;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: opacity 0.8s;
+}
+#loading.fade { opacity: 0; pointer-events: none; }
+.load-logo {
+  font-family: 'Syne', sans-serif;
+  font-weight: 800;
+  font-size: 32px;
+  letter-spacing: -0.03em;
+  color: #fff;
+  margin-bottom: 6px;
+}
+.load-logo span { color: #00D4FF; }
+.load-sub {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.3);
+  margin-bottom: 40px;
+}
+.load-bar {
+  width: 200px;
+  height: 1px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.load-fill {
+  height: 100%;
+  background: #00D4FF;
+  border-radius: 1px;
+  animation: load-grow 2s cubic-bezier(0.4,0,0.2,1) forwards;
+}
+@keyframes load-grow { from{width:0} to{width:100%} }
+.load-status {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  color: rgba(255,255,255,0.2);
+  margin-top: 14px;
+  text-transform: uppercase;
+  animation: status-cycle 2s steps(1) forwards;
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div class="load-logo">RAQAM<span>.</span>GLOBAL</div>
+  <div class="load-sub">Real Estate Intelligence · Worldwide</div>
+  <div class="load-bar"><div class="load-fill"></div></div>
+  <div class="load-status" id="load-status">Initialising globe engine...</div>
+</div>
+
+<!-- GLOBE -->
+<div id="globe-wrap"></div>
+
+<!-- TOP BAR -->
+<div id="topbar" class="panel">
+  <div class="logo">
+    <div class="logo-mark">RG</div>
+    <div>
+      <div class="logo-text">RAQAM GLOBAL</div>
+      <div class="logo-sub">Real Estate Monitor</div>
+    </div>
+  </div>
+  <div class="top-pills">
+    <button class="top-pill active" onclick="setView('global',this)">Global</button>
+    <button class="top-pill" onclick="setView('mena',this)">MENA</button>
+    <button class="top-pill" onclick="setView('uae',this)">UAE</button>
+    <button class="top-pill" onclick="setView('asia',this)">Asia</button>
+    <button class="top-pill" onclick="setView('europe',this)">Europe</button>
+    <button class="top-pill" onclick="setView('americas',this)">Americas</button>
+  </div>
+  <div class="top-sep"></div>
+  <div class="live-dot">Live</div>
+  <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">☀</button>
+</div>
+
+<!-- REGION PRESETS (removed — consolidated into top bar) -->
+
+<!-- LAYERS PANEL -->
+<div id="layers-panel" class="panel">
+  <div class="layers-header">Data Layers</div>
+
+  <div class="layer-item active" onclick="toggleLayer('markets',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">◉</div>
+    <div class="layer-label">Markets</div>
+    <div class="layer-badge">189</div>
+  </div>
+  <div class="layer-item active" onclick="toggleLayer('hotspots',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">⬡</div>
+    <div class="layer-label">Hotspots</div>
+    <div class="layer-badge">42</div>
+  </div>
+  <div class="layer-item active" onclick="toggleLayer('transactions',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">↗</div>
+    <div class="layer-label">Transactions</div>
+  </div>
+  <div class="layer-divider"></div>
+  <div class="layer-item active" onclick="toggleLayer('uae',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">🇦🇪</div>
+    <div class="layer-label">UAE Districts</div>
+    <div class="layer-badge">UAE</div>
+  </div>
+  <div class="layer-item" onclick="toggleLayer('arcs',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">〜</div>
+    <div class="layer-label">Trade Flows</div>
+  </div>
+  <div class="layer-divider"></div>
+  <div class="layer-item active" onclick="toggleLayer('labels',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">Aa</div>
+    <div class="layer-label">Labels</div>
+  </div>
+  <div class="layer-item" onclick="toggleLayer('grid',this)">
+    <div class="layer-check"><div class="layer-check-inner"></div></div>
+    <div class="layer-icon">⊞</div>
+    <div class="layer-label">Graticule</div>
+  </div>
+</div>
+
+<!-- STATS PANEL (right) -->
+<div id="stats-panel" class="panel">
+  <div>
+    <div class="stats-title">Global RE Market</div>
+    <div class="stat-big" id="stat-vol">$4.2T</div>
+    <div class="stat-sub">Annual transaction volume · 2025</div>
+  </div>
+  <div>
+    <div class="stats-title">UAE Focus</div>
+    <div class="stat-row">
+      <div>
+        <div class="stat-row-label">Dubai 2025 Vol.</div>
+        <div class="stat-row-value">AED 761B</div>
+      </div>
+      <div class="stat-delta up">▲ 28.4%</div>
+    </div>
+    <div class="stat-row">
+      <div>
+        <div class="stat-row-label">Avg PSF</div>
+        <div class="stat-row-value">AED 1,758</div>
+      </div>
+      <div class="stat-delta up">▲ 11.2%</div>
+    </div>
+    <div class="stat-row">
+      <div>
+        <div class="stat-row-label">Avg Yield</div>
+        <div class="stat-row-value">7.4%</div>
+      </div>
+      <div class="stat-delta up">▲ 0.6pp</div>
+    </div>
+    <div class="stat-row">
+      <div>
+        <div class="stat-row-label">Active Listings</div>
+        <div class="stat-row-value">226,489</div>
+      </div>
+      <div class="stat-delta dn">▼ 3.1%</div>
+    </div>
+    <div>
+      <div class="stat-row-label" style="margin-bottom:6px">Market Health</div>
+      <div class="market-bar"><div class="market-bar-fill" style="width:78%"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        <span class="stat-row-label">Weak</span>
+        <span class="stat-row-label" style="color:var(--green)">78 / Strong</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ZOOM CONTROLS -->
+<div id="zoom-ctrl">
+  <button class="zoom-btn" onclick="zoomIn()">+</button>
+  <button class="zoom-btn" onclick="zoomOut()">−</button>
+  <button class="zoom-btn" title="Reset view" onclick="resetView()" style="font-size:11px;letter-spacing:0">⌂</button>
+</div>
+
+<!-- GLOBAL COUNTER -->
+<div id="global-counter" class="panel">
+  <div class="gc-label">Transactions Today</div>
+  <div class="gc-value" id="gc-num">18,247</div>
+  <div class="gc-sub">across 89 markets</div>
+</div>
+
+<!-- UAE DEEP DIVE -->
+<a id="uae-btn" href="dubai-realestate-tracker.html" target="_blank">
+  <div class="uae-flag">🇦🇪</div>
+  <div class="uae-text">
+    <div class="uae-label">Deep Dive</div>
+    <div class="uae-name">RAQAM Dubai</div>
+  </div>
+  <div class="uae-arrow">→</div>
+</a>
+
+<!-- COUNTRY HOVER CARD -->
+<div id="country-card" class="panel"></div>
+
+<!-- BOTTOM TICKER -->
+<div id="ticker-bar">
+  <div class="ticker-label">Global Txn Feed</div>
+  <div class="ticker-track">
+    <div class="ticker-inner" id="ticker-inner"></div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════
+   DATA
+══════════════════════════════════════════════ */
+const MARKETS = [
+  {country:"United Arab Emirates",code:"AE",flag:"🇦🇪",lat:24.47,lng:54.37,score:88,yoy:28.4,psf:"AED 1,758",vol:"$207B",trend:"up"},
+  {country:"Saudi Arabia",code:"SA",flag:"🇸🇦",lat:23.88,lng:45.08,score:74,yoy:14.2,psf:"SAR 3,200",vol:"$89B",trend:"up"},
+  {country:"United States",code:"US",flag:"🇺🇸",lat:37.09,lng:-95.71,score:65,yoy:4.1,psf:"$245",vol:"$1.8T",trend:"up"},
+  {country:"United Kingdom",code:"GB",flag:"🇬🇧",lat:55.38,lng:-3.44,score:54,yoy:-1.8,psf:"£485",vol:"$312B",trend:"dn"},
+  {country:"Germany",code:"DE",flag:"🇩🇪",lat:51.17,lng:10.45,score:48,yoy:-4.2,psf:"€4,100",vol:"$198B",trend:"dn"},
+  {country:"France",code:"FR",flag:"🇫🇷",lat:46.23,lng:2.21,score:51,yoy:-2.1,psf:"€5,800",vol:"$174B",trend:"dn"},
+  {country:"Japan",code:"JP",flag:"🇯🇵",lat:36.20,lng:138.25,score:72,yoy:9.8,psf:"¥1.2M",vol:"$156B",trend:"up"},
+  {country:"Singapore",code:"SG",flag:"🇸🇬",lat:1.35,lng:103.82,score:81,yoy:16.4,psf:"S$2,100",vol:"$43B",trend:"up"},
+  {country:"Australia",code:"AU",flag:"🇦🇺",lat:-25.27,lng:133.78,score:69,yoy:8.2,psf:"A$8,900",vol:"$187B",trend:"up"},
+  {country:"Canada",code:"CA",flag:"🇨🇦",lat:56.13,lng:-106.35,score:58,yoy:1.4,psf:"C$690",vol:"$142B",trend:"up"},
+  {country:"India",code:"IN",flag:"🇮🇳",lat:20.59,lng:78.96,score:77,yoy:18.7,psf:"₹8,400",vol:"$98B",trend:"up"},
+  {country:"China",code:"CN",flag:"🇨🇳",lat:35.86,lng:104.19,score:34,yoy:-8.4,psf:"¥18,500",vol:"$1.1T",trend:"dn"},
+  {country:"Brazil",code:"BR",flag:"🇧🇷",lat:-14.24,lng:-51.93,score:61,yoy:6.8,psf:"R$8,200",vol:"$76B",trend:"up"},
+  {country:"South Korea",code:"KR",flag:"🇰🇷",lat:35.91,lng:127.77,score:58,yoy:3.2,psf:"₩8.4M",vol:"$112B",trend:"up"},
+  {country:"Netherlands",code:"NL",flag:"🇳🇱",lat:52.13,lng:5.29,score:63,yoy:5.4,psf:"€4,600",vol:"$67B",trend:"up"},
+  {country:"Portugal",code:"PT",flag:"🇵🇹",lat:39.40,lng:-8.22,score:75,yoy:14.8,psf:"€3,100",vol:"$28B",trend:"up"},
+  {country:"Qatar",code:"QA",flag:"🇶🇦",lat:25.35,lng:51.18,score:71,yoy:11.2,psf:"QAR 1,450",vol:"$18B",trend:"up"},
+  {country:"Kuwait",code:"KW",flag:"🇰🇼",lat:29.31,lng:47.48,score:58,yoy:4.8,psf:"KWD 380",vol:"$9B",trend:"up"},
+  {country:"Türkiye",code:"TR",flag:"🇹🇷",lat:38.96,lng:35.24,score:42,yoy:68.4,psf:"₺48,000",vol:"$31B",trend:"up"},
+  {country:"South Africa",code:"ZA",flag:"🇿🇦",lat:-30.56,lng:22.94,score:44,yoy:2.1,psf:"R12,400",vol:"$14B",trend:"up"},
+  {country:"Kenya",code:"KE",flag:"🇰🇪",lat:0.02,lng:37.91,score:53,yoy:7.4,psf:"KES 9,800",vol:"$4B",trend:"up"},
+  {country:"Mexico",code:"MX",flag:"🇲🇽",lat:23.63,lng:-102.55,score:62,yoy:9.1,psf:"MXN 28,000",vol:"$38B",trend:"up"},
+  {country:"Nigeria",code:"NG",flag:"🇳🇬",lat:9.08,lng:8.68,score:46,yoy:31.2,psf:"₦480,000",vol:"$7B",trend:"up"},
+  {country:"Indonesia",code:"ID",flag:"🇮🇩",lat:-0.79,lng:113.92,score:66,yoy:8.9,psf:"Rp 28M",vol:"$24B",trend:"up"},
+  {country:"Thailand",code:"TH",flag:"🇹🇭",lat:15.87,lng:100.99,score:62,yoy:7.1,psf:"THB 95,000",vol:"$19B",trend:"up"},
+  {country:"Vietnam",code:"VN",flag:"🇻🇳",lat:14.06,lng:108.28,score:71,yoy:13.4,psf:"VND 48M",vol:"$11B",trend:"up"},
+  {country:"Poland",code:"PL",flag:"🇵🇱",lat:51.92,lng:19.15,score:67,yoy:11.8,psf:"PLN 12,400",vol:"$34B",trend:"up"},
+  {country:"Sweden",code:"SE",flag:"🇸🇪",lat:60.13,lng:18.64,score:47,yoy:-3.8,psf:"SEK 42,000",vol:"$41B",trend:"dn"},
+  {country:"Switzerland",code:"CH",flag:"🇨🇭",lat:46.82,lng:8.23,score:74,yoy:4.8,psf:"CHF 11,200",vol:"$78B",trend:"up"},
+  {country:"Spain",code:"ES",flag:"🇪🇸",lat:40.46,lng:-3.75,score:72,yoy:12.4,psf:"€2,800",vol:"$87B",trend:"up"},
+];
+
+const TICKER_DATA = [
+  {city:"Dubai",area:"Downtown",price:"AED 4,200,000",psf:"AED 3,848",trend:"up",delta:"+12.4%"},
+  {city:"London",area:"Canary Wharf",price:"£1,850,000",psf:"£1,240/ft²",trend:"dn",delta:"-2.1%"},
+  {city:"Singapore",area:"Marina Bay",price:"S$4,200,000",psf:"S$3,100/ft²",trend:"up",delta:"+9.8%"},
+  {city:"Dubai",area:"Business Bay",price:"AED 2,100,000",psf:"AED 2,240",trend:"up",delta:"+8.7%"},
+  {city:"New York",area:"Manhattan",price:"$2,840,000",psf:"$1,890/ft²",trend:"up",delta:"+3.4%"},
+  {city:"Tokyo",area:"Minato",price:"¥182,000,000",psf:"¥1.4M/㎡",trend:"up",delta:"+14.2%"},
+  {city:"Dubai",area:"Palm Jumeirah",price:"AED 12,500,000",psf:"AED 4,100",trend:"up",delta:"+18.6%"},
+  {city:"Sydney",area:"CBD",price:"A$2,400,000",psf:"A$18,400/㎡",trend:"up",delta:"+6.8%"},
+  {city:"Paris",area:"8th Arr.",price:"€3,200,000",psf:"€14,800/㎡",trend:"dn",delta:"-1.4%"},
+  {city:"Mumbai",area:"Bandra",price:"₹48,000,000",psf:"₹48,000/ft²",trend:"up",delta:"+22.1%"},
+  {city:"Dubai",area:"Dubai Marina",price:"AED 1,850,000",psf:"AED 2,100",trend:"up",delta:"+7.4%"},
+  {city:"Frankfurt",area:"Westend",price:"€1,980,000",psf:"€7,800/㎡",trend:"dn",delta:"-5.2%"},
+  {city:"Abu Dhabi",area:"Al Reem Island",price:"AED 2,400,000",psf:"AED 1,650",trend:"up",delta:"+11.8%"},
+  {city:"Lisbon",area:"Chiado",price:"€980,000",psf:"€6,200/㎡",trend:"up",delta:"+16.4%"},
+  {city:"Seoul",area:"Gangnam",price:"₩2,400,000,000",psf:"₩12.4M/㎡",trend:"up",delta:"+4.8%"},
+  {city:"Toronto",area:"Downtown",price:"C$1,200,000",psf:"C$1,140/ft²",trend:"up",delta:"+2.4%"},
+  {city:"Amsterdam",area:"Centrum",price:"€890,000",psf:"€7,400/㎡",trend:"up",delta:"+8.2%"},
+  {city:"Dubai",area:"JVC",price:"AED 680,000",psf:"AED 1,140",trend:"up",delta:"+6.1%"},
+  {city:"Barcelona",area:"Eixample",price:"€680,000",psf:"€4,800/㎡",trend:"up",delta:"+14.8%"},
+  {city:"Ho Chi Minh",area:"District 1",price:"$480,000",psf:"$4,200/㎡",trend:"up",delta:"+18.4%"},
+];
+
+const VIEW_PRESETS = {
+  global:   {lat:20,lng:0,alt:2.8},
+  mena:     {lat:24,lng:45,alt:1.4},
+  uae:      {lat:24.5,lng:54.5,alt:0.7},
+  asia:     {lat:25,lng:110,alt:1.8},
+  europe:   {lat:50,lng:10,alt:1.5},
+  americas: {lat:20,lng:-90,alt:1.8},
+};
+
+/* ══════════════════════════════════════════════
+   SCORE → COLOUR
+══════════════════════════════════════════════ */
+function scoreColor(score, alpha=0.7) {
+  const dark = document.documentElement.dataset.theme !== 'light';
+  if (score >= 75) return `rgba(0,229,160,${alpha})`;
+  if (score >= 60) return `rgba(245,200,66,${alpha})`;
+  if (score >= 45) return `rgba(255,130,50,${alpha})`;
+  return `rgba(255,68,85,${alpha})`;
+}
+
+/* ══════════════════════════════════════════════
+   GLOBE SETUP
+══════════════════════════════════════════════ */
+let globe, currentView = 'global';
+let layerState = {markets:true,hotspots:true,transactions:true,uae:true,arcs:false,labels:true,grid:false};
+
+const UAE_DISTRICTS = [
+  {name:"Downtown Dubai",lat:25.197,lng:55.274,psf:3848,yoy:12.4,vol:18400},
+  {name:"Dubai Marina",lat:25.078,lng:55.140,psf:2100,yoy:7.4,vol:24100},
+  {name:"Palm Jumeirah",lat:25.119,lng:55.139,psf:4100,yoy:18.6,vol:8200},
+  {name:"Business Bay",lat:25.186,lng:55.261,psf:2240,yoy:8.7,vol:21800},
+  {name:"JVC",lat:25.055,lng:55.218,psf:1140,yoy:6.1,vol:31400},
+  {name:"Dubai Hills",lat:25.110,lng:55.245,psf:1980,yoy:14.2,vol:12600},
+  {name:"Jumeirah",lat:25.205,lng:55.238,psf:3100,yoy:9.8,vol:6800},
+  {name:"Deira",lat:25.269,lng:55.318,psf:980,yoy:4.2,vol:9400},
+  {name:"Bur Dubai",lat:25.250,lng:55.296,psf:1120,yoy:5.8,vol:7200},
+  {name:"DIFC",lat:25.218,lng:55.280,psf:3400,yoy:16.8,vol:4100},
+  {name:"Al Barsha",lat:25.108,lng:55.195,psf:1460,yoy:8.4,vol:14800},
+  {name:"Mirdif",lat:25.215,lng:55.410,psf:920,yoy:3.8,vol:6200},
+];
+
+const TRADE_ARCS = [
+  {startLat:24.47,startLng:54.37,endLat:51.51,endLng:-0.13,val:12},
+  {startLat:24.47,startLng:54.37,endLat:25.20,endLng:55.27,val:8},
+  {startLat:24.47,startLng:54.37,endLat:1.35,endLng:103.82,val:6},
+  {startLat:24.47,startLng:54.37,endLat:40.71,endLng:-74.01,val:5},
+  {startLat:24.47,startLng:54.37,endLat:19.08,endLng:72.88,val:9},
+  {startLat:51.51,startLng:-0.13,endLat:40.71,endLng:-74.01,val:11},
+  {startLat:35.69,startLng:139.69,endLat:1.35,endLng:103.82,val:7},
+  {startLat:-33.87,startLng:151.21,endLat:1.35,endLng:103.82,val:4},
+  {startLat:48.86,startLng:2.35,endLat:51.51,endLng:-0.13,val:6},
+];
+
+function initGlobe() {
+  const isDark = document.documentElement.dataset.theme !== 'light';
+
+  globe = Globe()
+    .globeImageUrl(isDark
+      ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg'
+      : 'https://unpkg.com/three-globe/example/img/earth-day.jpg')
+    .backgroundImageUrl(isDark
+      ? 'https://unpkg.com/three-globe/example/img/night-sky.png'
+      : null)
+    .showAtmosphere(true)
+    .atmosphereColor(isDark ? '#00D4FF' : '#4488FF')
+    .atmosphereAltitude(0.18)
+    .pointOfView(VIEW_PRESETS.global, 0)
+    (document.getElementById('globe-wrap'));
+
+  // Sizing
+  const setSize = () => {
+    globe.width(window.innerWidth).height(window.innerHeight - 44);
+  };
+  setSize();
+  window.addEventListener('resize', setSize);
+
+  // Auto-rotate
+  let autoRotate = true, rotTimer;
+  globe.controls().autoRotate = true;
+  globe.controls().autoRotateSpeed = 0.4;
+  globe.controls().enableDamping = true;
+  globe.controls().dampingFactor = 0.06;
+
+  const pauseRotate = () => {
+    globe.controls().autoRotate = false;
+    clearTimeout(rotTimer);
+    rotTimer = setTimeout(() => { globe.controls().autoRotate = true; }, 6000);
+  };
+  document.getElementById('globe-wrap').addEventListener('mousedown', pauseRotate);
+  document.getElementById('globe-wrap').addEventListener('touchstart', pauseRotate);
+
+  renderLayers();
+}
+
+function renderLayers() {
+  if (!globe) return;
+  const isDark = document.documentElement.dataset.theme !== 'light';
+
+  // ── Country hotspot points ──────────────────
+  const pts = layerState.hotspots ? MARKETS : [];
+  globe.pointsData(pts)
+    .pointLat('lat')
+    .pointLng('lng')
+    .pointColor(d => scoreColor(d.score, 0.9))
+    .pointAltitude(d => d.score / 1200)
+    .pointRadius(d => 0.28 + d.score / 400)
+    .pointLabel(d => '')
+    .onPointClick(d => showCountryCard(d))
+    .onPointHover(d => {
+      document.body.style.cursor = d ? 'pointer' : '';
+    });
+
+  // ── UAE district rings ──────────────────────
+  const rings = layerState.uae ? UAE_DISTRICTS : [];
+  globe.ringsData(rings)
+    .ringLat('lat')
+    .ringLng('lng')
+    .ringColor(d => t => `rgba(0,212,255,${Math.max(0,0.8-t)})`)
+    .ringMaxRadius(d => 0.6 + d.vol / 60000)
+    .ringPropagationSpeed(1.2)
+    .ringRepeatPeriod(1800);
+
+  // ── Trade arcs ──────────────────────────────
+  const arcs = layerState.arcs ? TRADE_ARCS : [];
+  globe.arcsData(arcs)
+    .arcStartLat('startLat')
+    .arcStartLng('startLng')
+    .arcEndLat('endLat')
+    .arcEndLng('endLng')
+    .arcColor(() => isDark ? ['rgba(0,212,255,0.05)','rgba(0,212,255,0.6)','rgba(0,212,255,0.05)'] : ['rgba(0,82,204,0.05)','rgba(0,82,204,0.6)','rgba(0,82,204,0.05)'])
+    .arcAltitudeAutoScale(0.4)
+    .arcStroke(0.5)
+    .arcDashLength(0.3)
+    .arcDashGap(0.7)
+    .arcDashAnimateTime(3000);
+
+  // ── Labels ──────────────────────────────────
+  const labels = layerState.labels ? MARKETS.filter(m=>m.score>70) : [];
+  globe.labelsData(labels)
+    .labelLat('lat')
+    .labelLng('lng')
+    .labelText(d => d.flag + ' ' + d.country)
+    .labelSize(d => d.score > 80 ? 1.2 : 0.9)
+    .labelDotRadius(0)
+    .labelColor(() => isDark ? 'rgba(232,237,245,0.7)' : 'rgba(10,15,30,0.7)')
+    .labelAltitude(0.005)
+    .labelResolution(3)
+    .labelTypeFace(null);
+}
+
+/* ══════════════════════════════════════════════
+   COUNTRY CARD
+══════════════════════════════════════════════ */
+function showCountryCard(d) {
+  if (!d) { document.getElementById('country-card').classList.remove('visible'); return; }
+  const card = document.getElementById('country-card');
+  const trend = d.trend === 'up';
+  card.innerHTML = `
+    <div class="cc-flag">${d.flag}</div>
+    <div class="cc-name">${d.country}</div>
+    <div class="cc-region">Real Estate Market · ${d.trend === 'up' ? '▲ Growing' : '▼ Contracting'}</div>
+    <div class="cc-metrics">
+      <div class="cc-metric">
+        <div class="cc-metric-label">YoY Growth</div>
+        <div class="cc-metric-value ${trend?'up':'dn'}">${trend?'+':''}${d.yoy}%</div>
+      </div>
+      <div class="cc-metric">
+        <div class="cc-metric-label">Health Score</div>
+        <div class="cc-metric-value ${d.score>65?'up':d.score>45?'':'dn'}">${d.score}/100</div>
+      </div>
+      <div class="cc-metric">
+        <div class="cc-metric-label">Avg PSF</div>
+        <div class="cc-metric-value">${d.psf}</div>
+      </div>
+      <div class="cc-metric">
+        <div class="cc-metric-label">Annual Vol.</div>
+        <div class="cc-metric-value">${d.vol}</div>
+      </div>
+    </div>
+    ${d.code==='AE' ? '<button class="cc-cta" onclick="window.open(\'dubai-realestate-tracker.html\')">Open Dubai Dashboard →</button>' : ''}
+  `;
+  // Position near center-right
+  card.style.left = '50%';
+  card.style.top = '50%';
+  card.style.transform = 'translate(-50%,-50%)';
+  card.classList.add('visible');
+
+  // Click away to close
+  setTimeout(() => {
+    const close = (e) => {
+      if (!card.contains(e.target)) {
+        card.classList.remove('visible');
+        document.removeEventListener('click', close);
+      }
+    };
+    document.addEventListener('click', close);
+  }, 100);
+}
+
+/* ══════════════════════════════════════════════
+   VIEW PRESETS
+══════════════════════════════════════════════ */
+function setView(key, btn) {
+  currentView = key;
+  document.querySelectorAll('.top-pill').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (globe && VIEW_PRESETS[key]) {
+    globe.pointOfView(VIEW_PRESETS[key], 1400);
+    globe.controls().autoRotate = (key === 'global');
+  }
+}
+
+/* ══════════════════════════════════════════════
+   LAYER TOGGLE
+══════════════════════════════════════════════ */
+function toggleLayer(id, el) {
+  layerState[id] = !layerState[id];
+  el.classList.toggle('active', layerState[id]);
+  renderLayers();
+}
+
+/* ══════════════════════════════════════════════
+   ZOOM
+══════════════════════════════════════════════ */
+function zoomIn() {
+  if (!globe) return;
+  const pov = globe.pointOfView();
+  globe.pointOfView({...pov, alt: Math.max(0.3, pov.alt * 0.7)}, 400);
+}
+function zoomOut() {
+  if (!globe) return;
+  const pov = globe.pointOfView();
+  globe.pointOfView({...pov, alt: Math.min(4, pov.alt / 0.7)}, 400);
+}
+function resetView() { setView('global', null); globe && globe.pointOfView(VIEW_PRESETS.global, 1000); }
+
+/* ══════════════════════════════════════════════
+   THEME
+══════════════════════════════════════════════ */
+function toggleTheme() {
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
+  document.getElementById('theme-btn').textContent = isDark ? '☽' : '☀';
+  if (globe) {
+    globe.globeImageUrl(!isDark
+      ? 'https://unpkg.com/three-globe/example/img/earth-night.jpg'
+      : 'https://unpkg.com/three-globe/example/img/earth-day.jpg');
+    globe.backgroundImageUrl(!isDark
+      ? 'https://unpkg.com/three-globe/example/img/night-sky.png'
+      : null);
+    globe.atmosphereColor(!isDark ? '#00D4FF' : '#4488FF');
+    renderLayers();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   TICKER
+══════════════════════════════════════════════ */
+function buildTicker() {
+  const doubled = [...TICKER_DATA, ...TICKER_DATA]; // seamless loop
+  const inner = document.getElementById('ticker-inner');
+  inner.innerHTML = doubled.map(d => `
+    <div class="ticker-item">
+      <div>
+        <div class="ticker-city">${d.city}</div>
+        <div class="ticker-area">${d.area}</div>
+      </div>
+      <div class="ticker-price">${d.price}</div>
+      <div class="ticker-delta ${d.trend}">${d.delta}</div>
+    </div>
+    <div class="ticker-sep">|</div>
+  `).join('');
+}
+
+/* ══════════════════════════════════════════════
+   COUNTER ANIMATION
+══════════════════════════════════════════════ */
+function animateCounter() {
+  let val = 18247;
+  const el = document.getElementById('gc-num');
+  setInterval(() => {
+    val += Math.floor(Math.random() * 8);
+    el.textContent = val.toLocaleString();
+  }, 3400);
+}
+
+/* ══════════════════════════════════════════════
+   BOOT
+══════════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  const statuses = ['Initialising globe engine...','Loading earth textures...','Connecting market feeds...','Calibrating 30 markets...','Ready.'];
+  let si = 0;
+  const statusEl = document.getElementById('load-status');
+  const statusTimer = setInterval(() => {
+    si++;
+    if (si < statuses.length) statusEl.textContent = statuses[si];
+    else clearInterval(statusTimer);
+  }, 400);
+
+  buildTicker();
+  animateCounter();
+
+  setTimeout(() => {
+    initGlobe();
+    setTimeout(() => {
+      document.getElementById('loading').classList.add('fade');
+      setTimeout(() => { document.getElementById('loading').style.display = 'none'; }, 800);
+    }, 1800);
+  }, 600);
+});
+</script>
+</body>
+</html>
