@@ -835,8 +835,8 @@ const MAPBOX_TOKEN = ['pk.eyJ1Ijoic3VuZGVyajkxIiwiYSI6ImNtbWtmb2F1aTBnbm0y','c3I
 mapboxgl.accessToken = MAPBOX_TOKEN;
 
 // Mapbox Standard = photorealistic 3D buildings, roads, landmarks — all built-in
-const STYLE_DARK  = 'mapbox://styles/mapbox/standard';
-const STYLE_LIGHT = 'mapbox://styles/mapbox/standard';
+const STYLE_DARK  = 'mapbox://styles/mapbox/dark-v11';
+const STYLE_LIGHT = 'mapbox://styles/mapbox/light-v11';
 const STYLE_SAT   = 'mapbox://styles/mapbox/satellite-streets-v12';
 
 function getStyle(mode) {
@@ -854,10 +854,10 @@ let _areaList = [...AREAS];
 
 /* ── Heat colour scale ───────────────────────── */
 const HEAT_CONFIGS = {
-  psf:   { label: 'Price / sqft (AED)', stops: [[500,'#2563EB'],[1500,'#06B6D4'],[2500,'#F59E0B'],[4200,'#EF4444']] },
-  yoy:   { label: 'YoY Growth (%)',     stops: [[-5,'#1A4BFF'],[5,'#00B8D9'],[15,'#F59E0B'],[25,'#FF3D3D']] },
-  yield: { label: 'Rental Yield (%)',   stops: [[4,'#FF3D3D'],[6,'#F59E0B'],[8,'#00B8D9'],[10,'#1A4BFF']] },
-  vol:   { label: 'Transaction Volume', stops: [[2000,'#1A4BFF'],[10000,'#00B8D9'],[20000,'#F59E0B'],[32000,'#FF3D3D']] },
+  psf:   { label: 'Price / sqft (AED)', stops: [[500,'#3B82F6'],[1500,'#06B6D4'],[2500,'#FBBF24'],[4200,'#F43F5E']] },
+  yoy:   { label: 'YoY Growth (%)',     stops: [[-5,'#3B82F6'],[5,'#06B6D4'],[15,'#FBBF24'],[25,'#F43F5E']] },
+  yield: { label: 'Rental Yield (%)',   stops: [[4,'#F43F5E'],[6,'#FBBF24'],[8,'#06B6D4'],[10,'#3B82F6']] },
+  vol:   { label: 'Transaction Volume', stops: [[2000,'#3B82F6'],[10000,'#06B6D4'],[20000,'#FBBF24'],[32000,'#F43F5E']] },
 };
 
 function heatVal(a) {
@@ -950,10 +950,7 @@ function initMap() {
     // Configure Mapbox Standard style
     const isDarkInit = document.documentElement.dataset.theme === 'dark';
     try {
-      map.setConfigProperty('basemap', 'lightPreset', isDarkInit ? 'dusk' : 'day');
-      map.setConfigProperty('basemap', 'showPointOfInterestLabels', false);
-      map.setConfigProperty('basemap', 'showTransitLabels', true);
-      map.setConfigProperty('basemap', 'showPlaceLabels', true);
+      // dark-v11/light-v11 don't use configProperty lightPreset
     } catch(e) {}
     addAreaLayers();
     addMetroLayer();
@@ -1012,7 +1009,7 @@ function buildGeoJSON() {
 
 function addAreaLayers() {
   // Clean up existing layers + source
-  ['area-extrude','area-fill','area-line','area-line-hi','area-label'].forEach(id => {
+  ['area-extrude','area-fill','area-glow','area-line','area-line-hi','area-label'].forEach(id => {
     try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {}
   });
   try { if (map.getSource('areas')) map.removeSource('areas'); } catch(e) {}
@@ -1028,19 +1025,30 @@ function addAreaLayers() {
     source: 'areas',
     paint: {
       'fill-color': ['get', 'color'],
-      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.55, 11, 0.45, 13, 0.35, 15, 0.28],
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.62, 10, 0.55, 12, 0.48, 14, 0.40],
     }
   });
 
   // ── Border lines ─────────────────────────────
+  map.addLayer({
+    id: 'area-glow',
+    type: 'line',
+    source: 'areas',
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 6, 11, 10, 14, 14],
+      'line-opacity': 0.18,
+      'line-blur': 4,
+    }
+  });
   map.addLayer({
     id: 'area-line',
     type: 'line',
     source: 'areas',
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1, 12, 2, 15, 3],
-      'line-opacity': 0.7,
+      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.5, 14, 3.5],
+      'line-opacity': 1.0,
     }
   });
 
@@ -1093,9 +1101,9 @@ function addAreaLayers() {
     paint: {
       'text-color': '#FFFFFF',
       'text-opacity': ['interpolate', ['linear'], ['zoom'], 8.8, 0, 9.8, 1],
-      'text-halo-color': 'rgba(5,10,25,0.85)',
-      'text-halo-width': 1.8,
-      'text-halo-blur': 0.8,
+      'text-halo-color': 'rgba(0,0,0,0.95)',
+      'text-halo-width': 2.2,
+      'text-halo-blur': 0.5,
     }
   });
 
@@ -1146,7 +1154,7 @@ function addAreaLayers() {
   });
 
   if (!_layerState.areas) {
-    ['area-fill','area-line','area-line-hi','area-extrude'].forEach(id => {
+    ['area-fill','area-glow','area-line','area-line-hi','area-extrude'].forEach(id => {
       try { map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
     });
   }
@@ -1616,7 +1624,7 @@ function toggleTheme() {
   if (!_satMode) {
     // Mapbox Standard: switch light preset instantly — no style reload needed
     try {
-      map.setConfigProperty('basemap', 'lightPreset', isDark ? 'day' : 'dusk');
+      // lightPreset not used with dark-v11/light-v11
     } catch(e) {
       // Fallback: full style swap if config not available (e.g. satellite mode)
       map.setStyle(isDark ? getStyle('light') : getStyle('dark'));
@@ -1641,7 +1649,7 @@ function applyLayerVisibility() {
   const vis = on => on ? 'visible' : 'none';
   try {
     // Area polygon layers
-    ['area-fill','area-line','area-line-hi','area-label'].forEach(id => {
+    ['area-fill','area-glow','area-line','area-line-hi','area-label'].forEach(id => {
       if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis(_layerState.areas));
     });
     // 3D extrusions (only visible when areas + extrude both on AND in 3D view)
