@@ -1978,67 +1978,66 @@ function refreshAreaColors() {
 const METRO_LINES = {
   red: {
     color: '#FF3355', glow: '#FF335566',
-    // Red Line: Rashidiya → UAE Exchange, elevated then underground downtown
     coords: [
-      [55.09107,24.97760],[55.09400,24.99000],[55.09571,25.00129],[55.09800,25.01300],
-      [55.10130,25.02631],[55.10600,25.03500],[55.11100,25.04000],[55.11749,25.04668],
-      [55.12300,25.04550],[55.13000,25.04450],[55.13505,25.04350],[55.14000,25.04000],
-      [55.14200,25.03750],[55.14541,25.03526],[55.14900,25.03300],[55.15100,25.03150],
-      [55.15223,25.03047],[55.15350,25.02600],[55.15450,25.02000],[55.15500,25.01500],
-      [55.15567,25.00525],[55.15700,25.00800],[55.15900,25.01000],[55.16100,25.01300],
-      [55.16334,25.01779],
-      [55.15800,25.01500],
-      [55.15200,25.01200],
-      [55.14700,25.01000],
-      [55.14200,25.01000],
-      [55.13900,25.01500],
-      [55.13700,25.02200],
-      [55.13600,25.03000],
-      [55.13700,25.04000],
-      [55.13800,25.05000],
-      [55.13871,25.07088],[55.14200,25.07400],[55.14759,25.07995],[55.15300,25.08400],
-      [55.15817,25.08892],[55.16300,25.09300],[55.16800,25.09700],[55.17390,25.10217],
-      [55.18315,25.10917],[55.19088,25.11479],[55.19696,25.11892],[55.20099,25.12165],
-      [55.20792,25.12669],[55.21294,25.13105],[55.22202,25.14517],[55.22716,25.15356],
-      [55.24000,25.17000],[55.25000,25.18000],[55.26041,25.19128],[55.26719,25.19848],
+      [55.09107,24.97760],[55.09571,25.00129],[55.10130,25.02631],[55.11100,25.04000],
+      [55.11749,25.04668],[55.12300,25.04550],[55.13000,25.04450],[55.13505,25.04350],
+      [55.13300,25.04200],[55.13000,25.04000],[55.13000,25.05000],[55.13200,25.05800],
+      [55.13400,25.06400],[55.13871,25.07088],[55.14200,25.07400],[55.14759,25.07995],
+      [55.15200,25.08400],[55.15817,25.08892],[55.16500,25.09300],[55.17000,25.09800],
+      [55.17390,25.10217],[55.18000,25.10550],[55.18200,25.10700],[55.19088,25.11479],
+      [55.20045,25.12120],[55.20792,25.12668],[55.21500,25.13500],[55.22500,25.14800],
+      [55.23500,25.17000],[55.24500,25.18000],[55.26041,25.19128],[55.26719,25.19848],
       [55.27126,25.20462],[55.27800,25.20900],[55.28248,25.21388],[55.28815,25.21773],
       [55.29588,25.22594],[55.30489,25.22734],[55.31538,25.23190],[55.32234,25.23208],
-      [55.33081,25.23421],[55.33886,25.23486],[55.35264,25.24185],[55.36500,25.24600],
-      [55.37240,25.24800],[55.38400,25.24900],[55.38800,25.24900],[55.39900,25.24700],
-      [55.40500,25.24300],[55.41000,25.24200],[55.41400,25.23600]
+      [55.33081,25.23421],[55.33886,25.23486],[55.35264,25.24185],[55.36300,25.24600],
+      [55.37240,25.24800],[55.38500,25.24900],[55.39500,25.24700],[55.40500,25.24300],
+      [55.41000,25.24200],[55.41400,25.23600]
+    ]
+  },
+  route2020: {
+    color: '#FF3355', glow: '#FF335544',
+    coords: [
+      [55.13505,25.04350],[55.13900,25.04100],[55.14200,25.03800],[55.14541,25.03526],
+      [55.14900,25.03300],[55.15100,25.03150],[55.15223,25.03047],[55.15600,25.03000],
+      [55.16200,25.03000],[55.17000,25.03050],[55.17350,25.03180],[55.17200,25.02700],
+      [55.16900,25.02200],[55.16600,25.01900],[55.16334,25.01779],[55.15900,25.01200],
+      [55.15500,25.00400],[55.15200,24.99500],[55.15000,24.98500],[55.14800,24.97500],
+      [55.14608,24.96349]
+    ]
+  },
+  airportBranch: {
+    color: '#FF3355', glow: '#FF335544',
+    coords: [
+      [55.38500,25.24900],[55.37500,25.25200],[55.36300,25.25200],[55.36500,25.25800],
+      [55.36800,25.26200],[55.37200,25.26500],[55.38000,25.26600],[55.38800,25.26600]
     ]
   },
   green: {
     color: '#00E676', glow: '#00E67666',
-    // Green Line: Etisalat → Creek, loops through Deira/Bur Dubai
     coords: [
-      [55.30659,25.25366],[55.29913,25.2574],[55.29104,25.26086],[55.28865,25.26376],
-      [55.28923,25.26577],[55.29586,25.27072],[55.30066,25.2757],[55.30474,25.27683],
-      [55.30724,25.272],[55.30766,25.26918],[55.3096,25.26711],[55.31274,25.26608],
-      [55.31435,25.26642],[55.31499,25.26673],[55.31606,25.26825],[55.31634,25.26959],
-      [55.31826,25.27025],[55.3238,25.27031],[55.33001,25.27049],[55.33554,25.27139],
-      [55.34643,25.27543],[55.34778,25.2758],[55.34955,25.27569],[55.35092,25.27611],
-      [55.35508,25.27965],[55.35671,25.28009],[55.36148,25.27794],[55.37517,25.26984],
-      [55.38775,25.26248],[55.3994,25.25574],[55.39938,25.25571],[55.38726,25.26273],
-      [55.37131,25.27213],[55.35815,25.27972],[55.35633,25.28004],[55.35476,25.27943],
-      [55.35064,25.2759],[55.34913,25.27566],[55.34741,25.27572],[55.34481,25.27467],
-      [55.33359,25.271],[55.32902,25.27033],[55.32083,25.27031],[55.31676,25.27],
-      [55.31624,25.26897],[55.3156,25.26734],[55.31474,25.26651],[55.31303,25.26606],
-      [55.31235,25.26607],[55.30783,25.26826],[55.30752,25.27092],[55.30501,25.2764],
-      [55.30169,25.2761],[55.29837,25.2734],[55.28945,25.266],[55.28868,25.26423],
-      [55.28962,25.26206],[55.29748,25.25821],[55.30734,25.25332],[55.31028,25.25211],
-      [55.3134,25.24908],[55.31511,25.24633],[55.31591,25.24393],[55.31692,25.2382],
-      [55.31714,25.23546],[55.31683,25.23317],[55.31719,25.23212],[55.3182,25.23144],
-      [55.32033,25.23127],[55.32536,25.23065],[55.32755,25.23088],[55.32931,25.22999],
-      [55.33163,25.22748],[55.33496,25.22354],[55.33952,25.21839],[55.3382,25.21979],
-      [55.3337,25.22488],[55.33032,25.22892],[55.32845,25.2306],[55.32641,25.23079],
-      [55.32262,25.23094],[55.3182,25.23142],[55.31708,25.23226],[55.31685,25.23356],
-      [55.31715,25.23594],[55.31665,25.24036],[55.31544,25.24558],[55.31375,25.24863],
-      [55.31081,25.25167],[55.30805,25.25299],[55.30659,25.25366]
+      [55.35900,25.21800],[55.35200,25.22200],[55.34800,25.22100],[55.34000,25.22500],
+      [55.33500,25.22800],[55.32600,25.23200],[55.32100,25.23000],[55.31538,25.23190],
+      [55.30900,25.23500],[55.30489,25.22734],[55.30200,25.24000]
+    ]
+  },
+  greenEast: {
+    color: '#00E676', glow: '#00E67666',
+    coords: [
+      [55.30489,25.26900],[55.31500,25.27200],[55.32000,25.27500],[55.32800,25.27800],
+      [55.33800,25.27500],[55.34400,25.27200],[55.35264,25.26300],[55.36500,25.27000],
+      [55.37300,25.27400],[55.38400,25.26900],[55.39200,25.26300],[55.39800,25.27100],
+      [55.40500,25.27000],[55.40800,25.26700],[55.41800,25.27200],[55.43400,25.26900]
+    ]
+  },
+  tram: {
+    color: '#F59E0B', glow: '#F59E0B55',
+    coords: [
+      [55.12900,25.07600],[55.13200,25.08100],[55.13800,25.08700],[55.14200,25.09100],
+      [55.14600,25.09600],[55.15000,25.10000],[55.15600,25.10400],[55.16100,25.10800],
+      [55.16600,25.11200],[55.17200,25.11600]
     ]
   }
 };
-
 // Road overlays removed — dark-v11 basemap shows roads clearly
 const ROAD_OVERLAYS = [];
 
@@ -2046,66 +2045,88 @@ let _metroAnimFrame = null;
 
 /* ── Station data (OSM-sourced, 54 stations) ── */
 const METRO_STATIONS = {
-  red:   [
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.09107,24.9776]},properties:{name:"Life Pharmacy",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.09571,25.00129]},properties:{name:"Danube",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.1013,25.02631]},properties:{name:"Energy",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.11749,25.04668]},properties:{name:"Ibn Battuta",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.12736,25.05788]},properties:{name:"National Paints",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.13505,25.0435]},properties:{name:"The Gardens",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.13871,25.07088]},properties:{name:"DMCC",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.14541,25.03526]},properties:{name:"Discovery Gardens",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.14608,24.96349]},properties:{name:"Expo City Dubai",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.14759,25.07995]},properties:{name:"Sobha Realty",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.15223,25.03047]},properties:{name:"Al Furjan",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.15567,25.00525]},properties:{name:"Dubai Investment Park",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.15817,25.08892]},properties:{name:"Al Fardan Exchange",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.16334,25.01779]},properties:{name:"Jumeirah Golf Estates",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.1739,25.10217]},properties:{name:"Dubai Internet City",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.19089,25.11477]},properties:{name:"InsuranceMarket",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.20045,25.1212]},properties:{name:"Mall of the Emirates",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.20792,25.12668]},properties:{name:"Equiti",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.22852,25.15563]},properties:{name:"ONPASSIVE",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.26041,25.19128]},properties:{name:"Business Bay",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.26955,25.20144]},properties:{name:"Burj Khalifa / Dubai Mall",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.27553,25.21082]},properties:{name:"Financial Centre",line:"#FF3355"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.27988,25.21723]},properties:{name:"Emirates Towers",line:"#FF3355"}}
+  red: [
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.09107,24.9776]},properties:{name:'UAE Exchange'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.09571,25.00129]},properties:{name:'Danube'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.1013,25.02631]},properties:{name:'Energy'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.11749,25.04668]},properties:{name:'Ibn Battuta'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.13505,25.0435]},properties:{name:'The Gardens'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.14541,25.03526]},properties:{name:'Discovery Gardens'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.15223,25.03047]},properties:{name:'Al Furjan'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.1735,25.0318]},properties:{name:'Jumeirah Golf Estates'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.16334,25.01779]},properties:{name:'Dubai Investment Park'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.13871,25.07088]},properties:{name:'DMCC'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.14759,25.07995]},properties:{name:'Sobha Realty'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.15817,25.08892]},properties:{name:'Al Khail'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.1739,25.10217]},properties:{name:'Dubai Internet City'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.182,25.107]},properties:{name:'Mashreq'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.20045,25.1212]},properties:{name:'Mall of the Emirates'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.20792,25.12668]},properties:{name:'Equiti'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.235,25.17]},properties:{name:'Al Safa'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.26041,25.19128]},properties:{name:'Business Bay'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.27126,25.20462]},properties:{name:'Burj Khalifa/Dubai Mall'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.28248,25.21388]},properties:{name:'Financial Centre'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.28815,25.21773]},properties:{name:'Emirates Towers'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.29588,25.22594]},properties:{name:'World Trade Centre'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.30489,25.22734]},properties:{name:'Union'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.31538,25.2319]},properties:{name:'BurJuman'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.32234,25.23208]},properties:{name:'Al Fahidi'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.33081,25.23421]},properties:{name:'Al Ghubaiba'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.33886,25.23486]},properties:{name:'Al Ras'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.35264,25.24185]},properties:{name:'Baniyas Square'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.3724,25.248]},properties:{name:'Abu Baker Al Siddique'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.385,25.249]},properties:{name:'Salah Al Din'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.395,25.247]},properties:{name:'Abu Hail'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.41,25.242]},properties:{name:'Al Qiyadah'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.414,25.236]},properties:{name:'Rashidiya'}}
+  ],
+  redAirport: [
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.363,25.252]},properties:{name:'Airport Terminal 1'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.368,25.258]},properties:{name:'Airport Terminal 3'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.373,25.263]},properties:{name:'Emirates'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.388,25.266]},properties:{name:'Centrepoint'}}
   ],
   green: [
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.28512,25.22484]},properties:{name:"World Trade Centre",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.28894,25.26504]},properties:{name:"Al Ghubaiba",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.29218,25.23359]},properties:{name:"max",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.29362,25.26877]},properties:{name:"Al Ras",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.29748,25.25821]},properties:{name:"Sharaf DG",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.29818,25.24451]},properties:{name:"ADCB",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.30168,25.27614]},properties:{name:"Gold Souq",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.30394,25.25499]},properties:{name:"BurJuman",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.30412,25.2544]},properties:{name:"Bur Juman",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.30761,25.26917]},properties:{name:"Baniyas Square",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.31375,25.26618]},properties:{name:"Union",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.31589,25.24393]},properties:{name:"Oud Metha",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.32083,25.27032]},properties:{name:"Salah Al Din",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.32262,25.23095]},properties:{name:"Dubai Healthcare City",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.32389,25.26335]},properties:{name:"Al Rigga",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.33026,25.25468]},properties:{name:"Deira City Centre",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.33275,25.27089]},properties:{name:"Abu Baker Al Siddique",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.33375,25.22491]},properties:{name:"Al Jadaf",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.33904,25.21888]},properties:{name:"Creek",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.33998,25.24948]},properties:{name:"Al Garhoud",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.34645,25.27542]},properties:{name:"Abu Hail",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.35236,25.24848]},properties:{name:"Airport Terminal 1",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.35263,25.27759]},properties:{name:"Al Qiyadah",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.3595,25.24503]},properties:{name:"Airport Terminal 3",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.36147,25.27791]},properties:{name:"Stadium",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.36568,25.24106]},properties:{name:"Emirates",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.36948,25.27321]},properties:{name:"Al Nahda",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.37515,25.26983]},properties:{name:"Dubai Airport Free Zone",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.38727,25.26274]},properties:{name:"Al Qusais",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.39112,25.23031]},properties:{name:"Centrepoint",line:"#00E676"}},
-    {type:'Feature',geometry:{type:'Point',coordinates:[55.40128,25.25473]},properties:{name:"e&",line:"#00E676"}}
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.434,25.269]},properties:{name:'Etisalat'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.418,25.272]},properties:{name:'Al Qusais'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.405,25.27]},properties:{name:'Dubai Airport Free Zone'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.388,25.295]},properties:{name:'Al Nahda'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.372,25.292]},properties:{name:'Stadium'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.408,25.267]},properties:{name:'Al Qiyadah'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.392,25.263]},properties:{name:'Abu Hail'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.378,25.276]},properties:{name:'Al Muteena'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.384,25.269]},properties:{name:'Salah Al Din'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.30489,25.269]},properties:{name:'Union'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.31538,25.256]},properties:{name:'BurJuman'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.309,25.242]},properties:{name:'Al Karama'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.321,25.23]},properties:{name:'Oud Metha'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.335,25.228]},properties:{name:'Dubai Healthcare City'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.348,25.221]},properties:{name:'Al Jaddaf'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.359,25.218]},properties:{name:'Creek'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.332,25.266]},properties:{name:'Al Rigga'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.30489,25.269]},properties:{name:'Union (Green)'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.302,25.279]},properties:{name:'Palm Deira'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.318,25.275]},properties:{name:'Gold Souq'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.35264,25.263]},properties:{name:'Baniyas Square (Green)'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.344,25.272]},properties:{name:'Al Ras (Green)'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.34,25.261]},properties:{name:'Al Ghubaiba (Green)'}}
+  ],
+  tram: [
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.135,25.0765]},properties:{name:'Jumeirah Beach Residence 1'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.132,25.082]},properties:{name:'Jumeirah Beach Residence 2'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.138,25.087]},properties:{name:'Dubai Marina Mall'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.142,25.092]},properties:{name:'Dubai Marina'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.146,25.096]},properties:{name:'Marina Towers'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.15,25.1]},properties:{name:'DAMAC Properties'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.156,25.104]},properties:{name:'Dubai Media City'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.136,25.112]},properties:{name:'Palm Jumeirah'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.161,25.108]},properties:{name:'Sobha Realty (Tram)'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.166,25.112]},properties:{name:'Knowledge Village'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.172,25.116]},properties:{name:'Dubai Internet City (Tram)'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.178,25.098]},properties:{name:'Al Sufouh 1'}},
+    {type:'Feature',geometry:{type:'Point',coordinates:[55.184,25.102]},properties:{name:'Al Sufouh 2'}}
   ]
 };
-
 /* ── Road overlays (OSM-sourced) ── */
 const ROADS = {
   e11: {
@@ -2183,14 +2204,22 @@ const ROADS = {
 function addMetroLayer() {
   const allLayerIds = [
     'metro-red-glow','metro-red-core','metro-red-dash',
+    'metro-2020-glow','metro-2020-core',
+    'metro-airport-core',
     'metro-green-glow','metro-green-core','metro-green-dash',
-    'stations-red','stations-green','stations-label',
-    'road-e11-glow','road-e11-core',
-    'road-e311-glow','road-e311-core'
+    'metro-greenE-glow','metro-greenE-core','metro-greenE-dash',
+    'metro-tram-glow','metro-tram-core',
+    'stations-red','stations-2020','stations-airport',
+    'stations-green','stations-tram','stations-label',
+    'road-e11-glow','road-e11-core','road-e311-glow','road-e311-core'
   ];
-  const allSrcIds = ['metro-src-red','metro-src-green',
-    'stations-src-red','stations-src-green',
-    'road-src-e11','road-src-e311'];
+  const allSrcIds = [
+    'metro-src-red','metro-src-2020','metro-src-airport',
+    'metro-src-green','metro-src-greenE','metro-src-tram',
+    'stations-src-red','stations-src-2020','stations-src-airport',
+    'stations-src-green','stations-src-tram',
+    'road-src-e11','road-src-e311'
+  ];
 
   allLayerIds.forEach(id => { try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {} });
   allSrcIds.forEach(id => { try { if (map.getSource(id)) map.removeSource(id); } catch(e) {} });
@@ -2201,159 +2230,85 @@ function addMetroLayer() {
       type: 'geojson',
       data: { type: 'Feature', geometry: { type: 'LineString', coordinates: road.coords } }
     });
-    map.addLayer({
-      id: `road-${key}-glow`, type: 'line', source: `road-src-${key}`,
-      paint: {
-        'line-color': road.color,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 14, 12, 22],
-        'line-opacity': 0.10, 'line-blur': 10,
-      }
-    });
-    map.addLayer({
-      id: `road-${key}-core`, type: 'line', source: `road-src-${key}`,
-      paint: {
-        'line-color': road.color,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.2, 12, 2, 15, 3],
-        'line-opacity': 0.55,
-        'line-dasharray': [6, 4],
-      }
-    });
+    map.addLayer({ id:`road-${key}-glow`, type:'line', source:`road-src-${key}`,
+      paint:{ 'line-color': road.glow, 'line-width': 6, 'line-opacity': 0.3, 'line-blur': 4 }
+    }, 'waterway-label');
+    map.addLayer({ id:`road-${key}-core`, type:'line', source:`road-src-${key}`,
+      paint:{ 'line-color': road.color, 'line-width': 1.5, 'line-opacity': 0.5, 'line-dasharray': [4,3] }
+    }, 'waterway-label');
   });
 
-  /* ── Metro line layers ── */
-  Object.entries(METRO_LINES).forEach(([key, line]) => {
-    map.addSource(`metro-src-${key}`, {
-      type: 'geojson',
-      data: { type: 'Feature', geometry: { type: 'LineString', coordinates: line.coords } }
-    });
-    map.addLayer({
-      id: `metro-${key}-glow`, type: 'line', source: `metro-src-${key}`,
-      paint: {
-        'line-color': line.color,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 12, 12, 18, 15, 24],
-        'line-opacity': 0.18, 'line-blur': 6,
-      }
-    });
-    map.addLayer({
-      id: `metro-${key}-core`, type: 'line', source: `metro-src-${key}`,
-      paint: {
-        'line-color': line.color,
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 2.5, 12, 4, 15, 6],
-        'line-opacity': 0.95,
-      }
-    });
-    map.addLayer({
-      id: `metro-${key}-dash`, type: 'line', source: `metro-src-${key}`,
-      paint: {
-        'line-color': '#FFFFFF',
-        'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.5, 12, 2.5],
-        'line-opacity': 0.65,
-        'line-dasharray': [2, 8],
-      }
-    });
-  });
+  /* ── Line helper ── */
+  function addLine(srcId, coords, color, glow, glowId, coreId, dashId, width, opacity) {
+    const geom = {type:'FeatureCollection', features:[{type:'Feature',geometry:{type:'LineString',coordinates:coords}}]};
+    map.addSource(srcId, {type:'geojson', data: geom});
+    if (glowId) map.addLayer({id:glowId, type:'line', source:srcId,
+      paint:{'line-color':glow,'line-width':width*3,'line-opacity':0.25,'line-blur':5}}, 'waterway-label');
+    map.addLayer({id:coreId, type:'line', source:srcId,
+      paint:{'line-color':color,'line-width':width,'line-opacity':opacity,'line-cap':'round','line-join':'round'}}, 'waterway-label');
+    if (dashId) map.addLayer({id:dashId, type:'line', source:srcId,
+      paint:{'line-color':'rgba(255,255,255,0.35)','line-width':width*0.5,'line-dasharray':[3,4]}}, 'waterway-label');
+  }
 
-  /* ── Station dots ── */
-  ['red','green'].forEach(key => {
-    const features = METRO_STATIONS[key].map(f => ({...f}));
-    map.addSource(`stations-src-${key}`, {
-      type: 'geojson',
-      data: { type: 'FeatureCollection', features }
-    });
-    const color = key === 'red' ? '#FF3355' : '#00E676';
-    map.addLayer({
-      id: `stations-${key}`, type: 'circle', source: `stations-src-${key}`,
-      paint: {
-        'circle-radius': ['interpolate', ['linear'], ['zoom'], 9, 3, 11, 5, 13, 8],
-        'circle-color': '#0D1117',
-        'circle-stroke-width': ['interpolate', ['linear'], ['zoom'], 9, 1.5, 12, 2.5],
+  /* ── Metro lines ── */
+  addLine('metro-src-red',   METRO_LINES.red.coords,       '#FF3355','#FF335566','metro-red-glow','metro-red-core','metro-red-dash', 3.5, 0.95);
+  addLine('metro-src-2020',  METRO_LINES.route2020.coords,  '#FF3355','#FF335544', null,           'metro-2020-core', null,           2.5, 0.80);
+  addLine('metro-src-airport',METRO_LINES.airportBranch.coords,'#FF3355','#FF335533',null,         'metro-airport-core',null,         2,   0.65);
+  addLine('metro-src-green', METRO_LINES.green.coords,      '#00E676','#00E67666','metro-green-glow','metro-green-core','metro-green-dash',3.5,0.95);
+  addLine('metro-src-greenE',METRO_LINES.greenEast.coords,  '#00E676','#00E67655', null,           'metro-greenE-core','metro-greenE-dash',3.5,0.95);
+  addLine('metro-src-tram',  METRO_LINES.tram.coords,       '#F59E0B','#F59E0B55','metro-tram-glow','metro-tram-core', null,          2.5, 0.85);
+
+  /* ── Station dots helper ── */
+  function addStations(srcId, layerId, stationsArr, color, radius) {
+    const fc = {type:'FeatureCollection', features: stationsArr};
+    map.addSource(srcId, {type:'geojson', data: fc});
+    map.addLayer({id:layerId, type:'circle', source:srcId,
+      paint:{
+        'circle-radius': radius,
+        'circle-color': '#0A0F1A',
+        'circle-stroke-width': 2.5,
         'circle-stroke-color': color,
-        'circle-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.8, 11, 1],
+        'circle-opacity': 1
       }
     });
-  });
+  }
 
-  /* ── Station name labels at zoom 12+ ── */
-  try { if (map.getLayer('stations-label')) map.removeLayer('stations-label'); } catch(e) {}
-  // Combine both lines for labels
-  const allStationsGeoJSON = {
-    type: 'FeatureCollection',
-    features: [
-      ...METRO_STATIONS.red.filter(s=>s.name).map(s=>({type:'Feature',geometry:{type:'Point',coordinates:[s.lon,s.lat]},properties:{name:s.name,color:'#FF3355'}})),
-      ...METRO_STATIONS.green.filter(s=>s.name).map(s=>({type:'Feature',geometry:{type:'Point',coordinates:[s.lon,s.lat]},properties:{name:s.name,color:'#00E676'}}))
-    ]
-  };
-  try { if (map.getSource('stations-src-label')) map.removeSource('stations-src-label'); } catch(e) {}
-  map.addSource('stations-src-label', {type:'geojson', data: allStationsGeoJSON});
+  addStations('stations-src-red',     'stations-red',     METRO_STATIONS.red,         '#FF3355', 4.5);
+  addStations('stations-src-2020',    'stations-2020',    METRO_STATIONS.red.slice(5,10), '#FF3355', 4);
+  addStations('stations-src-airport', 'stations-airport', METRO_STATIONS.redAirport,  '#FF3355', 4);
+  addStations('stations-src-green',   'stations-green',   METRO_STATIONS.green,       '#00E676', 4.5);
+  addStations('stations-src-tram',    'stations-tram',    METRO_STATIONS.tram,        '#F59E0B', 3.5);
+
+  /* ── Station labels ── */
+  const allStationsFC = {type:'FeatureCollection', features:[
+    ...METRO_STATIONS.red, ...METRO_STATIONS.redAirport, ...METRO_STATIONS.green
+  ]};
+  map.addSource('stations-label-src', {type:'geojson', data: allStationsFC});
+  if (map.getLayer('stations-label')) map.removeLayer('stations-label');
   map.addLayer({
-    id: 'stations-label', type: 'symbol', source: 'stations-src-label',
-    minzoom: 12,
-    layout: {
-      'text-field': ['get','name'],
-      'text-font': ['DIN Pro Medium','Arial Unicode MS Regular'],
-      'text-size': ['interpolate',['linear'],['zoom'],12,9,15,11],
-      'text-anchor': 'top', 'text-offset': [0,0.8],
-      'text-max-width': 8, 'text-allow-overlap': false,
+    id:'stations-label', type:'symbol', source:'stations-label-src',
+    layout:{
+      'text-field':['get','name'],
+      'text-font':['DIN Pro Medium'],
+      'text-size':9,
+      'text-offset':[0,1.2],
+      'text-anchor':'top',
+      'text-max-width':8,
     },
-    paint: {
-      'text-color': ['get','color'],
-      'text-halo-color': 'rgba(0,0,0,0.9)',
-      'text-halo-width': 1.5,
-      'text-opacity': ['interpolate',['linear'],['zoom'],12,0,12.5,1],
+    paint:{
+      'text-color':'#FFFFFF',
+      'text-opacity':0.7,
+      'text-halo-color':'#000000',
+      'text-halo-width':1
     }
   });
 
-  /* ── Station hover popup ── */
-  const stationPopup = new mapboxgl.Popup({
-    closeButton: false, closeOnClick: false,
-    className: 'raqam-popup', offset: 12,
-    maxWidth: '220px'
-  });
-
-  ['red','green'].forEach(key => {
-    map.on('mouseenter', `stations-${key}`, (e) => {
-      map.getCanvas().style.cursor = 'pointer';
-      const props = e.features[0].properties;
-      const color = key === 'red' ? '#FF3355' : '#00E676';
-      const lineName = key === 'red' ? 'Red Line' : 'Green Line';
-      // Find nearby RAQAM areas for this station
-      const sLon = e.features[0].geometry.coordinates[0];
-      const sLat = e.features[0].geometry.coordinates[1];
-      const nearbyAreas = [...AREAS].map(a => {
-        const c = CENTROIDS[a.id] || [55.27,25.19];
-        const d = Math.sqrt(Math.pow((c[0]-sLon)*111*Math.cos(sLat*Math.PI/180),2)+Math.pow((c[1]-sLat)*111,2));
-        return {...a, dist:d};
-      }).sort((a,b)=>a.dist-b.dist).slice(0,3).filter(a=>a.dist<5);
-      const nearbyHtml = nearbyAreas.length ?
-        `<div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text3);margin-top:5px;border-top:1px solid rgba(255,255,255,0.08);padding-top:5px">
-          Nearby: ${nearbyAreas.map(a=>`<span style="color:var(--text2)">${a.name}</span>`).join(' · ')}
-        </div>` : '';
-
-      stationPopup.setLngLat(e.lngLat)
-        .setHTML(`<div style="padding:4px 2px">
-          <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-            <div style="width:10px;height:10px;border-radius:50%;background:${color};box-shadow:0 0 6px ${color}88;flex-shrink:0"></div>
-            <span style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)">${props.name}</span>
-          </div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase">Dubai Metro · ${lineName}</div>
-          ${nearbyHtml}
-        </div>`)
-        .addTo(map);
-    });
-    map.on('mouseleave', `stations-${key}`, () => {
-      map.getCanvas().style.cursor = '';
-      stationPopup.remove();
-    });
-  });
-
-  /* ── Road hover popup ── */
-  const roadPopup = new mapboxgl.Popup({
-    closeButton: false, closeOnClick: false,
-    className: 'raqam-popup', offset: 8,
-  });
-  Object.entries(ROADS).forEach(([key, road]) => {
+  /* ── Road tooltips ── */
+  const roadPopup = new mapboxgl.Popup({closeButton:false,closeOnClick:false,offset:8});
+  Object.keys(ROADS).forEach(key => {
+    const road = ROADS[key];
     map.on('mouseenter', `road-${key}-core`, (e) => {
-      map.getCanvas().style.cursor = 'crosshair';
+      map.getCanvas().style.cursor = 'pointer';
       roadPopup.setLngLat(e.lngLat)
         .setHTML(`<div style="padding:2px 0;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text);letter-spacing:.04em">${road.label}</div>`)
         .addTo(map);
@@ -2367,6 +2322,7 @@ function addMetroLayer() {
   applyMetroVisibility();
   startMetroAnimation();
 }
+
 
 function startMetroAnimation() {
   if (_metroAnimFrame) cancelAnimationFrame(_metroAnimFrame);
@@ -2388,11 +2344,17 @@ function startMetroAnimation() {
 
 function applyMetroVisibility() {
   const vis = _layerState.metro ? 'visible' : 'none';
-  ['metro-red-glow','metro-red-core','metro-red-dash',
-   'metro-green-glow','metro-green-core','metro-green-dash',
-   'stations-red','stations-green','stations-label',
-   'road-e11-glow','road-e11-core',
-   'road-e311-glow','road-e311-core'].forEach(id => {
+  [
+    'metro-red-glow','metro-red-core','metro-red-dash',
+    'metro-2020-core','metro-airport-core',
+    'metro-green-glow','metro-green-core','metro-green-dash',
+    'metro-greenE-core','metro-greenE-dash',
+    'metro-tram-glow','metro-tram-core',
+    'stations-red','stations-2020','stations-airport',
+    'stations-green','stations-tram','stations-label',
+    'road-e11-glow','road-e11-core',
+    'road-e311-glow','road-e311-core'
+  ].forEach(id => {
     try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis); } catch(e) {}
   });
 }
@@ -2725,6 +2687,12 @@ function renderNearbyMetro(a) {
       lon: s.geometry?.coordinates?.[0] || s.lon,
       lat: s.geometry?.coordinates?.[1] || s.lat,
       line:'green', color:'#00E676', lineName:'Green Line'
+    })),
+    ...METRO_STATIONS.tram.map(s => ({
+      name: s.properties?.name || s.name,
+      lon: s.geometry?.coordinates?.[0] || s.lon,
+      lat: s.geometry?.coordinates?.[1] || s.lat,
+      line:'tram', color:'#F59E0B', lineName:'Dubai Tram'
     }))
   ];
   // Distance in km
