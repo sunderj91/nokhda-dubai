@@ -254,22 +254,22 @@ const WORLD_GEO={"type":"FeatureCollection","features":[{"type":"Feature","prope
 ══════════════════════════════════════════════ */
 
 const MARKETS = [
-  {country:"United Arab Emirates",code:"AE",flag:"🇦🇪",lat:24.47,lng:54.37,score:88,yoy:28.4,psf:"AED 1,758",vol:"$207B",trend:"up"},
-  {country:"Saudi Arabia",code:"SA",flag:"🇸🇦",lat:23.88,lng:45.08,score:74,yoy:14.2,psf:"SAR 3,200",vol:"$89B",trend:"up"},
-  {country:"United States of America",code:"US",flag:"🇺🇸",lat:37.09,lng:-95.71,score:65,yoy:4.1,psf:"$245",vol:"$1.8T",trend:"up"},
-  {country:"United Kingdom",code:"GB",flag:"🇬🇧",lat:55.38,lng:-3.44,score:54,yoy:-1.8,psf:"£485",vol:"$312B",trend:"dn"},
-  {country:"Germany",code:"DE",flag:"🇩🇪",lat:51.17,lng:10.45,score:48,yoy:-4.2,psf:"€4,100",vol:"$198B",trend:"dn"},
-  {country:"France",code:"FR",flag:"🇫🇷",lat:46.23,lng:2.21,score:51,yoy:-2.1,psf:"€5,800",vol:"$174B",trend:"dn"},
-  {country:"Japan",code:"JP",flag:"🇯🇵",lat:36.20,lng:138.25,score:72,yoy:9.8,psf:"¥1.2M",vol:"$156B",trend:"up"},
-  {country:"Singapore",code:"SG",flag:"🇸🇬",lat:1.35,lng:103.82,score:81,yoy:16.4,psf:"S$2,100",vol:"$43B",trend:"up"},
-  {country:"Australia",code:"AU",flag:"🇦🇺",lat:-25.27,lng:133.78,score:69,yoy:8.2,psf:"A$8,900",vol:"$187B",trend:"up"},
-  {country:"Canada",code:"CA",flag:"🇨🇦",lat:56.13,lng:-106.35,score:58,yoy:1.4,psf:"C$690",vol:"$142B",trend:"up"},
-  {country:"India",code:"IN",flag:"🇮🇳",lat:20.59,lng:78.96,score:77,yoy:18.7,psf:"₹8,400",vol:"$98B",trend:"up"},
-  {country:"China",code:"CN",flag:"🇨🇳",lat:35.86,lng:104.19,score:34,yoy:-8.4,psf:"¥18,500",vol:"$1.1T",trend:"dn"},
+  {country:"United Arab Emirates",code:"AE",flag:"🇦🇪",lat:24.47,lng:54.37,score:88,yoy:28.4,psf:"AED 1,758",vol:"$207B",trend:"up",hist:[900,1050,1180,1320,1580,1758]},
+  {country:"Saudi Arabia",code:"SA",flag:"🇸🇦",lat:23.88,lng:45.08,score:74,yoy:14.2,psf:"SAR 3,200",vol:"$89B",trend:"up",hist:[2100,2300,2520,2750,2960,3200]},
+  {country:"United States of America",code:"US",flag:"🇺🇸",lat:37.09,lng:-95.71,score:65,yoy:4.1,psf:"$245",vol:"$1.8T",trend:"up",hist:[190,205,218,228,238,245]},
+  {country:"United Kingdom",code:"GB",flag:"🇬🇧",lat:55.38,lng:-3.44,score:54,yoy:-1.8,psf:"£485",vol:"$312B",trend:"dn",hist:[440,470,510,520,502,485]},
+  {country:"Germany",code:"DE",flag:"🇩🇪",lat:51.17,lng:10.45,score:48,yoy:-4.2,psf:"€4,100",vol:"$198B",trend:"dn",hist:[3800,4200,4620,4790,4450,4100]},
+  {country:"France",code:"FR",flag:"🇫🇷",lat:46.23,lng:2.21,score:51,yoy:-2.1,psf:"€5,800",vol:"$174B",trend:"dn",hist:[5200,5600,6100,6300,6050,5800]},
+  {country:"Japan",code:"JP",flag:"🇯🇵",lat:36.20,lng:138.25,score:72,yoy:9.8,psf:"¥1.2M",vol:"$156B",trend:"up",hist:[800000,860000,950000,1020000,1110000,1200000]},
+  {country:"Singapore",code:"SG",flag:"🇸🇬",lat:1.35,lng:103.82,score:81,yoy:16.4,psf:"S$2,100",vol:"$43B",trend:"up",hist:[1400,1560,1720,1840,1930,2100]},
+  {country:"Australia",code:"AU",flag:"🇦🇺",lat:-25.27,lng:133.78,score:69,yoy:8.2,psf:"A$8,900",vol:"$187B",trend:"up",hist:[7100,7600,8200,8500,8700,8900]},
+  {country:"Canada",code:"CA",flag:"🇨🇦",lat:56.13,lng:-106.35,score:58,yoy:1.4,psf:"C$690",vol:"$142B",trend:"up",hist:[590,640,720,740,700,690]},
+  {country:"India",code:"IN",flag:"🇮🇳",lat:20.59,lng:78.96,score:77,yoy:18.7,psf:"₹8,400",vol:"$98B",trend:"up",hist:[5200,5800,6400,6900,7400,8400]},
+  {country:"China",code:"CN",flag:"🇨🇳",lat:35.86,lng:104.19,score:34,yoy:-8.4,psf:"¥18,500",vol:"$1.1T",trend:"dn",hist:[22000,24000,26000,25000,22000,18500]},
   {country:"Brazil",code:"BR",flag:"🇧🇷",lat:-14.24,lng:-51.93,score:61,yoy:6.8,psf:"R$8,200",vol:"$76B",trend:"up"},
   {country:"South Korea",code:"KR",flag:"🇰🇷",lat:35.91,lng:127.77,score:58,yoy:3.2,psf:"₩8.4M",vol:"$112B",trend:"up"},
   {country:"Netherlands",code:"NL",flag:"🇳🇱",lat:52.13,lng:5.29,score:63,yoy:5.4,psf:"€4,600",vol:"$67B",trend:"up"},
-  {country:"Portugal",code:"PT",flag:"🇵🇹",lat:39.40,lng:-8.22,score:75,yoy:14.8,psf:"€3,100",vol:"$28B",trend:"up"},
+  {country:"Portugal",code:"PT",flag:"🇵🇹",lat:39.40,lng:-8.22,score:75,yoy:14.8,psf:"€3,100",vol:"$28B",trend:"up",hist:[1800,2100,2500,2700,2850,3100]},
   {country:"Qatar",code:"QA",flag:"🇶🇦",lat:25.35,lng:51.18,score:71,yoy:11.2,psf:"QAR 1,450",vol:"$18B",trend:"up"},
   {country:"Kuwait",code:"KW",flag:"🇰🇼",lat:29.31,lng:47.48,score:58,yoy:4.8,psf:"KWD 380",vol:"$9B",trend:"up"},
   {country:"Turkey",code:"TR",flag:"🇹🇷",lat:38.96,lng:35.24,score:42,yoy:68.4,psf:"₺48,000",vol:"$31B",trend:"up"},
@@ -283,7 +283,7 @@ const MARKETS = [
   {country:"Poland",code:"PL",flag:"🇵🇱",lat:51.92,lng:19.15,score:67,yoy:11.8,psf:"PLN 12,400",vol:"$34B",trend:"up"},
   {country:"Sweden",code:"SE",flag:"🇸🇪",lat:60.13,lng:18.64,score:47,yoy:-3.8,psf:"SEK 42,000",vol:"$41B",trend:"dn"},
   {country:"Switzerland",code:"CH",flag:"🇨🇭",lat:46.82,lng:8.23,score:74,yoy:4.8,psf:"CHF 11,200",vol:"$78B",trend:"up"},
-  {country:"Spain",code:"ES",flag:"🇪🇸",lat:40.46,lng:-3.75,score:72,yoy:12.4,psf:"€2,800",vol:"$87B",trend:"up"},
+  {country:"Spain",code:"ES",flag:"🇪🇸",lat:40.46,lng:-3.75,score:72,yoy:12.4,psf:"€2,800",vol:"$87B",trend:"up",hist:[1800,2000,2200,2450,2620,2800]},
   {country:"Italy",code:"IT",flag:"🇮🇹",lat:41.87,lng:12.57,score:59,yoy:3.8,psf:"€3,400",vol:"$64B",trend:"up"},
   {country:"Denmark",code:"DK",flag:"🇩🇰",lat:56.26,lng:9.50,score:55,yoy:2.4,psf:"DKK 28,000",vol:"$32B",trend:"up"},
   {country:"Norway",code:"NO",flag:"🇳🇴",lat:60.47,lng:8.47,score:57,yoy:3.1,psf:"NOK 62,000",vol:"$41B",trend:"up"},
@@ -500,7 +500,10 @@ function applyPolygons() {
       if (f && f._market) {
         selectedCountry = f._market;
         showCountryCard(f._market);
-        globe.pointOfView({lat: f._market.lat, lng: f._market.lng, alt: 0.8}, 1200);
+        // UAE: zoom in closer to show Dubai detail
+        const alt = f._market.code === 'AE' ? 0.4 : 0.8;
+        globe.pointOfView({lat: f._market.lat, lng: f._market.lng, alt}, 1400);
+        globe.controls().autoRotate = false;
       }
     });
 }
@@ -539,6 +542,24 @@ function applyLabels() {
 /* ══════════════════════════════════════════════
    COUNTRY CARD
 ══════════════════════════════════════════════ */
+function buildMiniSparkline(hist, color) {
+  if (!hist || hist.length < 2) return '';
+  const W = 80, H = 28, P = 2;
+  const min = Math.min(...hist), max = Math.max(...hist), range = max - min || 1;
+  const pts = hist.map((v, i) => {
+    const x = P + (i / (hist.length - 1)) * (W - P * 2);
+    const y = H - P - ((v - min) / range) * (H - P * 2);
+    return `${x},${y}`;
+  }).join(' ');
+  const last = pts.split(' ').pop().split(',');
+  const first = pts.split(' ')[0].split(',');
+  const areaPath = `M${first[0]},${first[1]} L${pts.split(' ').slice(1).join(' L')} L${last[0]},${H} L${first[0]},${H} Z`;
+  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0">
+    <path d="${areaPath}" fill="${color}" opacity="0.15"/>
+    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+}
+
 function showCountryCard(m) {
   const card = document.getElementById('country-card');
   const trend = m.trend === 'up';
@@ -546,54 +567,72 @@ function showCountryCard(m) {
   const mono = "font-family:'IBM Plex Mono','Noto Sans Mono',monospace;";
   const syne = "font-family:'Syne',sans-serif;";
   const label = m.score>=80?'Strong':m.score>=68?'Growing':m.score>=55?'Stable':m.score>=42?'Slowing':'Contracting';
+  const spark = buildMiniSparkline(m.hist, col);
+
+  const uaeCities = m.code === 'AE' ? `
+    <div style="width:1px;height:40px;background:var(--border2);flex-shrink:0"></div>
+    <div style="display:flex;gap:8px;flex-shrink:0">
+      ${[
+        {city:'Dubai',psf:'AED 1,758',yoy:'+11.2%'},
+        {city:'Abu Dhabi',psf:'AED 1,240',yoy:'+8.4%'},
+        {city:'Sharjah',psf:'AED 680',yoy:'+6.1%'},
+      ].map(c => `
+        <div style="padding:7px 10px;border-radius:8px;background:var(--accent2);border:1px solid var(--border2);text-align:center;cursor:pointer" onclick="${c.city==='Dubai'?"window.open('index.html','_blank')":"void(0)"}">
+          <div style="${mono}font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)">${c.city}</div>
+          <div style="${mono}font-size:11px;font-weight:600;color:var(--text);margin:2px 0">${c.psf}</div>
+          <div style="${mono}font-size:9px;color:var(--green)">${c.yoy}</div>
+        </div>`).join('')}
+    </div>` : '';
+
   card.innerHTML = `
-    <div style="display:flex;align-items:center;gap:18px">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
       <div style="display:flex;align-items:center;gap:11px;flex-shrink:0">
-        <div style="font-size:30px;line-height:1">${m.flag}</div>
+        <div style="font-size:28px;line-height:1">${m.flag}</div>
         <div>
-          <div style="${syne}font-size:17px;font-weight:700;color:var(--text);white-space:nowrap">${m.country}</div>
+          <div style="${syne}font-size:16px;font-weight:700;color:var(--text);white-space:nowrap">${m.country}</div>
           <div style="display:flex;align-items:center;gap:5px;margin-top:2px">
-            <div style="width:6px;height:6px;border-radius:50%;background:${col}"></div>
-            <div style="${mono}font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:${col}">${m.score}/100 &middot; ${label}</div>
+            <div style="width:5px;height:5px;border-radius:50%;background:${col}"></div>
+            <div style="${mono}font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:${col}">${m.score}/100 · ${label}</div>
           </div>
         </div>
       </div>
-      <div style="flex:1;min-width:60px">
-        <div style="height:2px;border-radius:2px;background:var(--border);overflow:hidden">
+      <div style="flex:1;min-width:70px;display:flex;align-items:center;gap:8px">
+        <div style="flex:1;height:2px;border-radius:2px;background:var(--border);overflow:hidden">
           <div style="height:100%;width:${m.score}%;background:${col};border-radius:2px"></div>
         </div>
+        ${spark}
       </div>
-      <div style="display:flex;gap:14px;flex-shrink:0;align-items:center">
+      <div style="display:flex;gap:12px;flex-shrink:0;align-items:center">
         <div style="text-align:center">
-          <div style="${mono}font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">YoY</div>
-          <div style="${mono}font-size:16px;font-weight:600;color:${trend?'var(--green)':'var(--red)'}">${trend?'+':''}${m.yoy}%</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">YoY</div>
+          <div style="${mono}font-size:15px;font-weight:700;color:${trend?'var(--green)':'var(--red)'}">${trend?'+':''}${m.yoy}%</div>
         </div>
-        <div style="width:1px;height:32px;background:var(--border)"></div>
+        <div style="width:1px;height:28px;background:var(--border2)"></div>
         <div style="text-align:center">
-          <div style="${mono}font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Volume</div>
-          <div style="${mono}font-size:14px;font-weight:600;color:var(--text)">${m.vol}</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Volume</div>
+          <div style="${mono}font-size:13px;font-weight:600;color:var(--text)">${m.vol}</div>
         </div>
-        <div style="width:1px;height:32px;background:var(--border)"></div>
+        <div style="width:1px;height:28px;background:var(--border2)"></div>
         <div style="text-align:center">
-          <div style="${mono}font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Avg PSF</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Avg PSF</div>
           <div style="${mono}font-size:12px;font-weight:600;color:var(--text)">${m.psf}</div>
         </div>
-        <div style="width:1px;height:32px;background:var(--border)"></div>
+        <div style="width:1px;height:28px;background:var(--border2)"></div>
         <div style="text-align:center">
-          <div style="${mono}font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Trend</div>
-          <div style="${mono}font-size:13px;font-weight:600;color:${trend?'var(--green)':'var(--red)'}">${trend?'▲ Up':'▼ Down'}</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Trend</div>
+          <div style="${mono}font-size:12px;font-weight:700;color:${trend?'var(--green)':'var(--red)'}">${trend?'▲ Up':'▼ Down'}</div>
         </div>
       </div>
+      ${uaeCities}
       ${m.code==='AE'?`
-      <div style="width:1px;height:40px;background:var(--border);flex-shrink:0"></div>
       <a href="index.html" target="_blank" style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:var(--accent);text-decoration:none">
-        <span style="font-size:15px">🇦🇪</span>
+        <span style="font-size:14px">🗺️</span>
         <div>
           <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)">Open Dashboard</div>
-          <div style="${syne}font-size:12px;font-weight:700;color:#000">RAQAM Dubai →</div>
+          <div style="${syne}font-size:11px;font-weight:700;color:#000">RAQAM Dubai →</div>
         </div>
       </a>`:''}
-      <button onclick="closeCard()" style="flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:13px;display:flex;align-items:center;justify-content:center;margin-left:2px">✕</button>
+      <button onclick="closeCard()" style="flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;">✕</button>
     </div>
   `;
   card.classList.add('visible');
