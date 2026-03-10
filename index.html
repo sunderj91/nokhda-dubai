@@ -192,7 +192,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 .ar-rank { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text3); width: 16px; flex-shrink: 0; text-align: right; }
 .ar-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 .ar-info { flex: 1; min-width: 0; }
-.ar-name { font-family: 'IBM Plex Sans', sans-serif; font-size: 12px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ar-name { font-family: 'IBM Plex Sans', sans-serif; font-size: 11px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ar-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--text3); margin-top: 1px; }
 .ar-psf { font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500; color: var(--text); flex-shrink: 0; text-align: right; }
 .ar-yoy { font-family: 'IBM Plex Mono', monospace; font-size: 9px; flex-shrink: 0; width: 42px; text-align: right; }
@@ -208,14 +208,14 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 }
 #right-panel.open { transform: translateX(0); }
 .rp-header { padding: 16px; border-bottom: 1px solid var(--bord); flex-shrink: 0; }
-.rp-area-name { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 4px; }
+.rp-area-name { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -.02em; line-height: 1.1; margin-bottom: 3px; }
 .rp-area-sub { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); }
 .rp-close { position: absolute; top: 14px; right: 14px; width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--bord2); background: transparent; color: var(--text2); cursor: pointer; font-size: 13px; display: flex; align-items: center; justify-content: center; transition: all .15s; }
 .rp-close:hover { background: var(--accent2); color: var(--accent); }
 .rp-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--bord); border-bottom: 1px solid var(--bord); flex-shrink: 0; }
-.rp-kpi { padding: 12px 14px; background: var(--surf); }
+.rp-kpi { padding: 10px 12px; background: var(--surf); }
 .rp-kpi-l { font-family: 'IBM Plex Mono', monospace; font-size: 8px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 4px; }
-.rp-kpi-v { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -.02em; line-height: 1; }
+.rp-kpi-v { font-family: 'IBM Plex Mono', monospace; font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: -.02em; line-height: 1; }
 .rp-kpi-d { font-family: 'IBM Plex Mono', monospace; font-size: 9px; margin-top: 3px; }
 .rp-kpi-d.up { color: var(--green); } .rp-kpi-d.dn { color: var(--red); }
 .rp-score-bar { padding: 14px 16px; border-bottom: 1px solid var(--bord); flex-shrink: 0; }
@@ -355,9 +355,9 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .cp-clear:hover { border-color: var(--red); color: var(--red); }
 .rp-header-top { display:flex; align-items:flex-start; justify-content:space-between; padding:16px 16px 10px; }
 .rp-hero-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--bord); border-top:1px solid var(--bord); }
-.rp-hero-metric { padding:10px 12px; background:var(--surf); }
-.rp-hero-metric-l { font-family:'IBM Plex Mono',monospace; font-size:7px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:3px; }
-.rp-hero-metric-v { font-family:'Syne',sans-serif; font-size:16px; font-weight:800; color:var(--text); letter-spacing:-.03em; }
+.rp-hero-metric { padding:8px 11px; background:var(--surf); }
+.rp-hero-metric-l { font-family:'IBM Plex Mono',monospace; font-size:6.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); margin-bottom:2px; display:flex; align-items:center; gap:3px; }
+.rp-hero-metric-v { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:700; color:var(--text); letter-spacing:-.02em; white-space:nowrap; }
 .rp-hero-metric-d { font-family:'IBM Plex Mono',monospace; font-size:8px; margin-top:2px; }
 .rp-section-title { font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:10px; }
 /* transaction tab */
@@ -504,6 +504,79 @@ body.lp-collapsed #heat-legend { left: 12px; }
 
 /* ── Area list PSF currency ── */
 .ar-psf-val { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; color:var(--text); }
+
+/* ══ ENTERPRISE UI POLISH ══════════════════════════════════════ */
+
+/* Cleaner data badges - subtle, not attention-grabbing */
+.data-est { display:inline-flex; align-items:center; font-size:6px; padding:1px 3px; border-radius:2px; background:rgba(251,191,36,.1); color:rgba(251,191,36,.7); border:1px solid rgba(251,191,36,.2); vertical-align:middle; margin-left:3px; letter-spacing:.04em; font-family:'IBM Plex Mono',monospace; font-weight:500; }
+.data-live { display:inline-flex; align-items:center; font-size:6px; padding:1px 3px; border-radius:2px; background:rgba(0,230,118,.08); color:rgba(0,230,118,.8); border:1px solid rgba(0,230,118,.2); vertical-align:middle; margin-left:3px; letter-spacing:.04em; font-family:'IBM Plex Mono',monospace; }
+.data-est-sm { font-size:5.5px; padding:0 2px; border-radius:2px; background:rgba(251,191,36,.08); color:rgba(251,191,36,.6); border:1px solid rgba(251,191,36,.15); vertical-align:middle; margin-left:2px; font-family:'IBM Plex Mono',monospace; }
+.data-live-sm { font-size:5.5px; padding:0 2px; border-radius:2px; background:rgba(0,230,118,.07); color:rgba(0,230,118,.7); border:1px solid rgba(0,230,118,.15); vertical-align:middle; margin-left:2px; font-family:'IBM Plex Mono',monospace; }
+
+/* Tighter, cleaner currency row */
+.tb-cur-group { display:flex; align-items:center; gap:1px; background:var(--bg2); border:1px solid var(--bord); border-radius:7px; padding:2px; }
+.cur-btn { height:20px; padding:0 8px; border-radius:5px; font-size:8px; font-weight:600; font-family:'IBM Plex Mono',monospace; letter-spacing:.05em; border:none; background:transparent; color:var(--text3); cursor:pointer; transition:all .12s; }
+.cur-btn:hover { color:var(--text2); }
+.cur-btn.active { background:var(--surf); color:var(--text); box-shadow:0 1px 3px rgba(0,0,0,.3); }
+.fx-dot { font-size:6.5px; letter-spacing:.03em; font-family:'IBM Plex Mono',monospace; color:var(--text3); padding:0 5px; }
+
+/* Cleaner proximity block */
+.prox-block { margin:10px 0 0; border-radius:8px; border:1px solid var(--bord); overflow:hidden; }
+.prox-header { display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:var(--bg2); border-bottom:1px solid var(--bord); font-family:'IBM Plex Mono',monospace; font-size:7.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--text3); }
+.prox-grid { display:grid; grid-template-columns:1fr 1fr; }
+.prox-item { display:flex; flex-direction:column; padding:8px 12px; border-right:1px solid var(--bord); border-bottom:1px solid var(--bord); gap:4px; }
+.prox-item:nth-child(even) { border-right:none; }
+.prox-item:nth-child(3), .prox-item:nth-child(4) { border-bottom:none; }
+.prox-icon { display:none; } /* Remove emoji icons */
+.prox-info { display:flex; justify-content:space-between; align-items:baseline; }
+.prox-val { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:700; color:var(--text); }
+.prox-label { font-family:'IBM Plex Mono',monospace; font-size:7px; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); }
+.prox-bar-wrap { width:100%; height:2px; background:var(--bord); border-radius:1px; overflow:hidden; }
+.prox-bar-fill { height:100%; border-radius:1px; transition:width .6s ease; }
+.prox-scores { display:grid; grid-template-columns:1fr 1fr; border-top:1px solid var(--bord); }
+.prox-score-pill { display:flex; justify-content:space-between; align-items:center; padding:7px 12px; font-family:'IBM Plex Mono',monospace; font-size:8px; border-right:1px solid var(--bord); }
+.prox-score-pill:last-child { border-right:none; }
+.prox-score-pill span { color:var(--text3); letter-spacing:.06em; text-transform:uppercase; }
+.prox-score-pill strong { font-size:12px; font-weight:700; }
+
+/* Tighter tabs */
+.rp-tabs { display:flex; border-bottom:1px solid var(--bord); flex-shrink:0; background:var(--bg2); }
+.rp-tab { flex:1; padding:7px 4px; font-family:'IBM Plex Mono',monospace; font-size:7.5px; letter-spacing:.07em; text-transform:uppercase; border:none; background:transparent; color:var(--text3); cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
+.rp-tab:hover { color:var(--text2); }
+.rp-tab.active { color:var(--accent); border-bottom-color:var(--accent); background:var(--surf); }
+
+/* Cleaner score bar */
+.rp-score-bar { padding:10px 14px; border-bottom:1px solid var(--bord); flex-shrink:0; display:flex; align-items:center; gap:10px; }
+
+/* Panel header tighter */
+.rp-header { padding:12px 14px; border-bottom:1px solid var(--bord); flex-shrink:0; }
+
+/* Tags smaller */
+.rp-tag { font-family:'IBM Plex Mono',monospace; font-size:7px; letter-spacing:.04em; text-transform:uppercase; padding:2px 6px; border-radius:4px; border:1px solid var(--bord2); color:var(--text3); }
+.rp-tags { display:flex; flex-wrap:wrap; gap:4px; padding:8px 14px; border-bottom:1px solid var(--bord); flex-shrink:0; }
+
+/* KPI grid - 2x2 but compact */
+.rp-kpis { display:grid; grid-template-columns:1fr 1fr; gap:0; background:var(--bord); border-bottom:1px solid var(--bord); flex-shrink:0; }
+.rp-kpi { padding:9px 11px; background:var(--surf); }
+.rp-kpi-l { font-family:'IBM Plex Mono',monospace; font-size:7px; letter-spacing:.09em; text-transform:uppercase; color:var(--text3); margin-bottom:3px; }
+.rp-kpi-v { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:700; color:var(--text); letter-spacing:-.01em; line-height:1; }
+.rp-kpi-d { font-family:'IBM Plex Mono',monospace; font-size:8.5px; margin-top:2px; }
+
+/* Section headers inside panel */
+.rp-section-title { font-family:'IBM Plex Mono',monospace; font-size:7.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--bord); }
+
+/* Area list row tighter */
+.area-row { display:flex; align-items:center; gap:8px; padding:7px 10px; border-bottom:1px solid var(--bord); cursor:pointer; transition:background .12s; }
+.area-row:hover { background:var(--accent3); }
+.area-row.active { background:var(--accent2); }
+.ar-sub { font-family:'IBM Plex Mono',monospace; font-size:8px; color:var(--text3); margin-top:0px; }
+
+/* Cleaner left panel stats */
+.lp-stat-v { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:700; color:var(--text); letter-spacing:-.01em; line-height:1; }
+.lp-stat-l { font-family:'IBM Plex Mono',monospace; font-size:6.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--text3); margin-bottom:2px; }
+
+/* Data source note - minimal */
+#rp-data-source { font-size:8px; color:var(--text3); padding:8px 14px 6px; line-height:1.5; border-top:1px solid var(--bord); opacity:0.7; }
 </style>
 </head>
 <body>
@@ -2281,20 +2354,21 @@ function openDetail(a) {
   // Hero 3-metric strip — currency-aware, with Est. label
   const estBadge = '<span class="data-est" title="Estimated based on published market reports">Est.</span>';
   const liveBadge = '<span class="data-live" title="Live computed from coordinates">Computed</span>';
+  const psfDisplay = aedPSF(a.psf).replace('AED ','');  // strip AED prefix, shown in currency toggle
   document.getElementById('rp-hero').innerHTML = `
     <div class="rp-hero-metric">
-      <div class="rp-hero-metric-l">Avg PSF ${estBadge}</div>
-      <div class="rp-hero-metric-v">${aedPSF(a.psf)}</div>
+      <div class="rp-hero-metric-l">PSF · ${_currency} ${estBadge}</div>
+      <div class="rp-hero-metric-v">${psfDisplay}</div>
       <div class="rp-hero-metric-d ${trend?'up':'dn'}">${trend?'▲':' ▼'} ${trend?'+':''}${a.yoy}% YoY</div>
     </div>
     <div class="rp-hero-metric">
-      <div class="rp-hero-metric-l">Yield ${estBadge}</div>
+      <div class="rp-hero-metric-l">Gross Yield ${estBadge}</div>
       <div class="rp-hero-metric-v">${a.yld}%</div>
       <div class="rp-hero-metric-d ${a.yld>6.5?'up':'dn'}">${a.yld>6.5?'▲ Above avg':'▼ Below avg'}</div>
     </div>
     <div class="rp-hero-metric">
       <div class="rp-hero-metric-l">Inv. Score</div>
-      <div class="rp-hero-metric-v" style="color:${scoreColor(a.score)}">${a.score}<span style="font-size:10px;opacity:.5">/100</span></div>
+      <div class="rp-hero-metric-v" style="color:${scoreColor(a.score)}">${a.score}<span style="font-size:9px;opacity:.4;font-weight:400">/100</span></div>
       <div class="rp-hero-metric-d" style="color:var(--text3)">${a.txn.toLocaleString()} txns</div>
     </div>
   `;
@@ -2326,44 +2400,28 @@ function openDetail(a) {
         </div>
         <div class="prox-grid">
           <div class="prox-item">
-            <div class="prox-icon">✈</div>
-            <div class="prox-info">
-              <div class="prox-val">${prox.airport}km</div>
-              <div class="prox-label">Airport</div>
-            </div>
-            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.airport*4)}%;background:#6366F1"></div></div>
+            <div class="prox-info"><div class="prox-label">Airport</div><div class="prox-val">${prox.airport}km</div></div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.airport*3.5)}%;background:#818CF8"></div></div>
           </div>
           <div class="prox-item">
-            <div class="prox-icon">🚇</div>
-            <div class="prox-info">
-              <div class="prox-val">${prox.metro}km</div>
-              <div class="prox-label">Metro</div>
-            </div>
-            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.metro*20)}%;background:#FF3355"></div></div>
+            <div class="prox-info"><div class="prox-label">Metro</div><div class="prox-val">${prox.metro}km</div></div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.metro*18)}%;background:#FF3355"></div></div>
           </div>
           <div class="prox-item">
-            <div class="prox-icon">🏖</div>
-            <div class="prox-info">
-              <div class="prox-val">${prox.coast}km</div>
-              <div class="prox-label">Coast</div>
-            </div>
-            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.coast*10)}%;background:#06B6D4"></div></div>
+            <div class="prox-info"><div class="prox-label">Coast</div><div class="prox-val">${prox.coast}km</div></div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.coast*9)}%;background:#06B6D4"></div></div>
           </div>
           <div class="prox-item">
-            <div class="prox-icon">🏙</div>
-            <div class="prox-info">
-              <div class="prox-val">${prox.dt}km</div>
-              <div class="prox-label">Downtown</div>
-            </div>
-            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.dt*4)}%;background:#FBBF24"></div></div>
+            <div class="prox-info"><div class="prox-label">Downtown</div><div class="prox-val">${prox.dt}km</div></div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.dt*3.5)}%;background:#FBBF24"></div></div>
           </div>
         </div>
         <div class="prox-scores">
-          <div class="prox-score-pill" style="background:rgba(99,102,241,.15);color:#818CF8">
-            <span>Connectivity</span><strong>${prox.conn}/100</strong>
+          <div class="prox-score-pill">
+            <span>Connectivity</span><strong style="color:#818CF8">${prox.conn}/100</strong>
           </div>
-          <div class="prox-score-pill" style="background:rgba(6,182,212,.15);color:#67E8F9">
-            <span>Lifestyle</span><strong>${prox.life}/100</strong>
+          <div class="prox-score-pill">
+            <span>Lifestyle</span><strong style="color:#67E8F9">${prox.life}/100</strong>
           </div>
         </div>
       </div>`;
@@ -2887,7 +2945,8 @@ function renderAreaList() {
   el.innerHTML = list.map((a, i) => {
     const col = areaColor(a);
     const trend = a.yoy > 0;
-    const val = _sortMode === 'yield' ? `${a.yld}%` : _sortMode === 'yoy' ? `${a.yoy}%` : aedPSF(a.psf);
+    const rawPSF = aedPSF(a.psf);
+    const val = _sortMode === 'yield' ? `${a.yld}%` : _sortMode === 'yoy' ? `${a.yoy}%` : rawPSF;
     const inCompare = _compareAreas.some(x => x && x.id === a.id);
     const cpBtn = _compareMode ? `<button class="ar-compare${inCompare?' in-compare':''}" onclick="addToCompare('${a.id}',event)" title="${inCompare?'Remove from compare':'Add to compare'}">⇄</button>` : '';
     return `
