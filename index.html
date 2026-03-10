@@ -848,7 +848,7 @@ const AREAS = [
     {t:'🏗',type:'Apartment',name:'Green View',price:'AED 480K',size:'600 sqft'},
     {t:'🏗',type:'Villa',name:'DIP Villas',price:'AED 1.8M',size:'2,100 sqft'},
     {t:'🏗',type:'Apartment',name:'DIP Residences',price:'AED 380K',size:'520 sqft'},
-  ]},,
+  ]},
   {id:'harbour', name:'Dubai Harbour', tier:'prime', psf:3200, yoy:28.4, yld:5.1, txn:2800, off:88, rdy:12, beds:'1–4', type:'Luxury', score:91,
    hist:[1190, 1450, 1767, 2154, 2626, 3200], desc:'Brand-new master-planned waterfront hub adjacent to Palm Jumeirah with marina berths and retail promenade.', listings:[
     {t:'🏢',type:'Apartment',name:'Dubai Harbour Residences',price:'AED 2.6M',size:'800 sqft'},
@@ -1305,13 +1305,8 @@ function initMap() {
 
   map.on('load', () => {
     clearTimeout(loadTimeout);
-    // Configure Mapbox Standard style
-    const isDarkInit = document.documentElement.dataset.theme === 'dark';
-    try {
-      // dark-v11/light-v11 don't use configProperty lightPreset
-    } catch(e) {}
-    addAreaLayers();
-    addMetroLayer();
+    try { addAreaLayers(); } catch(e) { console.error('addAreaLayers failed:', e); }
+    try { addMetroLayer(); } catch(e) { console.error('addMetroLayer failed:', e); }
     dismissLoading();
   });
 
@@ -1361,7 +1356,7 @@ function buildGeoJSON() {
         },
         geometry: { type: 'Polygon', coordinates: coords }
       };
-    }).filter(Boolean)
+    }).filter(f => f && f.geometry && f.geometry.coordinates && f.geometry.coordinates[0] && f.geometry.coordinates[0].length >= 3)
   };
 }
 
@@ -2754,9 +2749,9 @@ const _loadTimer = setInterval(() => {
 }, 420);
 
 window.addEventListener('load', () => {
-  buildTicker();
-  renderAreaList();
-  updateLegend();
+  try { buildTicker(); } catch(e) { console.warn('Ticker error:', e); }
+  try { renderAreaList(); } catch(e) { console.warn('List error:', e); }
+  try { updateLegend(); } catch(e) { console.warn('Legend error:', e); }
   initMap();
 });
 </script>
