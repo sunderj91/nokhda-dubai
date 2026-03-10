@@ -848,7 +848,207 @@ const AREAS = [
     {t:'🏗',type:'Apartment',name:'Green View',price:'AED 480K',size:'600 sqft'},
     {t:'🏗',type:'Villa',name:'DIP Villas',price:'AED 1.8M',size:'2,100 sqft'},
     {t:'🏗',type:'Apartment',name:'DIP Residences',price:'AED 380K',size:'520 sqft'},
+  ]},,
+  {id:'harbour', name:'Dubai Harbour', tier:'prime', psf:3200, yoy:28.4, yld:5.1, txn:2800, off:88, rdy:12, beds:'1–4', type:'Luxury', score:91,
+   hist:[1190, 1450, 1767, 2154, 2626, 3200], desc:'Brand-new master-planned waterfront hub adjacent to Palm Jumeirah with marina berths and retail promenade.', listings:[
+    {t:'🏢',type:'Apartment',name:'Dubai Harbour Residences',price:'AED 2.6M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Dubai Harbour Villas',price:'AED 8.0M',size:'2,500 sqft'},
   ]},
+  {id:'bluewaters', name:'Bluewaters Island', tier:'prime', psf:3800, yoy:22.1, yld:5.4, txn:3100, off:65, rdy:35, beds:'1–4', type:'Luxury', score:88,
+   hist:[1699, 1996, 2344, 2754, 3235, 3800], desc:'Artificial island home to Ain Dubai and upscale hospitality brands. Ultra-prime urban beach living.', listings:[
+    {t:'🏢',type:'Apartment',name:'Bluewaters Island Residences',price:'AED 3.0M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Bluewaters Island Villas',price:'AED 9.5M',size:'2,500 sqft'},
+  ]},
+  {id:'pearljum', name:'Pearl Jumeirah', tier:'prime', psf:3500, yoy:19.8, yld:5.2, txn:1200, off:72, rdy:28, beds:'3–6', type:'Villa', score:87,
+   hist:[1676, 1942, 2250, 2607, 3021, 3500], desc:'Exclusive waterfront villa community with direct beach access and sea views toward Downtown.', listings:[
+    {t:'🏢',type:'Apartment',name:'Pearl Jumeirah Residences',price:'AED 2.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Pearl Jumeirah Villas',price:'AED 8.8M',size:'2,500 sqft'},
+  ]},
+  {id:'worldisl', name:'The World Islands', tier:'prime', psf:5200, yoy:31.0, yld:4.8, txn:400, off:95, rdy:5, beds:'4–7', type:'Ultra-Luxury', score:85,
+   hist:[1795, 2221, 2747, 3398, 4204, 5200], desc:'Private island development off Dubai coast. Ultra-exclusive bespoke villas targeting UHNW buyers.', listings:[
+    {t:'🏢',type:'Apartment',name:'The World Islands Residences',price:'AED 4.2M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The World Islands Villas',price:'AED 13.0M',size:'2,500 sqft'},
+  ]},
+  {id:'d3', name:'Dubai Design District', tier:'prime', psf:2800, yoy:18.2, yld:6.1, txn:2200, off:75, rdy:25, beds:'1–3', type:'Mixed', score:84,
+   hist:[1408, 1615, 1854, 2127, 2440, 2800], desc:'Creative hub and business district east of Business Bay. Growing F&B scene and residential launch pipeline.', listings:[
+    {t:'🏢',type:'Apartment',name:'Dubai Design District Residences',price:'AED 2.2M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Dubai Design District Villas',price:'AED 7.0M',size:'2,500 sqft'},
+  ]},
+  {id:'healthcare', name:'Healthcare City', tier:'mid', psf:1850, yoy:11.2, yld:7.2, txn:3400, off:42, rdy:58, beds:'1–3', type:'Mixed', score:73,
+   hist:[1157, 1271, 1396, 1533, 1684, 1850], desc:'Master-planned medical city near Dubai Creek. Niche demand from healthcare professionals.', listings:[
+    {t:'🏢',type:'Apartment',name:'Healthcare City Residences',price:'AED 1.5M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Healthcare City Villas',price:'AED 4.6M',size:'2,500 sqft'},
+  ]},
+  {id:'zaabeel', name:'Za\'abeel', tier:'prime', psf:2900, yoy:14.8, yld:5.8, txn:1800, off:55, rdy:45, beds:'1–4', type:'Mixed', score:82,
+   hist:[1619, 1819, 2044, 2297, 2581, 2900], desc:'Central district flanked by Za\'abeel Park and key government institutions. High connectivity.', listings:[
+    {t:'🏢',type:'Apartment',name:'Za\'abeel Residences',price:'AED 2.3M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Za\'abeel Villas',price:'AED 7.2M',size:'2,500 sqft'},
+  ]},
+  {id:'internetc', name:'Dubai Internet City', tier:'mid', psf:2100, yoy:10.4, yld:6.8, txn:4200, off:48, rdy:52, beds:'Studio–3', type:'Mixed', score:76,
+   hist:[1347, 1473, 1609, 1758, 1922, 2100], desc:'Tech and media cluster along Sheikh Zayed Road. Strong white-collar rental demand from tech workforce.', listings:[
+    {t:'🏢',type:'Apartment',name:'Dubai Internet City Residences',price:'AED 1.7M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Dubai Internet City Villas',price:'AED 5.2M',size:'2,500 sqft'},
+  ]},
+  {id:'mediac', name:'Dubai Media City', tier:'mid', psf:2050, yoy:9.8, yld:7.0, txn:3800, off:50, rdy:50, beds:'Studio–3', type:'Mixed', score:75,
+   hist:[1341, 1460, 1589, 1730, 1883, 2050], desc:'Adjacent to Internet City. Houses global media brands. Consistent rental demand from expats.', listings:[
+    {t:'🏢',type:'Apartment',name:'Dubai Media City Residences',price:'AED 1.6M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Dubai Media City Villas',price:'AED 5.1M',size:'2,500 sqft'},
+  ]},
+  {id:'jumeirah', name:'Jumeirah', tier:'mid', psf:2600, yoy:13.4, yld:5.9, txn:5600, off:22, rdy:78, beds:'3–6', type:'Villa', score:78,
+   hist:[1517, 1689, 1882, 2096, 2334, 2600], desc:'Iconic beachside villa corridor stretching 14km. Dubai\'s most established expat residential strip.', listings:[
+    {t:'🏢',type:'Apartment',name:'Jumeirah Residences',price:'AED 2.1M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Jumeirah Villas',price:'AED 6.5M',size:'2,500 sqft'},
+  ]},
+  {id:'alsafa', name:'Al Safa', tier:'mid', psf:2200, yoy:11.8, yld:6.2, txn:4100, off:28, rdy:72, beds:'3–5', type:'Villa', score:74,
+   hist:[1350, 1489, 1641, 1810, 1995, 2200], desc:'Quiet upscale neighbourhood between Sheikh Zayed and Al Wasl Roads. Popular with families.', listings:[
+    {t:'🏢',type:'Apartment',name:'Al Safa Residences',price:'AED 1.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Al Safa Villas',price:'AED 5.5M',size:'2,500 sqft'},
+  ]},
+  {id:'alwasl', name:'Al Wasl', tier:'mid', psf:2400, yoy:12.6, yld:6.0, txn:3800, off:18, rdy:82, beds:'3–5', type:'Mixed', score:76,
+   hist:[1436, 1591, 1763, 1954, 2166, 2400], desc:'Trendy mixed-use corridor home to City Walk. Boutique F&B, retail and residential demand rising.', listings:[
+    {t:'🏢',type:'Apartment',name:'Al Wasl Residences',price:'AED 1.9M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Al Wasl Villas',price:'AED 6.0M',size:'2,500 sqft'},
+  ]},
+  {id:'alsufouh', name:'Al Sufouh', tier:'mid', psf:1950, yoy:10.2, yld:7.1, txn:2900, off:32, rdy:68, beds:'Studio–3', type:'Mixed', score:71,
+   hist:[1259, 1374, 1500, 1637, 1787, 1950], desc:'Media and hospitality district behind Palm. Strong short-term rental demand from tourism.', listings:[
+    {t:'🏢',type:'Apartment',name:'Al Sufouh Residences',price:'AED 1.6M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Al Sufouh Villas',price:'AED 4.9M',size:'2,500 sqft'},
+  ]},
+  {id:'umm_suq', name:'Umm Suqeim', tier:'mid', psf:2500, yoy:14.1, yld:5.8, txn:3200, off:25, rdy:75, beds:'3–5', type:'Villa', score:77,
+   hist:[1427, 1596, 1786, 1998, 2235, 2500], desc:'Waterfront community near Kite Beach and Burj Al Arab. Premium villas with strong appreciation.', listings:[
+    {t:'🏢',type:'Apartment',name:'Umm Suqeim Residences',price:'AED 2.0M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Umm Suqeim Villas',price:'AED 6.2M',size:'2,500 sqft'},
+  ]},
+  {id:'mirdif', name:'Mirdif', tier:'mid', psf:1150, yoy:5.8, yld:7.8, txn:6800, off:15, rdy:85, beds:'3–4', type:'Villa', score:65,
+   hist:[857, 909, 964, 1022, 1084, 1150], desc:'Established suburban community near Dubai International Airport. Affordable villas for families.', listings:[
+    {t:'🏢',type:'Apartment',name:'Mirdif Residences',price:'AED 0.9M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Mirdif Villas',price:'AED 2.9M',size:'2,500 sqft'},
+  ]},
+  {id:'deira', name:'Deira', tier:'mid', psf:1050, yoy:4.2, yld:8.4, txn:8200, off:12, rdy:88, beds:'1–2', type:'Mixed', score:62,
+   hist:[825, 866, 909, 953, 1001, 1050], desc:'Historic trading district undergoing urban renewal. Affordable, high-yield, improving infrastructure.', listings:[
+    {t:'🏢',type:'Apartment',name:'Deira Residences',price:'AED 0.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Deira Villas',price:'AED 2.6M',size:'2,500 sqft'},
+  ]},
+  {id:'emiratesh', name:'Emirates Hills', tier:'prime', psf:4800, yoy:20.8, yld:4.4, txn:680, off:8, rdy:92, beds:'4–8', type:'Villa', score:86,
+   hist:[2231, 2600, 3031, 3533, 4118, 4800], desc:'Dubai\'s most prestigious gated villa enclave. Golf course frontage, ultra-premium land values.', listings:[
+    {t:'🏢',type:'Apartment',name:'Emirates Hills Residences',price:'AED 3.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Emirates Hills Villas',price:'AED 12.0M',size:'2,500 sqft'},
+  ]},
+  {id:'districtone', name:'District One', tier:'prime', psf:3600, yoy:24.2, yld:4.9, txn:1400, off:62, rdy:38, beds:'4–8', type:'Villa', score:90,
+   hist:[1512, 1799, 2140, 2545, 3027, 3600], desc:'Mohammed Bin Rashid City\'s flagship community with Crystal Lagoon. Premium off-plan and completed villas.', listings:[
+    {t:'🏢',type:'Apartment',name:'District One Residences',price:'AED 2.9M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'District One Villas',price:'AED 9.0M',size:'2,500 sqft'},
+  ]},
+  {id:'jumislands', name:'Jumeirah Islands', tier:'mid', psf:2100, yoy:12.4, yld:5.6, txn:1600, off:5, rdy:95, beds:'4–6', type:'Villa', score:72,
+   hist:[1264, 1399, 1549, 1714, 1897, 2100], desc:'Established island-cluster villa community popular with families near internet city cluster.', listings:[
+    {t:'🏢',type:'Apartment',name:'Jumeirah Islands Residences',price:'AED 1.7M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Jumeirah Islands Villas',price:'AED 5.2M',size:'2,500 sqft'},
+  ]},
+  {id:'jumipark', name:'Jumeirah Park', tier:'mid', psf:1900, yoy:11.2, yld:6.1, txn:2800, off:8, rdy:92, beds:'3–5', type:'Villa', score:71,
+   hist:[1188, 1305, 1434, 1575, 1730, 1900], desc:'Nakheel\'s suburban villa community popular for its park setting and family-oriented layout.', listings:[
+    {t:'🏢',type:'Apartment',name:'Jumeirah Park Residences',price:'AED 1.5M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Jumeirah Park Villas',price:'AED 4.8M',size:'2,500 sqft'},
+  ]},
+  {id:'jumiGE', name:'Jumeirah Golf Estates', tier:'mid', psf:1600, yoy:9.8, yld:6.4, txn:1800, off:22, rdy:78, beds:'3–5', type:'Villa', score:70,
+   hist:[1047, 1139, 1240, 1350, 1470, 1600], desc:'Golf-fronted villas and townhouses. Hosts DP World Tour finale. Strong luxury community appeal.', listings:[
+    {t:'🏢',type:'Apartment',name:'Jumeirah Golf Estates Residences',price:'AED 1.3M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Jumeirah Golf Estates Villas',price:'AED 4.0M',size:'2,500 sqft'},
+  ]},
+  {id:'damachills', name:'DAMAC Hills', tier:'mid', psf:1380, yoy:8.8, yld:7.1, txn:4200, off:38, rdy:62, beds:'2–5', type:'Mixed', score:68,
+   hist:[932, 1008, 1091, 1180, 1276, 1380], desc:'Trump-branded golf community with a mix of apartments and villas. Self-contained suburban hub.', listings:[
+    {t:'🏢',type:'Apartment',name:'DAMAC Hills Residences',price:'AED 1.1M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'DAMAC Hills Villas',price:'AED 3.5M',size:'2,500 sqft'},
+  ]},
+  {id:'remraam', name:'Remraam', tier:'value', psf:780, yoy:5.4, yld:9.2, txn:3200, off:18, rdy:82, beds:'Studio–2', type:'Residential', score:58,
+   hist:[589, 623, 659, 697, 737, 780], desc:'Affordable leasehold community in Dubai South corridor. High yield for budget-conscious investors.', listings:[
+    {t:'🏢',type:'Apartment',name:'Remraam Residences',price:'AED 0.6M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Remraam Villas',price:'AED 1.9M',size:'2,500 sqft'},
+  ]},
+  {id:'thegreens', name:'The Greens', tier:'mid', psf:1450, yoy:7.2, yld:8.1, txn:5400, off:5, rdy:95, beds:'1–3', type:'Residential', score:69,
+   hist:[1032, 1105, 1182, 1266, 1355, 1450], desc:'Nakheel low-rise community alongside Sheikh Zayed Road. Mature trees, lake views, steady rental market.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Greens Residences',price:'AED 1.2M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Greens Villas',price:'AED 3.6M',size:'2,500 sqft'},
+  ]},
+  {id:'thelakes', name:'The Lakes', tier:'mid', psf:1750, yoy:9.4, yld:6.8, txn:2200, off:5, rdy:95, beds:'3–5', type:'Villa', score:70,
+   hist:[1160, 1259, 1367, 1484, 1612, 1750], desc:'Quiet lakes community adjacent to Emirates Hills. Villa townhouses with strong family appeal.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Lakes Residences',price:'AED 1.4M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Lakes Villas',price:'AED 4.4M',size:'2,500 sqft'},
+  ]},
+  {id:'thesprings', name:'The Springs', tier:'mid', psf:1550, yoy:8.1, yld:7.2, txn:3800, off:5, rdy:95, beds:'2–4', type:'Villa', score:68,
+   hist:[1071, 1153, 1242, 1337, 1440, 1550], desc:'Popular Emaar townhouse community with lake access. One of Dubai\'s most liveable suburban areas.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Springs Residences',price:'AED 1.2M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Springs Villas',price:'AED 3.9M',size:'2,500 sqft'},
+  ]},
+  {id:'themeadows', name:'The Meadows', tier:'mid', psf:2200, yoy:12.2, yld:5.8, txn:1900, off:5, rdy:95, beds:'4–6', type:'Villa', score:72,
+   hist:[1333, 1473, 1629, 1800, 1990, 2200], desc:'Upscale Emaar villa community near Emirates Golf Club. Premium maintained gardens, quiet roads.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Meadows Residences',price:'AED 1.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Meadows Villas',price:'AED 5.5M',size:'2,500 sqft'},
+  ]},
+  {id:'thegardens', name:'The Gardens', tier:'value', psf:950, yoy:5.2, yld:8.8, txn:4800, off:12, rdy:88, beds:'1–3', type:'Residential', score:62,
+   hist:[722, 763, 806, 851, 899, 950], desc:'Affordable leasehold apartment community in JLT vicinity. Strong expat rental base.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Gardens Residences',price:'AED 0.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Gardens Villas',price:'AED 2.4M',size:'2,500 sqft'},
+  ]},
+  {id:'sustainable', name:'The Sustainable City', tier:'mid', psf:1650, yoy:10.8, yld:7.4, txn:1200, off:12, rdy:88, beds:'2–4', type:'Mixed', score:73,
+   hist:[1045, 1145, 1255, 1375, 1506, 1650], desc:'UAE\'s leading eco-community with solar power and urban farming. Premium for sustainability-focused buyers.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Sustainable City Residences',price:'AED 1.3M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Sustainable City Villas',price:'AED 4.1M',size:'2,500 sqft'},
+  ]},
+  {id:'canaldist', name:'Canal District', tier:'prime', psf:2600, yoy:15.4, yld:6.2, txn:1800, off:82, rdy:18, beds:'1–4', type:'Mixed', score:83,
+   hist:[1425, 1607, 1812, 2044, 2305, 2600], desc:'Emerging waterfront precinct along Dubai Water Canal. Strong pipeline from premium developers.', listings:[
+    {t:'🏢',type:'Apartment',name:'Canal District Residences',price:'AED 2.1M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Canal District Villas',price:'AED 6.5M',size:'2,500 sqft'},
+  ]},
+  {id:'globvillag', name:'Cityland Mall Area', tier:'value', psf:820, yoy:6.2, yld:8.4, txn:2100, off:68, rdy:32, beds:'Studio–2', type:'Mixed', score:58,
+   hist:[603, 641, 682, 725, 771, 820], desc:'Emerging affordable community near Global Village entertainment zone.', listings:[
+    {t:'🏢',type:'Apartment',name:'Cityland Mall Area Residences',price:'AED 0.7M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Cityland Mall Area Villas',price:'AED 2.0M',size:'2,500 sqft'},
+  ]},
+  {id:'expocity', name:'Expo City Dubai', tier:'value', psf:1050, yoy:14.2, yld:7.8, txn:2800, off:92, rdy:8, beds:'Studio–3', type:'Mixed', score:72,
+   hist:[597, 669, 749, 838, 938, 1050], desc:'Former Expo 2020 site repurposed as smart sustainable city. Long-term government-backed masterplan.', listings:[
+    {t:'🏢',type:'Apartment',name:'Expo City Dubai Residences',price:'AED 0.8M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Expo City Dubai Villas',price:'AED 2.6M',size:'2,500 sqft'},
+  ]},
+  {id:'academicc', name:'Academic City', tier:'value', psf:720, yoy:4.8, yld:9.4, txn:1800, off:28, rdy:72, beds:'Studio–2', type:'Residential', score:56,
+   hist:[555, 584, 616, 649, 683, 720], desc:'Student and educator housing hub adjacent to major universities. Niche but consistent rental yield.', listings:[
+    {t:'🏢',type:'Apartment',name:'Academic City Residences',price:'AED 0.6M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Academic City Villas',price:'AED 1.8M',size:'2,500 sqft'},
+  ]},
+  {id:'albadaa', name:'Al Bada\'a', tier:'mid', psf:1800, yoy:9.2, yld:6.8, txn:2400, off:15, rdy:85, beds:'2–4', type:'Mixed', score:68,
+   hist:[1200, 1302, 1412, 1531, 1660, 1800], desc:'Compact mixed-use neighbourhood near DIFC and Jumeirah. Growing boutique residential market.', listings:[
+    {t:'🏢',type:'Apartment',name:'Al Bada\'a Residences',price:'AED 1.4M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Al Bada\'a Villas',price:'AED 4.5M',size:'2,500 sqft'},
+  ]},
+  {id:'tilalgaf', name:'Tilal Al Ghaf', tier:'mid', psf:1720, yoy:11.4, yld:6.6, txn:2800, off:78, rdy:22, beds:'2–5', type:'Mixed', score:74,
+   hist:[1069, 1176, 1293, 1422, 1564, 1720], desc:'Majid Al Futtaim\'s master-planned lagoon community. Strong off-plan demand, lifestyle-focused design.', listings:[
+    {t:'🏢',type:'Apartment',name:'Tilal Al Ghaf Residences',price:'AED 1.4M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Tilal Al Ghaf Villas',price:'AED 4.3M',size:'2,500 sqft'},
+  ]},
+  {id:'productionc', name:'Dubai Production City', tier:'value', psf:820, yoy:6.8, yld:9.1, txn:2400, off:35, rdy:65, beds:'Studio–2', type:'Mixed', score:61,
+   hist:[591, 631, 674, 719, 768, 820], desc:'Formerly IMPZ. Affordable studios and apartments with improving community infrastructure.', listings:[
+    {t:'🏢',type:'Apartment',name:'Dubai Production City Residences',price:'AED 0.7M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Dubai Production City Villas',price:'AED 2.0M',size:'2,500 sqft'},
+  ]},
+  {id:'studioc', name:'Dubai Studio City', tier:'value', psf:880, yoy:7.1, yld:8.8, txn:2100, off:42, rdy:58, beds:'Studio–2', type:'Mixed', score:62,
+   hist:[628, 672, 719, 769, 823, 880], desc:'Media production hub with affordable residential towers. Strong short-let potential from visiting crews.', listings:[
+    {t:'🏢',type:'Apartment',name:'Dubai Studio City Residences',price:'AED 0.7M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Dubai Studio City Villas',price:'AED 2.2M',size:'2,500 sqft'},
+  ]},
+  {id:'albarari', name:'Al Barari', tier:'prime', psf:3200, yoy:16.8, yld:5.2, txn:420, off:18, rdy:82, beds:'4–7', type:'Villa', score:84,
+   hist:[1680, 1911, 2174, 2473, 2813, 3200], desc:'Lush botanical villa estate with 60% green space. Dubai\'s most private organic luxury community.', listings:[
+    {t:'🏢',type:'Apartment',name:'Al Barari Residences',price:'AED 2.6M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Al Barari Villas',price:'AED 8.0M',size:'2,500 sqft'},
+  ]},
+  {id:'jebalipalm', name:'Palm Jebel Ali', tier:'prime', psf:2800, yoy:45.0, yld:5.8, txn:800, off:98, rdy:2, beds:'3–7', type:'Villa', score:89,
+   hist:[660, 882, 1177, 1571, 2097, 2800], desc:'Nakheel\'s revived mega-project. Largest off-plan launch in Dubai history. Ultra-high appreciation potential.', listings:[
+    {t:'🏢',type:'Apartment',name:'Palm Jebel Ali Residences',price:'AED 2.2M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'Palm Jebel Ali Villas',price:'AED 7.0M',size:'2,500 sqft'},
+  ]},
+  {id:'oasis', name:'The Oasis', tier:'prime', psf:2400, yoy:32.0, yld:5.4, txn:600, off:98, rdy:2, beds:'3–6', type:'Villa', score:86,
+   hist:[806, 1002, 1247, 1551, 1929, 2400], desc:'Emaar\'s flagship mega-development. Lagoon-fronted villas in Mohammed Bin Rashid City. Top-tier demand.', listings:[
+    {t:'🏢',type:'Apartment',name:'The Oasis Residences',price:'AED 1.9M',size:'800 sqft'},
+    {t:'🏠',type:'Villa',name:'The Oasis Villas',price:'AED 6.0M',size:'2,500 sqft'},
+  ]}
 ];
 
 /* ══════════════════════════════════════════════
@@ -2549,207 +2749,7 @@ let _loadStep = 0;
 const _loadTimer = setInterval(() => {
   _loadStep++;
   if (_loadStep < LOAD_STEPS.length) {
-    document.getElementById('load-status').textContent = LOAD_STEPS[_loadStep,
-  {id:'harbour', name:'Dubai Harbour', tier:'prime', psf:3200, yoy:28.4, yld:5.1, txn:2800, off:88, rdy:12, beds:'1–4', type:'Luxury', score:91,
-   hist:[1190, 1450, 1767, 2154, 2626, 3200], desc:'Brand-new master-planned waterfront hub adjacent to Palm Jumeirah with marina berths and retail promenade.', listings:[
-    {t:'🏢',type:'Apartment',name:'Dubai Harbour Residences',price:'AED 2.6M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Dubai Harbour Villas',price:'AED 8.0M',size:'2,500 sqft'},
-  ]},
-  {id:'bluewaters', name:'Bluewaters Island', tier:'prime', psf:3800, yoy:22.1, yld:5.4, txn:3100, off:65, rdy:35, beds:'1–4', type:'Luxury', score:88,
-   hist:[1699, 1996, 2344, 2754, 3235, 3800], desc:'Artificial island home to Ain Dubai and upscale hospitality brands. Ultra-prime urban beach living.', listings:[
-    {t:'🏢',type:'Apartment',name:'Bluewaters Island Residences',price:'AED 3.0M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Bluewaters Island Villas',price:'AED 9.5M',size:'2,500 sqft'},
-  ]},
-  {id:'pearljum', name:'Pearl Jumeirah', tier:'prime', psf:3500, yoy:19.8, yld:5.2, txn:1200, off:72, rdy:28, beds:'3–6', type:'Villa', score:87,
-   hist:[1676, 1942, 2250, 2607, 3021, 3500], desc:'Exclusive waterfront villa community with direct beach access and sea views toward Downtown.', listings:[
-    {t:'🏢',type:'Apartment',name:'Pearl Jumeirah Residences',price:'AED 2.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Pearl Jumeirah Villas',price:'AED 8.8M',size:'2,500 sqft'},
-  ]},
-  {id:'worldisl', name:'The World Islands', tier:'prime', psf:5200, yoy:31.0, yld:4.8, txn:400, off:95, rdy:5, beds:'4–7', type:'Ultra-Luxury', score:85,
-   hist:[1795, 2221, 2747, 3398, 4204, 5200], desc:'Private island development off Dubai coast. Ultra-exclusive bespoke villas targeting UHNW buyers.', listings:[
-    {t:'🏢',type:'Apartment',name:'The World Islands Residences',price:'AED 4.2M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The World Islands Villas',price:'AED 13.0M',size:'2,500 sqft'},
-  ]},
-  {id:'d3', name:'Dubai Design District', tier:'prime', psf:2800, yoy:18.2, yld:6.1, txn:2200, off:75, rdy:25, beds:'1–3', type:'Mixed', score:84,
-   hist:[1408, 1615, 1854, 2127, 2440, 2800], desc:'Creative hub and business district east of Business Bay. Growing F&B scene and residential launch pipeline.', listings:[
-    {t:'🏢',type:'Apartment',name:'Dubai Design District Residences',price:'AED 2.2M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Dubai Design District Villas',price:'AED 7.0M',size:'2,500 sqft'},
-  ]},
-  {id:'healthcare', name:'Healthcare City', tier:'mid', psf:1850, yoy:11.2, yld:7.2, txn:3400, off:42, rdy:58, beds:'1–3', type:'Mixed', score:73,
-   hist:[1157, 1271, 1396, 1533, 1684, 1850], desc:'Master-planned medical city near Dubai Creek. Niche demand from healthcare professionals.', listings:[
-    {t:'🏢',type:'Apartment',name:'Healthcare City Residences',price:'AED 1.5M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Healthcare City Villas',price:'AED 4.6M',size:'2,500 sqft'},
-  ]},
-  {id:'zaabeel', name:'Za\'abeel', tier:'prime', psf:2900, yoy:14.8, yld:5.8, txn:1800, off:55, rdy:45, beds:'1–4', type:'Mixed', score:82,
-   hist:[1619, 1819, 2044, 2297, 2581, 2900], desc:'Central district flanked by Za\'abeel Park and key government institutions. High connectivity.', listings:[
-    {t:'🏢',type:'Apartment',name:'Za\'abeel Residences',price:'AED 2.3M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Za\'abeel Villas',price:'AED 7.2M',size:'2,500 sqft'},
-  ]},
-  {id:'internetc', name:'Dubai Internet City', tier:'mid', psf:2100, yoy:10.4, yld:6.8, txn:4200, off:48, rdy:52, beds:'Studio–3', type:'Mixed', score:76,
-   hist:[1347, 1473, 1609, 1758, 1922, 2100], desc:'Tech and media cluster along Sheikh Zayed Road. Strong white-collar rental demand from tech workforce.', listings:[
-    {t:'🏢',type:'Apartment',name:'Dubai Internet City Residences',price:'AED 1.7M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Dubai Internet City Villas',price:'AED 5.2M',size:'2,500 sqft'},
-  ]},
-  {id:'mediac', name:'Dubai Media City', tier:'mid', psf:2050, yoy:9.8, yld:7.0, txn:3800, off:50, rdy:50, beds:'Studio–3', type:'Mixed', score:75,
-   hist:[1341, 1460, 1589, 1730, 1883, 2050], desc:'Adjacent to Internet City. Houses global media brands. Consistent rental demand from expats.', listings:[
-    {t:'🏢',type:'Apartment',name:'Dubai Media City Residences',price:'AED 1.6M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Dubai Media City Villas',price:'AED 5.1M',size:'2,500 sqft'},
-  ]},
-  {id:'jumeirah', name:'Jumeirah', tier:'mid', psf:2600, yoy:13.4, yld:5.9, txn:5600, off:22, rdy:78, beds:'3–6', type:'Villa', score:78,
-   hist:[1517, 1689, 1882, 2096, 2334, 2600], desc:'Iconic beachside villa corridor stretching 14km. Dubai\'s most established expat residential strip.', listings:[
-    {t:'🏢',type:'Apartment',name:'Jumeirah Residences',price:'AED 2.1M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Jumeirah Villas',price:'AED 6.5M',size:'2,500 sqft'},
-  ]},
-  {id:'alsafa', name:'Al Safa', tier:'mid', psf:2200, yoy:11.8, yld:6.2, txn:4100, off:28, rdy:72, beds:'3–5', type:'Villa', score:74,
-   hist:[1350, 1489, 1641, 1810, 1995, 2200], desc:'Quiet upscale neighbourhood between Sheikh Zayed and Al Wasl Roads. Popular with families.', listings:[
-    {t:'🏢',type:'Apartment',name:'Al Safa Residences',price:'AED 1.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Al Safa Villas',price:'AED 5.5M',size:'2,500 sqft'},
-  ]},
-  {id:'alwasl', name:'Al Wasl', tier:'mid', psf:2400, yoy:12.6, yld:6.0, txn:3800, off:18, rdy:82, beds:'3–5', type:'Mixed', score:76,
-   hist:[1436, 1591, 1763, 1954, 2166, 2400], desc:'Trendy mixed-use corridor home to City Walk. Boutique F&B, retail and residential demand rising.', listings:[
-    {t:'🏢',type:'Apartment',name:'Al Wasl Residences',price:'AED 1.9M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Al Wasl Villas',price:'AED 6.0M',size:'2,500 sqft'},
-  ]},
-  {id:'alsufouh', name:'Al Sufouh', tier:'mid', psf:1950, yoy:10.2, yld:7.1, txn:2900, off:32, rdy:68, beds:'Studio–3', type:'Mixed', score:71,
-   hist:[1259, 1374, 1500, 1637, 1787, 1950], desc:'Media and hospitality district behind Palm. Strong short-term rental demand from tourism.', listings:[
-    {t:'🏢',type:'Apartment',name:'Al Sufouh Residences',price:'AED 1.6M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Al Sufouh Villas',price:'AED 4.9M',size:'2,500 sqft'},
-  ]},
-  {id:'umm_suq', name:'Umm Suqeim', tier:'mid', psf:2500, yoy:14.1, yld:5.8, txn:3200, off:25, rdy:75, beds:'3–5', type:'Villa', score:77,
-   hist:[1427, 1596, 1786, 1998, 2235, 2500], desc:'Waterfront community near Kite Beach and Burj Al Arab. Premium villas with strong appreciation.', listings:[
-    {t:'🏢',type:'Apartment',name:'Umm Suqeim Residences',price:'AED 2.0M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Umm Suqeim Villas',price:'AED 6.2M',size:'2,500 sqft'},
-  ]},
-  {id:'mirdif', name:'Mirdif', tier:'mid', psf:1150, yoy:5.8, yld:7.8, txn:6800, off:15, rdy:85, beds:'3–4', type:'Villa', score:65,
-   hist:[857, 909, 964, 1022, 1084, 1150], desc:'Established suburban community near Dubai International Airport. Affordable villas for families.', listings:[
-    {t:'🏢',type:'Apartment',name:'Mirdif Residences',price:'AED 0.9M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Mirdif Villas',price:'AED 2.9M',size:'2,500 sqft'},
-  ]},
-  {id:'deira', name:'Deira', tier:'mid', psf:1050, yoy:4.2, yld:8.4, txn:8200, off:12, rdy:88, beds:'1–2', type:'Mixed', score:62,
-   hist:[825, 866, 909, 953, 1001, 1050], desc:'Historic trading district undergoing urban renewal. Affordable, high-yield, improving infrastructure.', listings:[
-    {t:'🏢',type:'Apartment',name:'Deira Residences',price:'AED 0.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Deira Villas',price:'AED 2.6M',size:'2,500 sqft'},
-  ]},
-  {id:'emiratesh', name:'Emirates Hills', tier:'prime', psf:4800, yoy:20.8, yld:4.4, txn:680, off:8, rdy:92, beds:'4–8', type:'Villa', score:86,
-   hist:[2231, 2600, 3031, 3533, 4118, 4800], desc:'Dubai\'s most prestigious gated villa enclave. Golf course frontage, ultra-premium land values.', listings:[
-    {t:'🏢',type:'Apartment',name:'Emirates Hills Residences',price:'AED 3.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Emirates Hills Villas',price:'AED 12.0M',size:'2,500 sqft'},
-  ]},
-  {id:'districtone', name:'District One', tier:'prime', psf:3600, yoy:24.2, yld:4.9, txn:1400, off:62, rdy:38, beds:'4–8', type:'Villa', score:90,
-   hist:[1512, 1799, 2140, 2545, 3027, 3600], desc:'Mohammed Bin Rashid City\'s flagship community with Crystal Lagoon. Premium off-plan and completed villas.', listings:[
-    {t:'🏢',type:'Apartment',name:'District One Residences',price:'AED 2.9M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'District One Villas',price:'AED 9.0M',size:'2,500 sqft'},
-  ]},
-  {id:'jumislands', name:'Jumeirah Islands', tier:'mid', psf:2100, yoy:12.4, yld:5.6, txn:1600, off:5, rdy:95, beds:'4–6', type:'Villa', score:72,
-   hist:[1264, 1399, 1549, 1714, 1897, 2100], desc:'Established island-cluster villa community popular with families near internet city cluster.', listings:[
-    {t:'🏢',type:'Apartment',name:'Jumeirah Islands Residences',price:'AED 1.7M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Jumeirah Islands Villas',price:'AED 5.2M',size:'2,500 sqft'},
-  ]},
-  {id:'jumipark', name:'Jumeirah Park', tier:'mid', psf:1900, yoy:11.2, yld:6.1, txn:2800, off:8, rdy:92, beds:'3–5', type:'Villa', score:71,
-   hist:[1188, 1305, 1434, 1575, 1730, 1900], desc:'Nakheel\'s suburban villa community popular for its park setting and family-oriented layout.', listings:[
-    {t:'🏢',type:'Apartment',name:'Jumeirah Park Residences',price:'AED 1.5M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Jumeirah Park Villas',price:'AED 4.8M',size:'2,500 sqft'},
-  ]},
-  {id:'jumiGE', name:'Jumeirah Golf Estates', tier:'mid', psf:1600, yoy:9.8, yld:6.4, txn:1800, off:22, rdy:78, beds:'3–5', type:'Villa', score:70,
-   hist:[1047, 1139, 1240, 1350, 1470, 1600], desc:'Golf-fronted villas and townhouses. Hosts DP World Tour finale. Strong luxury community appeal.', listings:[
-    {t:'🏢',type:'Apartment',name:'Jumeirah Golf Estates Residences',price:'AED 1.3M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Jumeirah Golf Estates Villas',price:'AED 4.0M',size:'2,500 sqft'},
-  ]},
-  {id:'damachills', name:'DAMAC Hills', tier:'mid', psf:1380, yoy:8.8, yld:7.1, txn:4200, off:38, rdy:62, beds:'2–5', type:'Mixed', score:68,
-   hist:[932, 1008, 1091, 1180, 1276, 1380], desc:'Trump-branded golf community with a mix of apartments and villas. Self-contained suburban hub.', listings:[
-    {t:'🏢',type:'Apartment',name:'DAMAC Hills Residences',price:'AED 1.1M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'DAMAC Hills Villas',price:'AED 3.5M',size:'2,500 sqft'},
-  ]},
-  {id:'remraam', name:'Remraam', tier:'value', psf:780, yoy:5.4, yld:9.2, txn:3200, off:18, rdy:82, beds:'Studio–2', type:'Residential', score:58,
-   hist:[589, 623, 659, 697, 737, 780], desc:'Affordable leasehold community in Dubai South corridor. High yield for budget-conscious investors.', listings:[
-    {t:'🏢',type:'Apartment',name:'Remraam Residences',price:'AED 0.6M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Remraam Villas',price:'AED 1.9M',size:'2,500 sqft'},
-  ]},
-  {id:'thegreens', name:'The Greens', tier:'mid', psf:1450, yoy:7.2, yld:8.1, txn:5400, off:5, rdy:95, beds:'1–3', type:'Residential', score:69,
-   hist:[1032, 1105, 1182, 1266, 1355, 1450], desc:'Nakheel low-rise community alongside Sheikh Zayed Road. Mature trees, lake views, steady rental market.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Greens Residences',price:'AED 1.2M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Greens Villas',price:'AED 3.6M',size:'2,500 sqft'},
-  ]},
-  {id:'thelakes', name:'The Lakes', tier:'mid', psf:1750, yoy:9.4, yld:6.8, txn:2200, off:5, rdy:95, beds:'3–5', type:'Villa', score:70,
-   hist:[1160, 1259, 1367, 1484, 1612, 1750], desc:'Quiet lakes community adjacent to Emirates Hills. Villa townhouses with strong family appeal.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Lakes Residences',price:'AED 1.4M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Lakes Villas',price:'AED 4.4M',size:'2,500 sqft'},
-  ]},
-  {id:'thesprings', name:'The Springs', tier:'mid', psf:1550, yoy:8.1, yld:7.2, txn:3800, off:5, rdy:95, beds:'2–4', type:'Villa', score:68,
-   hist:[1071, 1153, 1242, 1337, 1440, 1550], desc:'Popular Emaar townhouse community with lake access. One of Dubai\'s most liveable suburban areas.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Springs Residences',price:'AED 1.2M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Springs Villas',price:'AED 3.9M',size:'2,500 sqft'},
-  ]},
-  {id:'themeadows', name:'The Meadows', tier:'mid', psf:2200, yoy:12.2, yld:5.8, txn:1900, off:5, rdy:95, beds:'4–6', type:'Villa', score:72,
-   hist:[1333, 1473, 1629, 1800, 1990, 2200], desc:'Upscale Emaar villa community near Emirates Golf Club. Premium maintained gardens, quiet roads.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Meadows Residences',price:'AED 1.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Meadows Villas',price:'AED 5.5M',size:'2,500 sqft'},
-  ]},
-  {id:'thegardens', name:'The Gardens', tier:'value', psf:950, yoy:5.2, yld:8.8, txn:4800, off:12, rdy:88, beds:'1–3', type:'Residential', score:62,
-   hist:[722, 763, 806, 851, 899, 950], desc:'Affordable leasehold apartment community in JLT vicinity. Strong expat rental base.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Gardens Residences',price:'AED 0.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Gardens Villas',price:'AED 2.4M',size:'2,500 sqft'},
-  ]},
-  {id:'sustainable', name:'The Sustainable City', tier:'mid', psf:1650, yoy:10.8, yld:7.4, txn:1200, off:12, rdy:88, beds:'2–4', type:'Mixed', score:73,
-   hist:[1045, 1145, 1255, 1375, 1506, 1650], desc:'UAE\'s leading eco-community with solar power and urban farming. Premium for sustainability-focused buyers.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Sustainable City Residences',price:'AED 1.3M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Sustainable City Villas',price:'AED 4.1M',size:'2,500 sqft'},
-  ]},
-  {id:'canaldist', name:'Canal District', tier:'prime', psf:2600, yoy:15.4, yld:6.2, txn:1800, off:82, rdy:18, beds:'1–4', type:'Mixed', score:83,
-   hist:[1425, 1607, 1812, 2044, 2305, 2600], desc:'Emerging waterfront precinct along Dubai Water Canal. Strong pipeline from premium developers.', listings:[
-    {t:'🏢',type:'Apartment',name:'Canal District Residences',price:'AED 2.1M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Canal District Villas',price:'AED 6.5M',size:'2,500 sqft'},
-  ]},
-  {id:'globvillag', name:'Cityland Mall Area', tier:'value', psf:820, yoy:6.2, yld:8.4, txn:2100, off:68, rdy:32, beds:'Studio–2', type:'Mixed', score:58,
-   hist:[603, 641, 682, 725, 771, 820], desc:'Emerging affordable community near Global Village entertainment zone.', listings:[
-    {t:'🏢',type:'Apartment',name:'Cityland Mall Area Residences',price:'AED 0.7M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Cityland Mall Area Villas',price:'AED 2.0M',size:'2,500 sqft'},
-  ]},
-  {id:'expocity', name:'Expo City Dubai', tier:'value', psf:1050, yoy:14.2, yld:7.8, txn:2800, off:92, rdy:8, beds:'Studio–3', type:'Mixed', score:72,
-   hist:[597, 669, 749, 838, 938, 1050], desc:'Former Expo 2020 site repurposed as smart sustainable city. Long-term government-backed masterplan.', listings:[
-    {t:'🏢',type:'Apartment',name:'Expo City Dubai Residences',price:'AED 0.8M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Expo City Dubai Villas',price:'AED 2.6M',size:'2,500 sqft'},
-  ]},
-  {id:'academicc', name:'Academic City', tier:'value', psf:720, yoy:4.8, yld:9.4, txn:1800, off:28, rdy:72, beds:'Studio–2', type:'Residential', score:56,
-   hist:[555, 584, 616, 649, 683, 720], desc:'Student and educator housing hub adjacent to major universities. Niche but consistent rental yield.', listings:[
-    {t:'🏢',type:'Apartment',name:'Academic City Residences',price:'AED 0.6M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Academic City Villas',price:'AED 1.8M',size:'2,500 sqft'},
-  ]},
-  {id:'albadaa', name:'Al Bada\'a', tier:'mid', psf:1800, yoy:9.2, yld:6.8, txn:2400, off:15, rdy:85, beds:'2–4', type:'Mixed', score:68,
-   hist:[1200, 1302, 1412, 1531, 1660, 1800], desc:'Compact mixed-use neighbourhood near DIFC and Jumeirah. Growing boutique residential market.', listings:[
-    {t:'🏢',type:'Apartment',name:'Al Bada\'a Residences',price:'AED 1.4M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Al Bada\'a Villas',price:'AED 4.5M',size:'2,500 sqft'},
-  ]},
-  {id:'tilalgaf', name:'Tilal Al Ghaf', tier:'mid', psf:1720, yoy:11.4, yld:6.6, txn:2800, off:78, rdy:22, beds:'2–5', type:'Mixed', score:74,
-   hist:[1069, 1176, 1293, 1422, 1564, 1720], desc:'Majid Al Futtaim\'s master-planned lagoon community. Strong off-plan demand, lifestyle-focused design.', listings:[
-    {t:'🏢',type:'Apartment',name:'Tilal Al Ghaf Residences',price:'AED 1.4M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Tilal Al Ghaf Villas',price:'AED 4.3M',size:'2,500 sqft'},
-  ]},
-  {id:'productionc', name:'Dubai Production City', tier:'value', psf:820, yoy:6.8, yld:9.1, txn:2400, off:35, rdy:65, beds:'Studio–2', type:'Mixed', score:61,
-   hist:[591, 631, 674, 719, 768, 820], desc:'Formerly IMPZ. Affordable studios and apartments with improving community infrastructure.', listings:[
-    {t:'🏢',type:'Apartment',name:'Dubai Production City Residences',price:'AED 0.7M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Dubai Production City Villas',price:'AED 2.0M',size:'2,500 sqft'},
-  ]},
-  {id:'studioc', name:'Dubai Studio City', tier:'value', psf:880, yoy:7.1, yld:8.8, txn:2100, off:42, rdy:58, beds:'Studio–2', type:'Mixed', score:62,
-   hist:[628, 672, 719, 769, 823, 880], desc:'Media production hub with affordable residential towers. Strong short-let potential from visiting crews.', listings:[
-    {t:'🏢',type:'Apartment',name:'Dubai Studio City Residences',price:'AED 0.7M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Dubai Studio City Villas',price:'AED 2.2M',size:'2,500 sqft'},
-  ]},
-  {id:'albarari', name:'Al Barari', tier:'prime', psf:3200, yoy:16.8, yld:5.2, txn:420, off:18, rdy:82, beds:'4–7', type:'Villa', score:84,
-   hist:[1680, 1911, 2174, 2473, 2813, 3200], desc:'Lush botanical villa estate with 60% green space. Dubai\'s most private organic luxury community.', listings:[
-    {t:'🏢',type:'Apartment',name:'Al Barari Residences',price:'AED 2.6M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Al Barari Villas',price:'AED 8.0M',size:'2,500 sqft'},
-  ]},
-  {id:'jebalipalm', name:'Palm Jebel Ali', tier:'prime', psf:2800, yoy:45.0, yld:5.8, txn:800, off:98, rdy:2, beds:'3–7', type:'Villa', score:89,
-   hist:[660, 882, 1177, 1571, 2097, 2800], desc:'Nakheel\'s revived mega-project. Largest off-plan launch in Dubai history. Ultra-high appreciation potential.', listings:[
-    {t:'🏢',type:'Apartment',name:'Palm Jebel Ali Residences',price:'AED 2.2M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'Palm Jebel Ali Villas',price:'AED 7.0M',size:'2,500 sqft'},
-  ]},
-  {id:'oasis', name:'The Oasis', tier:'prime', psf:2400, yoy:32.0, yld:5.4, txn:600, off:98, rdy:2, beds:'3–6', type:'Villa', score:86,
-   hist:[806, 1002, 1247, 1551, 1929, 2400], desc:'Emaar\'s flagship mega-development. Lagoon-fronted villas in Mohammed Bin Rashid City. Top-tier demand.', listings:[
-    {t:'🏢',type:'Apartment',name:'The Oasis Residences',price:'AED 1.9M',size:'800 sqft'},
-    {t:'🏠',type:'Villa',name:'The Oasis Villas',price:'AED 6.0M',size:'2,500 sqft'},
-  ]}];
+    document.getElementById('load-status').textContent = LOAD_STEPS[_loadStep];
   } else clearInterval(_loadTimer);
 }, 420);
 
