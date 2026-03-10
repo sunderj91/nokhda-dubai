@@ -861,44 +861,14 @@ const STYLE_DARK  = `https://api.maptiler.com/maps/backdrop-dark/style.json?key=
 const STYLE_LIGHT = `https://api.maptiler.com/maps/backdrop/style.json?key=${MAPTILER_KEY}`;
 const STYLE_SAT   = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_KEY}`;
 
-// Minimal inline fallback styles (used when MapTiler tiles are blocked by CSP)
-const STYLE_FALLBACK_DARK = {
-  version: 8,
-  name: 'RAQAM Dark',
-  glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-  sources: {
-    osm: {
-      type: 'raster',
-      tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
-              'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],
-      tileSize: 256,
-      attribution: '© OpenStreetMap © CARTO'
-    }
-  },
-  layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#03060F' } },
-           { id: 'osm', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.88 } }]
-};
-const STYLE_FALLBACK_LIGHT = {
-  version: 8,
-  name: 'RAQAM Light',
-  glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
-  sources: {
-    osm: {
-      type: 'raster',
-      tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
-              'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
-      tileSize: 256,
-      attribution: '© OpenStreetMap © CARTO'
-    }
-  },
-  layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#EEF1F8' } },
-           { id: 'osm', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.9 } }]
-};
+// OpenFreeMap: free, no API key, CORS * — works in all iframe environments
+const STYLE_FALLBACK_DARK  = 'https://tiles.openfreemap.org/styles/dark';
+const STYLE_FALLBACK_LIGHT = 'https://tiles.openfreemap.org/styles/liberty';
 
-// Detect sandboxed iframe (claudeusercontent.com) — use CARTO tiles which allow cross-origin
+// Always use OpenFreeMap in sandboxed preview; MapTiler on live site
 const IS_SANDBOXED = location.hostname.includes('claudeusercontent') || location.hostname.includes('claude.ai');
 function getStyle(mode) {
-  if (IS_SANDBOXED) return mode === 'sat' ? STYLE_FALLBACK_DARK : (mode === 'light' ? STYLE_FALLBACK_LIGHT : STYLE_FALLBACK_DARK);
+  if (IS_SANDBOXED) return mode === 'light' ? STYLE_FALLBACK_LIGHT : STYLE_FALLBACK_DARK;
   return mode === 'sat' ? STYLE_SAT : (mode === 'light' ? STYLE_LIGHT : STYLE_DARK);
 }
 const DUBAI_CENTER = [55.2708, 25.2048];
