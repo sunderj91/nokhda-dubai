@@ -327,9 +327,14 @@ body.lp-collapsed #heat-legend { left: 12px; }
   border-radius: 14px 14px 0 0; border: 1px solid var(--bord2); border-bottom: none;
   background: var(--surf); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
   min-width: 480px; max-width: 780px; overflow: hidden;
-  transition: transform 0.35s cubic-bezier(.4,0,.2,1);
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1), visibility 0s linear 0s;
+  visibility: visible;
 }
-#compare-panel.hidden { transform: translateX(-50%) translateY(110%); }
+#compare-panel.hidden {
+  transform: translateX(-50%) translateY(calc(100% + var(--bh) + 4px));
+  visibility: hidden;
+  transition: transform 0.35s cubic-bezier(.4,0,.2,1), visibility 0s linear 0.35s;
+}
 .cp-slot { flex: 1; padding: 14px 16px; border-right: 1px solid var(--bord); min-width: 140px; cursor: pointer; transition: background 0.15s; position: relative; }
 .cp-slot:last-child { border-right: none; }
 .cp-slot:hover { background: var(--accent3); }
