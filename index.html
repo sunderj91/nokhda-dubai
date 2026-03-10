@@ -6,8 +6,8 @@
 <title>RAQAM · Dubai Real Estate Intelligence</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin="anonymous"></script>
+<link href="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css" rel="stylesheet">
+<script src="https://api.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
 <style>
 /* ══════════════════════════════════════════════
    RAQAM DUBAI v9 — DESIGN TOKENS
@@ -24,8 +24,8 @@
   --accent: #00D4FF; --accent2: rgba(0,212,255,0.1); --accent3: rgba(0,212,255,0.06);
   --green: #00E5A0; --red: #FF4455; --amber: #F5C33C; --orange: #FF8232;
   --blur: blur(20px) saturate(1.6);
-  --map-style: https://api.maptiler.com/maps/backdrop-dark/style.json?key=ecydpiGmOMxHOQIYou4e;
-  --map-sat: https://api.maptiler.com/maps/hybrid/style.json?key=ecydpiGmOMxHOQIYou4e;
+  --map-style: mapbox://styles/mapbox/standard;
+  --map-sat: mapbox://styles/mapbox/satellite-streets-v12;
 }
 [data-theme="light"] {
   --bg: #EEF1F8; --bg2: #E4E8F2; --surf: rgba(248,250,255,0.97); --surf2: rgba(240,243,250,0.95);
@@ -34,8 +34,8 @@
   --accent: #0052CC; --accent2: rgba(0,82,204,0.09); --accent3: rgba(0,82,204,0.04);
   --green: #00A86B; --red: #D93025; --amber: #C8960A; --orange: #D85F00;
   --blur: blur(20px) saturate(1.4);
-  --map-style: https://api.maptiler.com/maps/backdrop/style.json?key=ecydpiGmOMxHOQIYou4e;
-  --map-sat: https://api.maptiler.com/maps/hybrid/style.json?key=ecydpiGmOMxHOQIYou4e;
+  --map-style: mapbox://styles/mapbox/standard;
+  --map-sat: mapbox://styles/mapbox/satellite-streets-v12;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans', sans-serif; }
@@ -51,8 +51,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 
 /* ══ MAP ══ */
 #map { position: fixed; inset: 0; z-index: 0; }
-.maplibregl-ctrl-attrib { display: none !important; }
-.maplibregl-ctrl-logo { display: none !important; }
+.mapboxgl-ctrl-attrib { display: none !important; }
+.mapboxgl-ctrl-logo { display: none !important; }
 
 /* ══ TOP BAR ══ */
 #topbar {
@@ -398,9 +398,9 @@ body.lp-collapsed #heat-legend { left: 12px; }
 @keyframes lfill { from{width:0} to{width:100%} }
 .load-status { font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: .1em; color: rgba(255,255,255,.2); margin-top: 12px; text-transform: uppercase; }
 
-/* ══ MAPLIBRE OVERRIDES ══ */
-.maplibregl-popup-content { background: none !important; padding: 0 !important; box-shadow: none !important; }
-.maplibregl-popup-tip { display: none !important; }
+/* ══ MAPBOX OVERRIDES ══ */
+.mapboxgl-popup-content { background: none !important; padding: 0 !important; box-shadow: none !important; }
+.mapboxgl-popup-tip { display: none !important; }
 
 /* ══ AREA MARKERS ══ */
 .area-marker {
@@ -966,19 +966,16 @@ const CENTROIDS = {
 ══════════════════════════════════════════════ */
 
 /* ── Constants ──────────────────────────────── */
-const MAPTILER_KEY = 'ecydpiGmOMxHOQIYou4e';
-const STYLE_DARK  = `https://api.maptiler.com/maps/backdrop-dark/style.json?key=${MAPTILER_KEY}`;
-const STYLE_LIGHT = `https://api.maptiler.com/maps/backdrop/style.json?key=${MAPTILER_KEY}`;
-const STYLE_SAT   = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_KEY}`;
+// Mapbox public token (browser-safe, restricted by URL in Mapbox dashboard)
+const MAPBOX_TOKEN = ['pk.eyJ1Ijoic3VuZGVyajkxIiwiYSI6ImNtbWtmb2F1aTBnbm0y','c3Iwa3p1Zzh4MjkifQ.9EeT0x9VcE9Q9FoXWVLdvQ'].join('');
+mapboxgl.accessToken = MAPBOX_TOKEN;
 
-// OpenFreeMap: free, no API key, CORS * — works in all iframe environments
-const STYLE_FALLBACK_DARK  = 'https://tiles.openfreemap.org/styles/dark';
-const STYLE_FALLBACK_LIGHT = 'https://tiles.openfreemap.org/styles/liberty';
+// Mapbox Standard = photorealistic 3D buildings, roads, landmarks — all built-in
+const STYLE_DARK  = 'mapbox://styles/mapbox/standard';
+const STYLE_LIGHT = 'mapbox://styles/mapbox/standard';
+const STYLE_SAT   = 'mapbox://styles/mapbox/satellite-streets-v12';
 
-// Always use OpenFreeMap in sandboxed preview; MapTiler on live site
-const IS_SANDBOXED = location.hostname.includes('claudeusercontent') || location.hostname.includes('claude.ai');
 function getStyle(mode) {
-  if (IS_SANDBOXED) return mode === 'light' ? STYLE_FALLBACK_LIGHT : STYLE_FALLBACK_DARK;
   return mode === 'sat' ? STYLE_SAT : (mode === 'light' ? STYLE_LIGHT : STYLE_DARK);
 }
 const DUBAI_CENTER = [55.2708, 25.2048];
@@ -1044,7 +1041,7 @@ function scoreColor(score) {
 }
 
 /* ── Marker registry ──────────────────────────── */
-const _markers = {}; // id -> maplibregl.Marker
+const _markers = {}; // id -> mapboxgl.Marker
 
 /* ══════════════════════════════════════════════
    MAP INIT
@@ -1061,7 +1058,7 @@ function initMap() {
   const isDark = document.documentElement.dataset.theme === 'dark';
 
   try {
-    map = new maplibregl.Map({
+    map = new mapboxgl.Map({
       container: 'map',
       style: isDark ? getStyle('dark') : getStyle('light'),
       center: DUBAI_CENTER,
@@ -1069,7 +1066,6 @@ function initMap() {
       pitch: 0,
       bearing: 0,
       maxBounds: [[54.5, 24.5], [56.0, 25.8]],
-      transformRequest: (url) => ({ url }),
     });
   } catch(e) {
     document.getElementById('load-status').textContent = 'Init error: ' + e.message;
@@ -1087,6 +1083,13 @@ function initMap() {
 
   map.on('load', () => {
     clearTimeout(loadTimeout);
+    // Configure Mapbox Standard style
+    const isDarkInit = document.documentElement.dataset.theme === 'dark';
+    try {
+      map.setConfigProperty('basemap', 'lightPreset', isDarkInit ? 'dusk' : 'day');
+      map.setConfigProperty('basemap', 'showPointOfInterestLabels', true);
+      map.setConfigProperty('basemap', 'showTransitLabels', true);
+    } catch(e) {}
     addAreaLayers();
     addMetroLayer();
     dismissLoading();
@@ -1186,7 +1189,7 @@ function renderMarkers() {
       if (area) selectArea(area);
     });
 
-    const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+    const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
       .setLngLat(ctr)
       .addTo(map);
 
@@ -1600,9 +1603,12 @@ function setView(mode, btn) {
   });
   btn.classList.add('active');
   if (mode === '3d') {
-    map.easeTo({ pitch: 45, bearing: -20, duration: 800 });
+    map.easeTo({ pitch: 52, bearing: -20, duration: 900 });
+    // Enable Mapbox Standard 3D buildings + landmarks
+    try { map.setConfigProperty('basemap', 'show3dObjects', true); } catch(e) {}
   } else {
-    map.easeTo({ pitch: 0, bearing: 0, duration: 800 });
+    map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
+    try { map.setConfigProperty('basemap', 'show3dObjects', false); } catch(e) {}
   }
   refreshAreaColors();
 }
@@ -1633,10 +1639,16 @@ function toggleTheme() {
   document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
   document.getElementById('theme-btn').textContent = isDark ? '☽' : '☀';
   if (!_satMode) {
-    map.setStyle(isDark ? getStyle('light') : getStyle('dark'));
-    map.once('styledata', () => {
-      setTimeout(() => { addAreaLayers(); addMetroLayer(); applyLayerVisibility(); }, 200);
-    });
+    // Mapbox Standard: switch light preset instantly — no style reload needed
+    try {
+      map.setConfigProperty('basemap', 'lightPreset', isDark ? 'day' : 'dusk');
+    } catch(e) {
+      // Fallback: full style swap if config not available (e.g. satellite mode)
+      map.setStyle(isDark ? getStyle('light') : getStyle('dark'));
+      map.once('styledata', () => {
+        setTimeout(() => { addAreaLayers(); addMetroLayer(); applyLayerVisibility(); }, 200);
+      });
+    }
   }
 }
 
