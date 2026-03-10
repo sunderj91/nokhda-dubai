@@ -403,169 +403,28 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .mapboxgl-popup-tip { display: none !important; }
 
 /* ══ AREA MARKERS ══ */
-.area-marker {
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  transition: transform 0.2s cubic-bezier(.4,0,.2,1);
-  transform-origin: bottom center;
-}
-.area-marker:hover { transform: scale(1.12) translateY(-2px); z-index: 10; }
-.area-marker.selected { transform: scale(1.18) translateY(-3px); z-index: 20; }
-
-.am-pin {
-  width: 44px;
-  height: 44px;
-  border-radius: 50% 50% 50% 4px;
-  transform: rotate(-45deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 2px solid rgba(255,255,255,0.18);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 0 rgba(255,255,255,0.1);
-  transition: box-shadow 0.2s, border-color 0.2s;
-  flex-shrink: 0;
-}
-.area-marker:hover .am-pin,
-.area-marker.selected .am-pin {
-  border-color: rgba(255,255,255,0.45);
-  box-shadow: 0 6px 28px rgba(0,0,0,0.6), 0 0 0 4px rgba(255,255,255,0.08);
-}
-
-.am-pin-inner {
-  transform: rotate(45deg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-.am-psf {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  font-weight: 500;
-  color: rgba(255,255,255,0.95);
-  white-space: nowrap;
-  letter-spacing: -0.02em;
-}
-.am-label {
-  font-family: 'Syne', sans-serif;
-  font-size: 7px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.6);
-  white-space: nowrap;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  margin-top: 1px;
-}
-
-/* Hover card */
-.am-card {
-  position: absolute;
-  bottom: calc(100% + 10px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surf2);
-  border: 1px solid var(--bord2);
-  border-radius: 12px;
-  padding: 12px 14px;
-  min-width: 190px;
-  pointer-events: none;
+/* ══ MAPBOX HOVER POPUP ══ */
+.raqam-popup .mapboxgl-popup-content {
+  background: var(--surf2) !important;
+  border: 1px solid var(--bord2) !important;
+  border-radius: 12px !important;
+  padding: 0 !important;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6) !important;
   backdrop-filter: var(--blur);
   -webkit-backdrop-filter: var(--blur);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.55);
-  opacity: 0;
-  transform: translateX(-50%) translateY(6px) scale(0.96);
-  transition: opacity 0.18s ease, transform 0.18s ease;
-  z-index: 100;
-  white-space: nowrap;
 }
-.area-marker:hover .am-card,
-.area-marker.selected .am-card {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0) scale(1);
-}
-.am-card-name {
-  font-family: 'Syne', sans-serif;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text);
-  margin-bottom: 2px;
-  letter-spacing: -0.02em;
-}
-.am-card-tier {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 8px;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 10px;
-}
-.am-card-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-.am-card-kpi {}
-.am-card-kpi-l {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 7px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text3);
-  margin-bottom: 2px;
-}
-.am-card-kpi-v {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text);
-}
-.am-card-kpi-v.up { color: var(--green); }
-.am-card-kpi-v.dn { color: var(--red); }
-.am-card-divider {
-  height: 1px;
-  background: var(--bord);
-  margin: 9px 0;
-}
-.am-card-txn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.am-card-txn-l {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 7px;
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  color: var(--text3);
-}
-.am-card-txn-v {
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 10px;
-  font-weight: 500;
-  color: var(--text);
-}
-/* Pulse ring for selected */
-.am-pulse {
-  position: absolute;
-  width: 44px; height: 44px;
-  border-radius: 50%;
-  border: 2px solid currentColor;
-  opacity: 0;
-  animation: none;
-  top: 0; left: 0;
-  pointer-events: none;
-}
-.area-marker.selected .am-pulse {
-  animation: markerPulse 1.8s ease-out infinite;
-}
-@keyframes markerPulse {
-  0%   { transform: scale(1);   opacity: 0.6; }
-  100% { transform: scale(2.2); opacity: 0; }
-}
+.raqam-popup .mapboxgl-popup-tip { display: none !important; }
+.rp-hover-card { padding: 14px 16px; min-width: 200px; }
+.rp-hc-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 2px; }
+.rp-hc-tier { font-family: 'IBM Plex Mono', monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+.rp-hc-swatch { height: 3px; border-radius: 2px; margin-bottom: 10px; opacity: 0.8; }
+.rp-hc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 4px; }
+.rp-hc-l { font-family: 'IBM Plex Mono', monospace; font-size: 7px; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); margin-bottom: 2px; }
+.rp-hc-v { font-family: 'IBM Plex Mono', monospace; font-size: 12px; font-weight: 600; color: var(--text); }
+.rp-hc-v.up { color: var(--green); }
+.rp-hc-v.dn { color: var(--red); }
+.rp-hc-divider { height: 1px; background: var(--bord); margin: 10px 0; }
+.rp-hc-txn { display: flex; justify-content: space-between; align-items: center; }
 </style>
 </head>
 <body>
@@ -990,10 +849,10 @@ let _areaList = [...AREAS];
 
 /* ── Heat colour scale ───────────────────────── */
 const HEAT_CONFIGS = {
-  psf:   { label: 'Price / sqft (AED)', stops: [[500,'#3B82F6'],[1000,'#06B6D4'],[1500,'#10B981'],[2000,'#F59E0B'],[2500,'#EF4444'],[4200,'#DC2626']] },
-  yoy:   { label: 'YoY Growth (%)',     stops: [[-5,'#3B82F6'],[0,'#06B6D4'],[5,'#10B981'],[10,'#F59E0B'],[15,'#EF4444'],[25,'#DC2626']] },
-  yield: { label: 'Rental Yield (%)',   stops: [[4,'#EF4444'],[5,'#F59E0B'],[6,'#10B981'],[7,'#06B6D4'],[8,'#3B82F6'],[10,'#1E40AF']] },
-  vol:   { label: 'Transaction Volume', stops: [[2000,'#3B82F6'],[5000,'#06B6D4'],[10000,'#10B981'],[15000,'#F59E0B'],[20000,'#EF4444'],[32000,'#DC2626']] },
+  psf:   { label: 'Price / sqft (AED)', stops: [[500,'#1A4BFF'],[1500,'#00B8D9'],[2500,'#F59E0B'],[4200,'#FF3D3D']] },
+  yoy:   { label: 'YoY Growth (%)',     stops: [[-5,'#1A4BFF'],[5,'#00B8D9'],[15,'#F59E0B'],[25,'#FF3D3D']] },
+  yield: { label: 'Rental Yield (%)',   stops: [[4,'#FF3D3D'],[6,'#F59E0B'],[8,'#00B8D9'],[10,'#1A4BFF']] },
+  vol:   { label: 'Transaction Volume', stops: [[2000,'#1A4BFF'],[10000,'#00B8D9'],[20000,'#F59E0B'],[32000,'#FF3D3D']] },
 };
 
 function heatVal(a) {
@@ -1208,6 +1067,44 @@ function addAreaLayers() {
     }
   });
 
+  // ── Hover popup ──────────────────────────────
+  const hoverPopup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    maxWidth: '220px',
+    className: 'raqam-popup',
+    offset: 10,
+  });
+
+  map.on('mousemove', 'area-fill', (e) => {
+    map.getCanvas().style.cursor = 'pointer';
+    const props = e.features[0]?.properties;
+    if (!props) return;
+    const a = AREAS.find(x => x.id === props.id);
+    if (!a) return;
+    const trend = a.yoy > 0;
+    const col = areaColor(a);
+    hoverPopup.setLngLat(e.lngLat).setHTML(`
+      <div class="rp-hover-card">
+        <div class="rp-hc-name">${a.name}</div>
+        <div class="rp-hc-tier">${a.tier.toUpperCase()} · ${a.type}</div>
+        <div class="rp-hc-swatch" style="background:${col}"></div>
+        <div class="rp-hc-grid">
+          <div class="rp-hc-kpi"><div class="rp-hc-l">Avg PSF</div><div class="rp-hc-v">AED ${a.psf.toLocaleString()}</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">YoY</div><div class="rp-hc-v ${trend?'up':'dn'}">${trend?'+':''}${a.yoy}%</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">Yield</div><div class="rp-hc-v">${a.yld}%</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">Score</div><div class="rp-hc-v">${a.score}/100</div></div>
+        </div>
+        <div class="rp-hc-divider"></div>
+        <div class="rp-hc-txn"><span class="rp-hc-l">Transactions 2024</span><span class="rp-hc-v">${a.txn.toLocaleString()}</span></div>
+      </div>`).addTo(map);
+  });
+
+  map.on('mouseleave', 'area-fill', () => {
+    map.getCanvas().style.cursor = '';
+    hoverPopup.remove();
+  });
+
   // ── Click handler on polygons ─────────────────
   map.on('click', 'area-fill', (e) => {
     const props = e.features[0]?.properties;
@@ -1215,9 +1112,6 @@ function addAreaLayers() {
     const area = AREAS.find(a => a.id === props.id);
     if (area) selectArea(area);
   });
-
-  map.on('mouseenter', 'area-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
-  map.on('mouseleave', 'area-fill', () => { map.getCanvas().style.cursor = ''; });
 
   if (!_layerState.areas) {
     ['area-fill','area-line','area-line-hi','area-extrude'].forEach(id => {
@@ -1229,75 +1123,8 @@ function addAreaLayers() {
 }
 
 function renderMarkers() {
-  // Remove all existing markers
-  Object.values(_markers).forEach(m => m.remove());
-  Object.keys(_markers).forEach(k => delete _markers[k]);
-
-  const visible = _tierFilter === 'all'
-    ? AREAS
-    : AREAS.filter(a => a.tier === _tierFilter);
-
-  visible.forEach(a => {
-    const col = areaColor(a);
-    const ctr = CENTROIDS[a.id];
-    if (!ctr) return;
-
-    const trend = a.yoy > 0;
-    const psfK = a.psf >= 1000 ? (a.psf / 1000).toFixed(1) + 'K' : a.psf;
-
-    const el = document.createElement('div');
-    el.className = 'area-marker' + (a.id === _selId ? ' selected' : '');
-    el.dataset.id = a.id;
-    el.innerHTML = `
-      <div class="am-card">
-        <div class="am-card-name">${a.name}</div>
-        <div class="am-card-tier">${a.tier.toUpperCase()} · ${a.type}</div>
-        <div class="am-card-grid">
-          <div class="am-card-kpi">
-            <div class="am-card-kpi-l">Avg PSF</div>
-            <div class="am-card-kpi-v">AED ${a.psf.toLocaleString()}</div>
-          </div>
-          <div class="am-card-kpi">
-            <div class="am-card-kpi-l">YoY</div>
-            <div class="am-card-kpi-v ${trend ? 'up' : 'dn'}">${trend ? '+' : ''}${a.yoy}%</div>
-          </div>
-          <div class="am-card-kpi">
-            <div class="am-card-kpi-l">Yield</div>
-            <div class="am-card-kpi-v">${a.yld}%</div>
-          </div>
-          <div class="am-card-kpi">
-            <div class="am-card-kpi-l">Score</div>
-            <div class="am-card-kpi-v">${a.score}/100</div>
-          </div>
-        </div>
-        <div class="am-card-divider"></div>
-        <div class="am-card-txn">
-          <div class="am-card-txn-l">Transactions 2024</div>
-          <div class="am-card-txn-v">${a.txn.toLocaleString()}</div>
-        </div>
-      </div>
-      <div class="am-pulse" style="color:${col}"></div>
-      <div class="am-pin" style="background:${col}">
-        <div class="am-pin-inner">
-          <div class="am-psf">${psfK}</div>
-          <div class="am-label">/sqft</div>
-        </div>
-      </div>
-    `;
-
-    el.addEventListener('click', () => {
-      const area = AREAS.find(x => x.id === a.id);
-      if (area) selectArea(area);
-    });
-
-    const marker = new mapboxgl.Marker({ element: el, anchor: 'bottom' })
-      .setLngLat(ctr)
-      .addTo(map);
-
-    _markers[a.id] = marker;
-  });
+  // Pins removed — area data shown via polygon hover popup
 }
-
 function refreshAreaColors() {
   // Update GeoJSON source with new colors (heatmap mode changed)
   try {
@@ -1382,11 +1209,6 @@ function selectArea(a) {
 
   // Highlight polygon border
   try { map.setFilter('area-line-hi', ['==', 'id', a.id]); } catch(e) {}
-
-  // Update marker selected states
-  Object.entries(_markers).forEach(([id, marker]) => {
-    marker.getElement().classList.toggle('selected', id === a.id);
-  });
 
   // Highlight in list
   document.querySelectorAll('.area-row').forEach(r => r.classList.toggle('active', r.dataset.id === a.id));
@@ -1795,10 +1617,6 @@ function applyLayerVisibility() {
       map.setLayoutProperty('area-extrude', 'visibility',
         vis(_layerState.areas && _layerState.extrude && _viewMode === '3d'));
     }
-    // Markers visibility
-    Object.values(_markers).forEach(m => {
-      m.getElement().style.display = _layerState.areas ? '' : 'none';
-    });
     // Metro lines
     if (map.getLayer('metro-red')) map.setLayoutProperty('metro-red', 'visibility', vis(_layerState.metro));
     if (map.getLayer('metro-green')) map.setLayoutProperty('metro-green', 'visibility', vis(_layerState.metro));
@@ -1898,12 +1716,16 @@ function updateLegend() {
   const cfg = HEAT_CONFIGS[_heatMode];
   document.getElementById('hl-title').textContent = cfg.label;
   const stops = cfg.stops;
-  document.getElementById('hl-rows').innerHTML = stops.map(([val, col]) =>
-    `<div class="hl-row">
-      <div class="hl-swatch" style="background:${col}"></div>
-      <div class="hl-label">${val.toLocaleString()}</div>
-    </div>`
-  ).join('');
+  // Render as a single gradient bar with min/max labels
+  const gradient = stops.map(([v, c], i) => `${c} ${Math.round(i/(stops.length-1)*100)}%`).join(', ');
+  const minV = stops[0][0].toLocaleString();
+  const maxV = stops[stops.length-1][0].toLocaleString();
+  document.getElementById('hl-rows').innerHTML = `
+    <div style="height:8px;border-radius:4px;background:linear-gradient(to right,${gradient});margin-bottom:5px"></div>
+    <div style="display:flex;justify-content:space-between">
+      <span class="hl-label">${minV}</span>
+      <span class="hl-label">${maxV}</span>
+    </div>`;
 }
 
 /* ══════════════════════════════════════════════
