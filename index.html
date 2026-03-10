@@ -473,6 +473,37 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .rp-hc-v.dn { color: var(--red); }
 .rp-hc-divider { height: 1px; background: var(--bord); margin: 10px 0; }
 .rp-hc-txn { display: flex; justify-content: space-between; align-items: center; }
+
+/* ── Data badges ── */
+.data-est { display:inline-block; font-size:7px; padding:1px 4px; border-radius:3px; background:rgba(251,191,36,.15); color:#FBBF24; border:1px solid rgba(251,191,36,.3); vertical-align:middle; margin-left:3px; letter-spacing:.05em; font-family:'IBM Plex Mono',monospace; }
+.data-live { display:inline-block; font-size:7px; padding:1px 4px; border-radius:3px; background:rgba(0,230,118,.12); color:#00E676; border:1px solid rgba(0,230,118,.25); vertical-align:middle; margin-left:3px; letter-spacing:.05em; font-family:'IBM Plex Mono',monospace; }
+.data-est-sm { font-size:6px; padding:0px 3px; border-radius:2px; background:rgba(251,191,36,.12); color:#FBBF24; border:1px solid rgba(251,191,36,.2); vertical-align:middle; margin-left:2px; letter-spacing:.04em; font-family:'IBM Plex Mono',monospace; }
+.data-live-sm { font-size:6px; padding:0px 3px; border-radius:2px; background:rgba(0,230,118,.1); color:#00E676; border:1px solid rgba(0,230,118,.2); vertical-align:middle; margin-left:2px; font-family:'IBM Plex Mono',monospace; }
+
+/* ── Currency selector ── */
+.tb-cur-group { display:flex; align-items:center; gap:2px; }
+.cur-btn { height:24px; padding:0 7px; border-radius:5px; font-size:9px; font-weight:700; font-family:'IBM Plex Mono',monospace; letter-spacing:.05em; border:1px solid var(--bord); background:transparent; color:var(--text3); cursor:pointer; transition:all .15s; }
+.cur-btn:hover { background:var(--surf); color:var(--text); }
+.cur-btn.active { background:rgba(0,212,255,.15); border-color:rgba(0,212,255,.4); color:#00D4FF; }
+.fx-dot { font-size:7px; letter-spacing:.04em; font-family:'IBM Plex Mono',monospace; color:var(--text3); padding:0 4px; }
+
+/* ── Proximity block ── */
+.prox-block { margin:12px 0 0; padding:12px; background:var(--bg2); border-radius:10px; border:1px solid var(--bord); }
+.prox-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:.1em; text-transform:uppercase; color:var(--text2); }
+.prox-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.prox-item { display:flex; align-items:center; gap:8px; }
+.prox-icon { font-size:14px; width:20px; text-align:center; }
+.prox-info { flex:1; }
+.prox-val { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:700; color:var(--text); }
+.prox-label { font-family:'IBM Plex Mono',monospace; font-size:7px; letter-spacing:.08em; text-transform:uppercase; color:var(--text3); }
+.prox-bar-wrap { width:40px; height:3px; background:var(--bord); border-radius:2px; overflow:hidden; }
+.prox-bar-fill { height:100%; border-radius:2px; transition:width .6s ease; }
+.prox-scores { display:flex; gap:8px; }
+.prox-score-pill { flex:1; display:flex; justify-content:space-between; align-items:center; padding:6px 10px; border-radius:7px; font-family:'IBM Plex Mono',monospace; font-size:9px; }
+.prox-score-pill strong { font-size:12px; font-weight:800; }
+
+/* ── Area list PSF currency ── */
+.ar-psf-val { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:700; color:var(--text); }
 </style>
 </head>
 <body>
@@ -510,6 +541,15 @@ body.lp-collapsed #heat-legend { left: 12px; }
     <button class="tb-pill" id="view-3d" onclick="setView('3d',this)">3D</button>
   </div>
   <div class="tb-right">
+    <div class="tb-cur-group">
+      <button class="cur-btn active" data-cur="AED" onclick="setCurrency('AED')">AED</button>
+      <button class="cur-btn" data-cur="USD" onclick="setCurrency('USD')">USD</button>
+      <button class="cur-btn" data-cur="GBP" onclick="setCurrency('GBP')">GBP</button>
+      <button class="cur-btn" data-cur="EUR" onclick="setCurrency('EUR')">EUR</button>
+      <button class="cur-btn" data-cur="INR" onclick="setCurrency('INR')">INR</button>
+      <span class="fx-live fx-dot" title="FX rates: loading...">● EST</span>
+    </div>
+    <div class="tb-sep"></div>
     <div class="live-badge">LIVE</div>
     <button class="tb-btn" id="compare-btn" onclick="toggleCompareMode()" title="Compare Areas">⇄</button>
     <button class="tb-btn" id="sat-btn" onclick="toggleSatellite()" title="Satellite">🛰</button>
@@ -621,6 +661,7 @@ body.lp-collapsed #heat-legend { left: 12px; }
   <!-- OVERVIEW TAB -->
   <div class="rp-tab-content active" id="tab-overview">
     <div class="rp-kpis" id="rp-kpis"></div>
+    <div id="rp-overview-extra"></div>
     <div class="rp-score-bar">
       <div class="rp-score-label">
         <span class="rp-score-l">Investment Score</span>
@@ -717,314 +758,314 @@ body.lp-collapsed #heat-legend { left: 12px; }
    RAQAM DUBAI v9 — AREA DATA
 ══════════════════════════════════════════════ */
 const AREAS = [
-  {id:'dtn',  name:'Downtown Dubai',   tier:'prime',  psf:3848, yoy:12.4, yld:5.2,  txn:18400, off:38, rdy:62, beds:'1–4', type:'Mixed', score:88,
+  {id:'dtn',  name:'Downtown Dubai',   tier:'prime',  psf:3848, yoy:12.4, yld:5.2,  txn:18400, off:38, rdy:62, beds:'1–4', type:'Mixed', score:88, prox:{conn:80,life:72,airport:11.1,coast:4.7,metro:0.8,dt:0.1},
    hist:[1820,2050,2380,2790,3420,3848], desc:'Iconic skyline district anchored by Burj Khalifa and Dubai Mall. Premium demand from HNWIs and institutional investors.', listings:[
     {t:'🏢',type:'Apartment',name:'The Address Sky View',price:'AED 4.2M',size:'1,092 sqft'},
     {t:'🏢',type:'Apartment',name:'Vida Residences',price:'AED 2.8M',size:'748 sqft'},
     {t:'🏠',type:'Penthouse',name:'Burj Vista',price:'AED 18.5M',size:'4,200 sqft'},
   ]},
-  {id:'bb',   name:'Business Bay',     tier:'prime',  psf:2240, yoy:8.7,  yld:6.8,  txn:21800, off:54, rdy:46, beds:'Studio–3', type:'Mixed', score:81,
+  {id:'bb',   name:'Business Bay',     tier:'prime',  psf:2240, yoy:8.7,  yld:6.8,  txn:21800, off:54, rdy:46, beds:'Studio–3', type:'Mixed', score:81, prox:{conn:74,life:61,airport:12.9,coast:5.5,metro:0.7,dt:1.8},
    hist:[1180,1340,1520,1720,2010,2240], desc:'Central business and residential hub bordering Downtown. Strong rental demand from corporate tenants.', listings:[
     {t:'🏢',type:'Apartment',name:'SLS Dubai Hotel',price:'AED 1.8M',size:'780 sqft'},
     {t:'🏢',type:'Apartment',name:'Aykon City',price:'AED 1.2M',size:'528 sqft'},
     {t:'🏢',type:'Office',name:'Bay Square',price:'AED 3.4M',size:'1,450 sqft'},
   ]},
-  {id:'marina',name:'Dubai Marina',    tier:'prime',  psf:2100, yoy:7.4,  yld:7.1,  txn:24100, off:42, rdy:58, beds:'1–3', type:'Residential', score:83,
+  {id:'marina',name:'Dubai Marina',    tier:'prime',  psf:2100, yoy:7.4,  yld:7.1,  txn:24100, off:42, rdy:58, beds:'1–3', type:'Residential', score:83, prox:{conn:36,life:38,airport:20.3,coast:2.0,metro:0.6,dt:18.8},
    hist:[1280,1420,1580,1750,1920,2100], desc:'Waterfront living along a 3km canal. Most liquid market in Dubai with consistently high rental occupancy.', listings:[
     {t:'🌊',type:'Apartment',name:'Address Beach Resort',price:'AED 2.1M',size:'914 sqft'},
     {t:'🌊',type:'Apartment',name:'Marina Gate',price:'AED 1.6M',size:'720 sqft'},
     {t:'🏠',type:'Penthouse',name:'Cayan Tower',price:'AED 7.8M',size:'3,100 sqft'},
   ]},
-  {id:'palm',  name:'Palm Jumeirah',   tier:'prime',  psf:4100, yoy:18.6, yld:5.8,  txn:8200,  off:28, rdy:72, beds:'2–5', type:'Luxury', score:92,
+  {id:'palm',  name:'Palm Jumeirah',   tier:'prime',  psf:4100, yoy:18.6, yld:5.8,  txn:8200,  off:28, rdy:72, beds:'2–5', type:'Luxury', score:92, prox:{conn:11,life:49,airport:24.2,coast:0.2,metro:3.5,dt:16.9},
    hist:[2100,2420,2890,3310,3690,4100], desc:'World\'s largest man-made island. Ultra-luxury villas and hotel residences with unmatched brand value.', listings:[
     {t:'🌴',type:'Villa',name:'Garden Homes Frond N',price:'AED 18.5M',size:'4,800 sqft'},
     {t:'🌴',type:'Apartment',name:'Atlantis The Royal',price:'AED 9.2M',size:'2,100 sqft'},
     {t:'🌴',type:'Villa',name:'Signature Villa',price:'AED 48M',size:'12,400 sqft'},
   ]},
-  {id:'jvc',   name:'Jumeirah Village Circle', tier:'value', psf:1140, yoy:6.1, yld:9.2, txn:31400, off:68, rdy:32, beds:'Studio–3', type:'Residential', score:74,
+  {id:'jvc',   name:'Jumeirah Village Circle', tier:'value', psf:1140, yoy:6.1, yld:9.2, txn:31400, off:68, rdy:32, beds:'Studio–3', type:'Residential', score:74, prox:{conn:9,life:0,airport:18.3,coast:9.0,metro:6.1,dt:17.2},
    hist:[720,810,890,980,1060,1140], desc:'High-yield residential community. Largest transaction volume in Dubai. Attracts budget-conscious investors and end-users.', listings:[
     {t:'🏠',type:'Apartment',name:'Binghatti Corner',price:'AED 680K',size:'512 sqft'},
     {t:'🏠',type:'Townhouse',name:'District One Residences',price:'AED 2.1M',size:'1,840 sqft'},
     {t:'🏢',type:'Apartment',name:'Samana Park Views',price:'AED 580K',size:'448 sqft'},
   ]},
-  {id:'difc',  name:'DIFC',            tier:'prime',  psf:3400, yoy:16.8, yld:5.4,  txn:4100,  off:35, rdy:65, beds:'1–4', type:'Mixed', score:87,
+  {id:'difc',  name:'DIFC',            tier:'prime',  psf:3400, yoy:16.8, yld:5.4,  txn:4100,  off:35, rdy:65, beds:'1–4', type:'Mixed', score:87, prox:{conn:83,life:74,airport:9.4,coast:3.4,metro:0.1,dt:2.1},
    hist:[1840,2050,2280,2620,2980,3400], desc:'Global financial hub. Home to 600+ financial institutions. Ultra-premium residential demand from C-suite executives.', listings:[
     {t:'💼',type:'Apartment',name:'Index Tower',price:'AED 3.8M',size:'1,120 sqft'},
     {t:'💼',type:'Office',name:'Gate Village',price:'AED 8.4M',size:'2,800 sqft'},
     {t:'💼',type:'Apartment',name:'Currency House',price:'AED 2.9M',size:'890 sqft'},
   ]},
-  {id:'dh',    name:'Dubai Hills Estate', tier:'mid', psf:1980, yoy:14.2, yld:6.4,  txn:12600, off:52, rdy:48, beds:'1–6', type:'Mixed', score:85,
+  {id:'dh',    name:'Dubai Hills Estate', tier:'mid', psf:1980, yoy:14.2, yld:6.4,  txn:12600, off:52, rdy:48, beds:'1–6', type:'Mixed', score:85, prox:{conn:34,life:30,airport:14.7,coast:10.2,metro:6.4,dt:6.6},
    hist:[1080,1240,1420,1640,1820,1980], desc:'Master-planned community by Emaar. Golf course, park, and mall. Strong family appeal driving sustained demand.', listings:[
     {t:'⛳',type:'Villa',name:'Golf Place',price:'AED 7.8M',size:'4,200 sqft'},
     {t:'⛳',type:'Apartment',name:'Park Heights',price:'AED 1.4M',size:'648 sqft'},
     {t:'⛳',type:'Townhouse',name:'Sidra Villas',price:'AED 3.9M',size:'2,400 sqft'},
   ]},
-  {id:'jbr',   name:'JBR',             tier:'prime',  psf:2380, yoy:9.2,  yld:6.9,  txn:9800,  off:38, rdy:62, beds:'1–4', type:'Residential', score:79,
+  {id:'jbr',   name:'JBR',             tier:'prime',  psf:2380, yoy:9.2,  yld:6.9,  txn:9800,  off:38, rdy:62, beds:'1–4', type:'Residential', score:79, prox:{conn:34,life:41,airport:20.1,coast:1.5,metro:0.9,dt:19.8},
    hist:[1380,1580,1720,1940,2180,2380], desc:'Beachfront living on Jumeirah Beach. Walk-to-beach lifestyle premium. Strong short-term rental market.', listings:[
     {t:'🏖',type:'Apartment',name:'Rimal 5',price:'AED 2.8M',size:'1,080 sqft'},
     {t:'🏖',type:'Apartment',name:'Shams 4',price:'AED 2.1M',size:'882 sqft'},
     {t:'🏖',type:'Penthouse',name:'Sadaf 8',price:'AED 12M',size:'4,100 sqft'},
   ]},
-  {id:'jlt',   name:'JLT',             tier:'mid',   psf:1420, yoy:5.8,  yld:7.8,  txn:14200, off:44, rdy:56, beds:'Studio–3', type:'Mixed', score:72,
+  {id:'jlt',   name:'JLT',             tier:'mid',   psf:1420, yoy:5.8,  yld:7.8,  txn:14200, off:44, rdy:56, beds:'Studio–3', type:'Mixed', score:72, prox:{conn:35,life:32,airport:19.3,coast:3.1,metro:1.0,dt:19.1},
    hist:[890,980,1060,1180,1310,1420], desc:'Clustered towers around lakes. Close to DMCC free zone. Popular with professionals and investors seeking yield.', listings:[
     {t:'🏊',type:'Apartment',name:'Cluster Y',price:'AED 980K',size:'642 sqft'},
     {t:'🏊',type:'Office',name:'Cluster A',price:'AED 1.8M',size:'980 sqft'},
     {t:'🏊',type:'Apartment',name:'Goldcrest Views 2',price:'AED 720K',size:'518 sqft'},
   ]},
-  {id:'creek', name:'Dubai Creek Harbour', tier:'prime', psf:2650, yoy:22.4, yld:5.1, txn:7400, off:78, rdy:22, beds:'1–3', type:'Residential', score:89,
+  {id:'creek', name:'Dubai Creek Harbour', tier:'prime', psf:2650, yoy:22.4, yld:5.1, txn:7400, off:78, rdy:22, beds:'1–3', type:'Residential', score:89, prox:{conn:53,life:23,airport:4.5,coast:10.3,metro:3.4,dt:9.1},
    hist:[1200,1480,1780,2050,2320,2650], desc:'Emaar\'s flagship next-generation waterfront city. Creek Tower will surpass Burj Khalifa. Highest growth trajectory.', listings:[
     {t:'🌉',type:'Apartment',name:'Harbour Views 1',price:'AED 2.4M',size:'820 sqft'},
     {t:'🌉',type:'Apartment',name:'Creek Gate',price:'AED 1.9M',size:'724 sqft'},
     {t:'🌉',type:'Penthouse',name:'Address Harbour Point',price:'AED 8.8M',size:'2,600 sqft'},
   ]},
-  {id:'arabian',name:'Arabian Ranches', tier:'mid',  psf:1480, yoy:8.4,  yld:5.8,  txn:5200,  off:28, rdy:72, beds:'3–5', type:'Villa', score:71,
+  {id:'arabian',name:'Arabian Ranches', tier:'mid',  psf:1480, yoy:8.4,  yld:5.8,  txn:5200,  off:28, rdy:72, beds:'3–5', type:'Villa', score:71, prox:{conn:4,life:2,airport:22.8,coast:18.1,metro:12.6,dt:16.1},
    hist:[980,1080,1180,1280,1380,1480], desc:'Premier villa community with polo club and golf course. Mature community with established infrastructure.', listings:[
     {t:'🏡',type:'Villa',name:'Savannah',price:'AED 4.8M',size:'3,200 sqft'},
     {t:'🏡',type:'Villa',name:'Al Mahra',price:'AED 6.2M',size:'4,100 sqft'},
     {t:'🏡',type:'Townhouse',name:'Palmera',price:'AED 2.9M',size:'2,100 sqft'},
   ]},
-  {id:'sportsct',name:'Dubai Sports City', tier:'value', psf:940,  yoy:4.8,  yld:8.4,  txn:6800,  off:38, rdy:62, beds:'1–4', type:'Mixed', score:62,
+  {id:'sportsct',name:'Dubai Sports City', tier:'value', psf:940,  yoy:4.8,  yld:8.4,  txn:6800,  off:38, rdy:62, beds:'1–4', type:'Mixed', score:62, prox:{conn:10,life:0,airport:17.6,coast:11.3,metro:7.0,dt:17.8},
    hist:[680,720,770,840,890,940], desc:'Sports-focused community with ICC cricket stadium and Els Club golf. Strong rental demand from sporting events.', listings:[
     {t:'⚽',type:'Apartment',name:'Seasons Community',price:'AED 680K',size:'780 sqft'},
     {t:'⚽',type:'Villa',name:'Wildflower',price:'AED 2.8M',size:'3,100 sqft'},
     {t:'⚽',type:'Apartment',name:'Golf Tower',price:'AED 580K',size:'620 sqft'},
   ]},
-  {id:'alfurjan',name:'Al Furjan',     tier:'value', psf:1020, yoy:6.4,  yld:8.1,  txn:8900,  off:48, rdy:52, beds:'1–5', type:'Mixed', score:67,
+  {id:'alfurjan',name:'Al Furjan',     tier:'value', psf:1020, yoy:6.4,  yld:8.1,  txn:8900,  off:48, rdy:52, beds:'1–5', type:'Mixed', score:67, prox:{conn:39,life:12,airport:15.8,coast:6.3,metro:0.9,dt:21.3},
    hist:[720,790,840,910,960,1020], desc:'Growing community near Expo 2020 site. Metro connectivity improving accessibility. Rising infrastructure investment.', listings:[
     {t:'🏠',type:'Apartment',name:'Azizi Farishta',price:'AED 780K',size:'680 sqft'},
     {t:'🏠',type:'Villa',name:'Quortaj',price:'AED 3.4M',size:'2,800 sqft'},
     {t:'🏠',type:'Apartment',name:'Nakheel Villas',price:'AED 1.2M',size:'1,100 sqft'},
   ]},
-  {id:'meydan',name:'Meydan',          tier:'prime',  psf:2100, yoy:19.4, yld:5.9,  txn:6400,  off:72, rdy:28, beds:'1–5', type:'Mixed', score:84,
+  {id:'meydan',name:'Meydan',          tier:'prime',  psf:2100, yoy:19.4, yld:5.9,  txn:6400,  off:72, rdy:28, beds:'1–5', type:'Mixed', score:84, prox:{conn:43,life:33,airport:9.2,coast:9.3,metro:5.9,dt:5.7},
    hist:[980,1180,1420,1680,1880,2100], desc:'Fastest growing district centred on Meydan Racecourse. Nad Al Sheba and MBR City development. Exceptional growth.', listings:[
     {t:'🏇',type:'Apartment',name:'The Residences at Meydan',price:'AED 1.8M',size:'820 sqft'},
     {t:'🏇',type:'Villa',name:'District One',price:'AED 12M',size:'5,200 sqft'},
     {t:'🏇',type:'Apartment',name:'Azizi Riviera',price:'AED 1.1M',size:'624 sqft'},
   ]},
-  {id:'dsouth',name:'Dubai South',     tier:'value', psf:820,  yoy:9.8,  yld:7.8,  txn:4200,  off:82, rdy:18, beds:'Studio–3', type:'Residential', score:65,
+  {id:'dsouth',name:'Dubai South',     tier:'value', psf:820,  yoy:9.8,  yld:7.8,  txn:4200,  off:82, rdy:18, beds:'Studio–3', type:'Residential', score:65, prox:{conn:30,life:0,airport:2.6,coast:18.0,metro:5.4,dt:33.9},
    hist:[480,540,600,670,740,820], desc:'Al Maktoum Airport expansion zone. Long-term growth play. Urban Master Plan 2040 priority area.', listings:[
     {t:'✈️',type:'Apartment',name:'The Pulse Beachfront',price:'AED 580K',size:'520 sqft'},
     {t:'✈️',type:'Villa',name:'South Bay',price:'AED 2.4M',size:'2,400 sqft'},
     {t:'✈️',type:'Apartment',name:'MAG 5 Boulevard',price:'AED 480K',size:'448 sqft'},
   ]},
-  {id:'intcity',name:'International City', tier:'value', psf:580, yoy:3.2, yld:10.1, txn:9800, off:22, rdy:78, beds:'Studio–1', type:'Residential', score:58,
+  {id:'intcity',name:'International City', tier:'value', psf:580, yoy:3.2, yld:10.1, txn:9800, off:22, rdy:78, beds:'Studio–1', type:'Residential', score:58, prox:{conn:29,life:11,airport:8.5,coast:15.1,metro:8.1,dt:12.9},
    hist:[420,450,480,520,555,580], desc:'Budget-friendly option with highest rental yields in Dubai. Cluster-based residential community near Dragon Mart.', listings:[
     {t:'🏘',type:'Studio',name:'France Cluster',price:'AED 280K',size:'392 sqft'},
     {t:'🏘',type:'Apartment',name:'China Cluster',price:'AED 380K',size:'524 sqft'},
     {t:'🏘',type:'Apartment',name:'England Cluster',price:'AED 320K',size:'448 sqft'},
   ]},
-  {id:'dso',  name:'Dubai Silicon Oasis', tier:'value', psf:880, yoy:5.1, yld:7.9, txn:7200, off:42, rdy:58, beds:'Studio–3', type:'Mixed', score:63,
+  {id:'dso',  name:'Dubai Silicon Oasis', tier:'value', psf:880, yoy:5.1, yld:7.9, txn:7200, off:42, rdy:58, beds:'Studio–3', type:'Mixed', score:63, prox:{conn:18,life:7,airport:15.5,coast:18.2,metro:14.0,dt:14.2},
    hist:[620,670,720,780,830,880], desc:'Tech and residential free zone in east Dubai. Strong demand from tech professionals. Integrated work-live community.', listings:[
     {t:'💻',type:'Apartment',name:'Cedre Villas',price:'AED 680K',size:'720 sqft'},
     {t:'💻',type:'Office',name:'DSO Headquarters',price:'AED 1.4M',size:'1,200 sqft'},
     {t:'💻',type:'Apartment',name:'Axis Residences',price:'AED 520K',size:'580 sqft'},
   ]},
-  {id:'burdubai',name:'Bur Dubai',     tier:'mid',   psf:1280, yoy:4.8,  yld:7.4,  txn:11200, off:18, rdy:82, beds:'1–3', type:'Mixed', score:66,
+  {id:'burdubai',name:'Bur Dubai',     tier:'mid',   psf:1280, yoy:4.8,  yld:7.4,  txn:11200, off:18, rdy:82, beds:'1–3', type:'Mixed', score:66, prox:{conn:56,life:47,airport:5.7,coast:5.0,metro:3.1,dt:7.7},
    hist:[980,1040,1080,1140,1210,1280], desc:'Historic waterfront district with established tenant base. Strong rental market driven by proximity to DIFC and Creek.', listings:[
     {t:'⚓',type:'Apartment',name:'Al Raffa Street',price:'AED 980K',size:'820 sqft'},
     {t:'⚓',type:'Retail',name:'Al Fahidi Souq',price:'AED 2.1M',size:'1,400 sqft'},
     {t:'⚓',type:'Apartment',name:'Oud Metha Residences',price:'AED 1.1M',size:'920 sqft'},
   ]},
-  {id:'dubailand',name:'Dubailand',    tier:'value', psf:980,  yoy:7.8,  yld:7.2,  txn:5800,  off:65, rdy:35, beds:'1–4', type:'Mixed', score:61,
+  {id:'dubailand',name:'Dubailand',    tier:'value', psf:980,  yoy:7.8,  yld:7.2,  txn:5800,  off:65, rdy:35, beds:'1–4', type:'Mixed', score:61, prox:{conn:26,life:10,airport:10.9,coast:16.2,metro:10.3,dt:13.3},
    hist:[620,690,760,840,910,980], desc:'Mega-project entertainment and residential district. Ongoing development provides entry-level investment opportunities.', listings:[
     {t:'🎡',type:'Apartment',name:'Liwan',price:'AED 680K',size:'680 sqft'},
     {t:'🎡',type:'Villa',name:'Villanova',price:'AED 2.8M',size:'2,600 sqft'},
     {t:'🎡',type:'Apartment',name:'Skycourts',price:'AED 580K',size:'620 sqft'},
   ]},
-  {id:'motcity',name:'Motor City',     tier:'value', psf:1050, yoy:5.4,  yld:7.6,  txn:4800,  off:32, rdy:68, beds:'1–4', type:'Mixed', score:64,
+  {id:'motcity',name:'Motor City',     tier:'value', psf:1050, yoy:5.4,  yld:7.6,  txn:4800,  off:32, rdy:68, beds:'1–4', type:'Mixed', score:64, prox:{conn:9,life:0,airport:18.4,coast:12.6,metro:8.5,dt:17.2},
    hist:[720,780,840,900,980,1050], desc:'Motorsport-themed community with Dubai Autodrome. Mature community with established amenities and community spirit.', listings:[
     {t:'🏎',type:'Apartment',name:'Green Community',price:'AED 820K',size:'840 sqft'},
     {t:'🏎',type:'Villa',name:'Uptown Mirdif',price:'AED 2.4M',size:'2,200 sqft'},
     {t:'🏎',type:'Apartment',name:'Park Residences',price:'AED 680K',size:'720 sqft'},
   ]},
-  {id:'discgard',name:'Discovery Gardens', tier:'value', psf:780, yoy:4.2, yld:8.8, txn:6400, off:15, rdy:85, beds:'Studio–2', type:'Residential', score:59,
+  {id:'discgard',name:'Discovery Gardens', tier:'value', psf:780, yoy:4.2, yld:8.8, txn:6400, off:15, rdy:85, beds:'Studio–2', type:'Residential', score:59, prox:{conn:39,life:16,airport:16.0,coast:5.7,metro:0.9,dt:23.0},
    hist:[580,620,650,700,740,780], desc:'Affordable residential community near Ibn Battuta Mall. Metro access, strong yield appeal for small investors.', listings:[
     {t:'🌿',type:'Studio',name:'Mediterranean Cluster',price:'AED 380K',size:'420 sqft'},
     {t:'🌿',type:'Apartment',name:'Contemporary Cluster',price:'AED 480K',size:'620 sqft'},
     {t:'🌿',type:'Apartment',name:'Zen Cluster',price:'AED 420K',size:'520 sqft'},
   ]},
-  {id:'dip',  name:'Dubai Investment Park', tier:'value', psf:720, yoy:3.8, yld:8.2, txn:3400, off:45, rdy:55, beds:'Studio–3', type:'Mixed', score:57,
+  {id:'dip',  name:'Dubai Investment Park', tier:'value', psf:720, yoy:3.8, yld:8.2, txn:3400, off:45, rdy:55, beds:'Studio–3', type:'Mixed', score:57, prox:{conn:42,life:0,airport:12.3,coast:9.9,metro:1.2,dt:23.8},
    hist:[520,550,590,630,680,720], desc:'Industrial and residential free zone. Lower price point attracts value investors. Long-term infrastructure play.', listings:[
     {t:'🏗',type:'Apartment',name:'Green View',price:'AED 480K',size:'600 sqft'},
     {t:'🏗',type:'Villa',name:'DIP Villas',price:'AED 1.8M',size:'2,100 sqft'},
     {t:'🏗',type:'Apartment',name:'DIP Residences',price:'AED 380K',size:'520 sqft'},
   ]},
-  {id:'harbour', name:'Dubai Harbour', tier:'prime', psf:3200, yoy:28.4, yld:5.1, txn:2800, off:88, rdy:12, beds:'1–4', type:'Luxury', score:91,
+  {id:'harbour', name:'Dubai Harbour', tier:'prime', psf:3200, yoy:28.4, yld:5.1, txn:2800, off:88, rdy:12, beds:'1–4', type:'Luxury', score:91, prox:{conn:21,life:43,airport:22.4,coast:1.1,metro:2.4,dt:18.2},
    hist:[1190, 1450, 1767, 2154, 2626, 3200], desc:'Brand-new master-planned waterfront hub adjacent to Palm Jumeirah with marina berths and retail promenade.', listings:[
     {t:'🏢',type:'Apartment',name:'Dubai Harbour Residences',price:'AED 2.6M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Dubai Harbour Villas',price:'AED 8.0M',size:'2,500 sqft'},
   ]},
-  {id:'bluewaters', name:'Bluewaters Island', tier:'prime', psf:3800, yoy:22.1, yld:5.4, txn:3100, off:65, rdy:35, beds:'1–4', type:'Luxury', score:88,
+  {id:'bluewaters', name:'Bluewaters Island', tier:'prime', psf:3800, yoy:22.1, yld:5.4, txn:3100, off:65, rdy:35, beds:'1–4', type:'Luxury', score:88, prox:{conn:27,life:43,airport:20.6,coast:1.2,metro:1.9,dt:20.3},
    hist:[1699, 1996, 2344, 2754, 3235, 3800], desc:'Artificial island home to Ain Dubai and upscale hospitality brands. Ultra-prime urban beach living.', listings:[
     {t:'🏢',type:'Apartment',name:'Bluewaters Island Residences',price:'AED 3.0M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Bluewaters Island Villas',price:'AED 9.5M',size:'2,500 sqft'},
   ]},
-  {id:'pearljum', name:'Pearl Jumeirah', tier:'prime', psf:3500, yoy:19.8, yld:5.2, txn:1200, off:72, rdy:28, beds:'3–6', type:'Villa', score:87,
+  {id:'pearljum', name:'Pearl Jumeirah', tier:'prime', psf:3500, yoy:19.8, yld:5.2, txn:1200, off:72, rdy:28, beds:'3–6', type:'Villa', score:87, prox:{conn:48,life:80,airport:10.8,coast:0.7,metro:4.0,dt:5.3},
    hist:[1676, 1942, 2250, 2607, 3021, 3500], desc:'Exclusive waterfront villa community with direct beach access and sea views toward Downtown.', listings:[
     {t:'🏢',type:'Apartment',name:'Pearl Jumeirah Residences',price:'AED 2.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Pearl Jumeirah Villas',price:'AED 8.8M',size:'2,500 sqft'},
   ]},
-  {id:'worldisl', name:'The World Islands', tier:'prime', psf:5200, yoy:31.0, yld:4.8, txn:400, off:95, rdy:5, beds:'4–7', type:'Ultra-Luxury', score:85,
+  {id:'worldisl', name:'The World Islands', tier:'prime', psf:5200, yoy:31.0, yld:4.8, txn:400, off:95, rdy:5, beds:'4–7', type:'Ultra-Luxury', score:85, prox:{conn:18,life:39,airport:20.0,coast:4.8,metro:9.3,dt:10.8},
    hist:[1795, 2221, 2747, 3398, 4204, 5200], desc:'Private island development off Dubai coast. Ultra-exclusive bespoke villas targeting UHNW buyers.', listings:[
     {t:'🏢',type:'Apartment',name:'The World Islands Residences',price:'AED 4.2M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The World Islands Villas',price:'AED 13.0M',size:'2,500 sqft'},
   ]},
-  {id:'d3', name:'Dubai Design District', tier:'prime', psf:2800, yoy:18.2, yld:6.1, txn:2200, off:75, rdy:25, beds:'1–3', type:'Mixed', score:84,
+  {id:'d3', name:'Dubai Design District', tier:'prime', psf:2800, yoy:18.2, yld:6.1, txn:2200, off:75, rdy:25, beds:'1–3', type:'Mixed', score:84, prox:{conn:73,life:56,airport:7.0,coast:5.3,metro:1.5,dt:4.1},
    hist:[1408, 1615, 1854, 2127, 2440, 2800], desc:'Creative hub and business district east of Business Bay. Growing F&B scene and residential launch pipeline.', listings:[
     {t:'🏢',type:'Apartment',name:'Dubai Design District Residences',price:'AED 2.2M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Dubai Design District Villas',price:'AED 7.0M',size:'2,500 sqft'},
   ]},
-  {id:'healthcare', name:'Healthcare City', tier:'mid', psf:1850, yoy:11.2, yld:7.2, txn:3400, off:42, rdy:58, beds:'1–3', type:'Mixed', score:73,
+  {id:'healthcare', name:'Healthcare City', tier:'mid', psf:1850, yoy:11.2, yld:7.2, txn:3400, off:42, rdy:58, beds:'1–3', type:'Mixed', score:73, prox:{conn:77,life:34,airport:3.4,coast:7.2,metro:0.5,dt:7.7},
    hist:[1157, 1271, 1396, 1533, 1684, 1850], desc:'Master-planned medical city near Dubai Creek. Niche demand from healthcare professionals.', listings:[
     {t:'🏢',type:'Apartment',name:'Healthcare City Residences',price:'AED 1.5M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Healthcare City Villas',price:'AED 4.6M',size:'2,500 sqft'},
   ]},
-  {id:'zaabeel', name:'Za\'abeel', tier:'prime', psf:2900, yoy:14.8, yld:5.8, txn:1800, off:55, rdy:45, beds:'1–4', type:'Mixed', score:82,
+  {id:'zaabeel', name:'Za\'abeel', tier:'prime', psf:2900, yoy:14.8, yld:5.8, txn:1800, off:55, rdy:45, beds:'1–4', type:'Mixed', score:82, prox:{conn:76,life:73,airport:8.3,coast:2.7,metro:0.8,dt:3.7},
    hist:[1619, 1819, 2044, 2297, 2581, 2900], desc:'Central district flanked by Za\'abeel Park and key government institutions. High connectivity.', listings:[
     {t:'🏢',type:'Apartment',name:'Za\'abeel Residences',price:'AED 2.3M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Za\'abeel Villas',price:'AED 7.2M',size:'2,500 sqft'},
   ]},
-  {id:'internetc', name:'Dubai Internet City', tier:'mid', psf:2100, yoy:10.4, yld:6.8, txn:4200, off:48, rdy:52, beds:'Studio–3', type:'Mixed', score:76,
+  {id:'internetc', name:'Dubai Internet City', tier:'mid', psf:2100, yoy:10.4, yld:6.8, txn:4200, off:48, rdy:52, beds:'Studio–3', type:'Mixed', score:76, prox:{conn:40,life:33,airport:22.9,coast:3.9,metro:0.0,dt:14.6},
    hist:[1347, 1473, 1609, 1758, 1922, 2100], desc:'Tech and media cluster along Sheikh Zayed Road. Strong white-collar rental demand from tech workforce.', listings:[
     {t:'🏢',type:'Apartment',name:'Dubai Internet City Residences',price:'AED 1.7M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Dubai Internet City Villas',price:'AED 5.2M',size:'2,500 sqft'},
   ]},
-  {id:'mediac', name:'Dubai Media City', tier:'mid', psf:2050, yoy:9.8, yld:7.0, txn:3800, off:50, rdy:50, beds:'Studio–3', type:'Mixed', score:75,
+  {id:'mediac', name:'Dubai Media City', tier:'mid', psf:2050, yoy:9.8, yld:7.0, txn:3800, off:50, rdy:50, beds:'Studio–3', type:'Mixed', score:75, prox:{conn:34,life:37,airport:23.6,coast:3.2,metro:0.9,dt:14.6},
    hist:[1341, 1460, 1589, 1730, 1883, 2050], desc:'Adjacent to Internet City. Houses global media brands. Consistent rental demand from expats.', listings:[
     {t:'🏢',type:'Apartment',name:'Dubai Media City Residences',price:'AED 1.6M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Dubai Media City Villas',price:'AED 5.1M',size:'2,500 sqft'},
   ]},
-  {id:'jumeirah', name:'Jumeirah', tier:'mid', psf:2600, yoy:13.4, yld:5.9, txn:5600, off:22, rdy:78, beds:'3–6', type:'Villa', score:78,
+  {id:'jumeirah', name:'Jumeirah', tier:'mid', psf:2600, yoy:13.4, yld:5.9, txn:5600, off:22, rdy:78, beds:'3–6', type:'Villa', score:78, prox:{conn:52,life:69,airport:14.1,coast:3.2,metro:3.2,dt:4.1},
    hist:[1517, 1689, 1882, 2096, 2334, 2600], desc:'Iconic beachside villa corridor stretching 14km. Dubai\'s most established expat residential strip.', listings:[
     {t:'🏢',type:'Apartment',name:'Jumeirah Residences',price:'AED 2.1M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Jumeirah Villas',price:'AED 6.5M',size:'2,500 sqft'},
   ]},
-  {id:'alsafa', name:'Al Safa', tier:'mid', psf:2200, yoy:11.8, yld:6.2, txn:4100, off:28, rdy:72, beds:'3–5', type:'Villa', score:74,
+  {id:'alsafa', name:'Al Safa', tier:'mid', psf:2200, yoy:11.8, yld:6.2, txn:4100, off:28, rdy:72, beds:'3–5', type:'Villa', score:74, prox:{conn:50,life:73,airport:15.1,coast:2.2,metro:3.1,dt:4.5},
    hist:[1350, 1489, 1641, 1810, 1995, 2200], desc:'Quiet upscale neighbourhood between Sheikh Zayed and Al Wasl Roads. Popular with families.', listings:[
     {t:'🏢',type:'Apartment',name:'Al Safa Residences',price:'AED 1.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Al Safa Villas',price:'AED 5.5M',size:'2,500 sqft'},
   ]},
-  {id:'alwasl', name:'Al Wasl', tier:'mid', psf:2400, yoy:12.6, yld:6.0, txn:3800, off:18, rdy:82, beds:'3–5', type:'Mixed', score:76,
+  {id:'alwasl', name:'Al Wasl', tier:'mid', psf:2400, yoy:12.6, yld:6.0, txn:3800, off:18, rdy:82, beds:'3–5', type:'Mixed', score:76, prox:{conn:62,life:69,airport:12.7,coast:3.6,metro:2.3,dt:2.9},
    hist:[1436, 1591, 1763, 1954, 2166, 2400], desc:'Trendy mixed-use corridor home to City Walk. Boutique F&B, retail and residential demand rising.', listings:[
     {t:'🏢',type:'Apartment',name:'Al Wasl Residences',price:'AED 1.9M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Al Wasl Villas',price:'AED 6.0M',size:'2,500 sqft'},
   ]},
-  {id:'alsufouh', name:'Al Sufouh', tier:'mid', psf:1950, yoy:10.2, yld:7.1, txn:2900, off:32, rdy:68, beds:'Studio–3', type:'Mixed', score:71,
+  {id:'alsufouh', name:'Al Sufouh', tier:'mid', psf:1950, yoy:10.2, yld:7.1, txn:2900, off:32, rdy:68, beds:'Studio–3', type:'Mixed', score:71, prox:{conn:38,life:31,airport:22.7,coast:4.1,metro:0.3,dt:14.7},
    hist:[1259, 1374, 1500, 1637, 1787, 1950], desc:'Media and hospitality district behind Palm. Strong short-term rental demand from tourism.', listings:[
     {t:'🏢',type:'Apartment',name:'Al Sufouh Residences',price:'AED 1.6M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Al Sufouh Villas',price:'AED 4.9M',size:'2,500 sqft'},
   ]},
-  {id:'umm_suq', name:'Umm Suqeim', tier:'mid', psf:2500, yoy:14.1, yld:5.8, txn:3200, off:25, rdy:75, beds:'3–5', type:'Villa', score:77,
+  {id:'umm_suq', name:'Umm Suqeim', tier:'mid', psf:2500, yoy:14.1, yld:5.8, txn:3200, off:25, rdy:75, beds:'3–5', type:'Villa', score:77, prox:{conn:47,life:32,airport:20.4,coast:6.5,metro:0.9,dt:9.5},
    hist:[1427, 1596, 1786, 1998, 2235, 2500], desc:'Waterfront community near Kite Beach and Burj Al Arab. Premium villas with strong appreciation.', listings:[
     {t:'🏢',type:'Apartment',name:'Umm Suqeim Residences',price:'AED 2.0M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Umm Suqeim Villas',price:'AED 6.2M',size:'2,500 sqft'},
   ]},
-  {id:'mirdif', name:'Mirdif', tier:'mid', psf:1150, yoy:5.8, yld:7.8, txn:6800, off:15, rdy:85, beds:'3–4', type:'Villa', score:65,
+  {id:'mirdif', name:'Mirdif', tier:'mid', psf:1150, yoy:5.8, yld:7.8, txn:6800, off:15, rdy:85, beds:'3–4', type:'Villa', score:65, prox:{conn:30,life:8,airport:6.2,coast:15.0,metro:6.6,dt:14.0},
    hist:[857, 909, 964, 1022, 1084, 1150], desc:'Established suburban community near Dubai International Airport. Affordable villas for families.', listings:[
     {t:'🏢',type:'Apartment',name:'Mirdif Residences',price:'AED 0.9M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Mirdif Villas',price:'AED 2.9M',size:'2,500 sqft'},
   ]},
-  {id:'deira', name:'Deira', tier:'mid', psf:1050, yoy:4.2, yld:8.4, txn:8200, off:12, rdy:88, beds:'1–2', type:'Mixed', score:62,
+  {id:'deira', name:'Deira', tier:'mid', psf:1050, yoy:4.2, yld:8.4, txn:8200, off:12, rdy:88, beds:'1–2', type:'Mixed', score:62, prox:{conn:45,life:29,airport:4.8,coast:7.0,metro:4.4,dt:9.7},
    hist:[825, 866, 909, 953, 1001, 1050], desc:'Historic trading district undergoing urban renewal. Affordable, high-yield, improving infrastructure.', listings:[
     {t:'🏢',type:'Apartment',name:'Deira Residences',price:'AED 0.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Deira Villas',price:'AED 2.6M',size:'2,500 sqft'},
   ]},
-  {id:'emiratesh', name:'Emirates Hills', tier:'prime', psf:4800, yoy:20.8, yld:4.4, txn:680, off:8, rdy:92, beds:'4–8', type:'Villa', score:86,
+  {id:'emiratesh', name:'Emirates Hills', tier:'prime', psf:4800, yoy:20.8, yld:4.4, txn:680, off:8, rdy:92, beds:'4–8', type:'Villa', score:86, prox:{conn:29,life:24,airport:21.3,coast:4.9,metro:1.7,dt:15.8},
    hist:[2231, 2600, 3031, 3533, 4118, 4800], desc:'Dubai\'s most prestigious gated villa enclave. Golf course frontage, ultra-premium land values.', listings:[
     {t:'🏢',type:'Apartment',name:'Emirates Hills Residences',price:'AED 3.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Emirates Hills Villas',price:'AED 12.0M',size:'2,500 sqft'},
   ]},
-  {id:'districtone', name:'District One', tier:'prime', psf:3600, yoy:24.2, yld:4.9, txn:1400, off:62, rdy:38, beds:'4–8', type:'Villa', score:90,
+  {id:'districtone', name:'District One', tier:'prime', psf:3600, yoy:24.2, yld:4.9, txn:1400, off:62, rdy:38, beds:'4–8', type:'Villa', score:90, prox:{conn:63,life:53,airport:8.3,coast:6.2,metro:2.8,dt:3.4},
    hist:[1512, 1799, 2140, 2545, 3027, 3600], desc:'Mohammed Bin Rashid City\'s flagship community with Crystal Lagoon. Premium off-plan and completed villas.', listings:[
     {t:'🏢',type:'Apartment',name:'District One Residences',price:'AED 2.9M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'District One Villas',price:'AED 9.0M',size:'2,500 sqft'},
   ]},
-  {id:'jumislands', name:'Jumeirah Islands', tier:'mid', psf:2100, yoy:12.4, yld:5.6, txn:1600, off:5, rdy:95, beds:'4–6', type:'Villa', score:72,
+  {id:'jumislands', name:'Jumeirah Islands', tier:'mid', psf:2100, yoy:12.4, yld:5.6, txn:1600, off:5, rdy:95, beds:'4–6', type:'Villa', score:72, prox:{conn:21,life:16,airport:19.2,coast:5.7,metro:3.1,dt:17.3},
    hist:[1264, 1399, 1549, 1714, 1897, 2100], desc:'Established island-cluster villa community popular with families near internet city cluster.', listings:[
     {t:'🏢',type:'Apartment',name:'Jumeirah Islands Residences',price:'AED 1.7M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Jumeirah Islands Villas',price:'AED 5.2M',size:'2,500 sqft'},
   ]},
-  {id:'jumipark', name:'Jumeirah Park', tier:'mid', psf:1900, yoy:11.2, yld:6.1, txn:2800, off:8, rdy:92, beds:'3–5', type:'Villa', score:71,
+  {id:'jumipark', name:'Jumeirah Park', tier:'mid', psf:1900, yoy:11.2, yld:6.1, txn:2800, off:8, rdy:92, beds:'3–5', type:'Villa', score:71, prox:{conn:9,life:4,airport:19.1,coast:7.7,metro:4.8,dt:16.6},
    hist:[1188, 1305, 1434, 1575, 1730, 1900], desc:'Nakheel\'s suburban villa community popular for its park setting and family-oriented layout.', listings:[
     {t:'🏢',type:'Apartment',name:'Jumeirah Park Residences',price:'AED 1.5M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Jumeirah Park Villas',price:'AED 4.8M',size:'2,500 sqft'},
   ]},
-  {id:'jumiGE', name:'Jumeirah Golf Estates', tier:'mid', psf:1600, yoy:9.8, yld:6.4, txn:1800, off:22, rdy:78, beds:'3–5', type:'Villa', score:70,
+  {id:'jumiGE', name:'Jumeirah Golf Estates', tier:'mid', psf:1600, yoy:9.8, yld:6.4, txn:1800, off:22, rdy:78, beds:'3–5', type:'Villa', score:70, prox:{conn:41,life:0,airport:14.4,coast:8.3,metro:1.0,dt:21.8},
    hist:[1047, 1139, 1240, 1350, 1470, 1600], desc:'Golf-fronted villas and townhouses. Hosts DP World Tour finale. Strong luxury community appeal.', listings:[
     {t:'🏢',type:'Apartment',name:'Jumeirah Golf Estates Residences',price:'AED 1.3M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Jumeirah Golf Estates Villas',price:'AED 4.0M',size:'2,500 sqft'},
   ]},
-  {id:'damachills', name:'DAMAC Hills', tier:'mid', psf:1380, yoy:8.8, yld:7.1, txn:4200, off:38, rdy:62, beds:'2–5', type:'Mixed', score:68,
+  {id:'damachills', name:'DAMAC Hills', tier:'mid', psf:1380, yoy:8.8, yld:7.1, txn:4200, off:38, rdy:62, beds:'2–5', type:'Mixed', score:68, prox:{conn:9,life:0,airport:18.2,coast:15.4,metro:10.3,dt:18.6},
    hist:[932, 1008, 1091, 1180, 1276, 1380], desc:'Trump-branded golf community with a mix of apartments and villas. Self-contained suburban hub.', listings:[
     {t:'🏢',type:'Apartment',name:'DAMAC Hills Residences',price:'AED 1.1M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'DAMAC Hills Villas',price:'AED 3.5M',size:'2,500 sqft'},
   ]},
-  {id:'remraam', name:'Remraam', tier:'value', psf:780, yoy:5.4, yld:9.2, txn:3200, off:18, rdy:82, beds:'Studio–2', type:'Residential', score:58,
+  {id:'remraam', name:'Remraam', tier:'value', psf:780, yoy:5.4, yld:9.2, txn:3200, off:18, rdy:82, beds:'Studio–2', type:'Residential', score:58, prox:{conn:18,life:0,airport:11.5,coast:13.8,metro:5.6,dt:23.9},
    hist:[589, 623, 659, 697, 737, 780], desc:'Affordable leasehold community in Dubai South corridor. High yield for budget-conscious investors.', listings:[
     {t:'🏢',type:'Apartment',name:'Remraam Residences',price:'AED 0.6M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Remraam Villas',price:'AED 1.9M',size:'2,500 sqft'},
   ]},
-  {id:'thegreens', name:'The Greens', tier:'mid', psf:1450, yoy:7.2, yld:8.1, txn:5400, off:5, rdy:95, beds:'1–3', type:'Residential', score:69,
+  {id:'thegreens', name:'The Greens', tier:'mid', psf:1450, yoy:7.2, yld:8.1, txn:5400, off:5, rdy:95, beds:'1–3', type:'Residential', score:69, prox:{conn:30,life:22,airport:21.7,coast:5.5,metro:1.8,dt:14.9},
    hist:[1032, 1105, 1182, 1266, 1355, 1450], desc:'Nakheel low-rise community alongside Sheikh Zayed Road. Mature trees, lake views, steady rental market.', listings:[
     {t:'🏢',type:'Apartment',name:'The Greens Residences',price:'AED 1.2M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Greens Villas',price:'AED 3.6M',size:'2,500 sqft'},
   ]},
-  {id:'thelakes', name:'The Lakes', tier:'mid', psf:1750, yoy:9.4, yld:6.8, txn:2200, off:5, rdy:95, beds:'3–5', type:'Villa', score:70,
+  {id:'thelakes', name:'The Lakes', tier:'mid', psf:1750, yoy:9.4, yld:6.8, txn:2200, off:5, rdy:95, beds:'3–5', type:'Villa', score:70, prox:{conn:31,life:27,airport:21.6,coast:4.2,metro:1.2,dt:15.9},
    hist:[1160, 1259, 1367, 1484, 1612, 1750], desc:'Quiet lakes community adjacent to Emirates Hills. Villa townhouses with strong family appeal.', listings:[
     {t:'🏢',type:'Apartment',name:'The Lakes Residences',price:'AED 1.4M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Lakes Villas',price:'AED 4.4M',size:'2,500 sqft'},
   ]},
-  {id:'thesprings', name:'The Springs', tier:'mid', psf:1550, yoy:8.1, yld:7.2, txn:3800, off:5, rdy:95, beds:'2–4', type:'Villa', score:68,
+  {id:'thesprings', name:'The Springs', tier:'mid', psf:1550, yoy:8.1, yld:7.2, txn:3800, off:5, rdy:95, beds:'2–4', type:'Villa', score:68, prox:{conn:29,life:23,airport:20.5,coast:4.5,metro:1.6,dt:16.7},
    hist:[1071, 1153, 1242, 1337, 1440, 1550], desc:'Popular Emaar townhouse community with lake access. One of Dubai\'s most liveable suburban areas.', listings:[
     {t:'🏢',type:'Apartment',name:'The Springs Residences',price:'AED 1.2M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Springs Villas',price:'AED 3.9M',size:'2,500 sqft'},
   ]},
-  {id:'themeadows', name:'The Meadows', tier:'mid', psf:2200, yoy:12.2, yld:5.8, txn:1900, off:5, rdy:95, beds:'4–6', type:'Villa', score:72,
+  {id:'themeadows', name:'The Meadows', tier:'mid', psf:2200, yoy:12.2, yld:5.8, txn:1900, off:5, rdy:95, beds:'4–6', type:'Villa', score:72, prox:{conn:34,life:32,airport:22.0,coast:3.3,metro:0.7,dt:16.1},
    hist:[1333, 1473, 1629, 1800, 1990, 2200], desc:'Upscale Emaar villa community near Emirates Golf Club. Premium maintained gardens, quiet roads.', listings:[
     {t:'🏢',type:'Apartment',name:'The Meadows Residences',price:'AED 1.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Meadows Villas',price:'AED 5.5M',size:'2,500 sqft'},
   ]},
-  {id:'thegardens', name:'The Gardens', tier:'value', psf:950, yoy:5.2, yld:8.8, txn:4800, off:12, rdy:88, beds:'1–3', type:'Residential', score:62,
+  {id:'thegardens', name:'The Gardens', tier:'value', psf:950, yoy:5.2, yld:8.8, txn:4800, off:12, rdy:88, beds:'1–3', type:'Residential', score:62, prox:{conn:40,life:20,airport:16.7,coast:5.0,metro:0.7,dt:21.5},
    hist:[722, 763, 806, 851, 899, 950], desc:'Affordable leasehold apartment community in JLT vicinity. Strong expat rental base.', listings:[
     {t:'🏢',type:'Apartment',name:'The Gardens Residences',price:'AED 0.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Gardens Villas',price:'AED 2.4M',size:'2,500 sqft'},
   ]},
-  {id:'sustainable', name:'The Sustainable City', tier:'mid', psf:1650, yoy:10.8, yld:7.4, txn:1200, off:12, rdy:88, beds:'2–4', type:'Mixed', score:73,
+  {id:'sustainable', name:'The Sustainable City', tier:'mid', psf:1650, yoy:10.8, yld:7.4, txn:1200, off:12, rdy:88, beds:'2–4', type:'Mixed', score:73, prox:{conn:13,life:0,airport:15.1,coast:14.3,metro:7.8,dt:20.9},
    hist:[1045, 1145, 1255, 1375, 1506, 1650], desc:'UAE\'s leading eco-community with solar power and urban farming. Premium for sustainability-focused buyers.', listings:[
     {t:'🏢',type:'Apartment',name:'The Sustainable City Residences',price:'AED 1.3M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Sustainable City Villas',price:'AED 4.1M',size:'2,500 sqft'},
   ]},
-  {id:'canaldist', name:'Canal District', tier:'prime', psf:2600, yoy:15.4, yld:6.2, txn:1800, off:82, rdy:18, beds:'1–4', type:'Mixed', score:83,
+  {id:'canaldist', name:'Canal District', tier:'prime', psf:2600, yoy:15.4, yld:6.2, txn:1800, off:82, rdy:18, beds:'1–4', type:'Mixed', score:83, prox:{conn:60,life:52,airport:10.4,coast:6.8,metro:3.2,dt:2.5},
    hist:[1425, 1607, 1812, 2044, 2305, 2600], desc:'Emerging waterfront precinct along Dubai Water Canal. Strong pipeline from premium developers.', listings:[
     {t:'🏢',type:'Apartment',name:'Canal District Residences',price:'AED 2.1M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Canal District Villas',price:'AED 6.5M',size:'2,500 sqft'},
   ]},
-  {id:'globvillag', name:'Cityland Mall Area', tier:'value', psf:820, yoy:6.2, yld:8.4, txn:2100, off:68, rdy:32, beds:'Studio–2', type:'Mixed', score:58,
+  {id:'globvillag', name:'Cityland Mall Area', tier:'value', psf:820, yoy:6.2, yld:8.4, txn:2100, off:68, rdy:32, beds:'Studio–2', type:'Mixed', score:58, prox:{conn:9,life:7,airport:21.4,coast:16.6,metro:11.2,dt:14.4},
    hist:[603, 641, 682, 725, 771, 820], desc:'Emerging affordable community near Global Village entertainment zone.', listings:[
     {t:'🏢',type:'Apartment',name:'Cityland Mall Area Residences',price:'AED 0.7M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Cityland Mall Area Villas',price:'AED 2.0M',size:'2,500 sqft'},
   ]},
-  {id:'expocity', name:'Expo City Dubai', tier:'value', psf:1050, yoy:14.2, yld:7.8, txn:2800, off:92, rdy:8, beds:'Studio–3', type:'Mixed', score:72,
+  {id:'expocity', name:'Expo City Dubai', tier:'value', psf:1050, yoy:14.2, yld:7.8, txn:2800, off:92, rdy:8, beds:'Studio–3', type:'Mixed', score:72, prox:{conn:44,life:0,airport:9.2,coast:11.8,metro:1.6,dt:27.5},
    hist:[597, 669, 749, 838, 938, 1050], desc:'Former Expo 2020 site repurposed as smart sustainable city. Long-term government-backed masterplan.', listings:[
     {t:'🏢',type:'Apartment',name:'Expo City Dubai Residences',price:'AED 0.8M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Expo City Dubai Villas',price:'AED 2.6M',size:'2,500 sqft'},
   ]},
-  {id:'academicc', name:'Academic City', tier:'value', psf:720, yoy:4.8, yld:9.4, txn:1800, off:28, rdy:72, beds:'Studio–2', type:'Residential', score:56,
+  {id:'academicc', name:'Academic City', tier:'value', psf:720, yoy:4.8, yld:9.4, txn:1800, off:28, rdy:72, beds:'Studio–2', type:'Residential', score:56, prox:{conn:15,life:7,airport:17.0,coast:18.8,metro:15.0,dt:14.5},
    hist:[555, 584, 616, 649, 683, 720], desc:'Student and educator housing hub adjacent to major universities. Niche but consistent rental yield.', listings:[
     {t:'🏢',type:'Apartment',name:'Academic City Residences',price:'AED 0.6M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Academic City Villas',price:'AED 1.8M',size:'2,500 sqft'},
   ]},
-  {id:'albadaa', name:'Al Bada\'a', tier:'mid', psf:1800, yoy:9.2, yld:6.8, txn:2400, off:15, rdy:85, beds:'2–4', type:'Mixed', score:68,
+  {id:'albadaa', name:'Al Bada\'a', tier:'mid', psf:1800, yoy:9.2, yld:6.8, txn:2400, off:15, rdy:85, beds:'2–4', type:'Mixed', score:68, prox:{conn:76,life:75,airport:8.7,coast:2.6,metro:0.9,dt:3.3},
    hist:[1200, 1302, 1412, 1531, 1660, 1800], desc:'Compact mixed-use neighbourhood near DIFC and Jumeirah. Growing boutique residential market.', listings:[
     {t:'🏢',type:'Apartment',name:'Al Bada\'a Residences',price:'AED 1.4M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Al Bada\'a Villas',price:'AED 4.5M',size:'2,500 sqft'},
   ]},
-  {id:'tilalgaf', name:'Tilal Al Ghaf', tier:'mid', psf:1720, yoy:11.4, yld:6.6, txn:2800, off:78, rdy:22, beds:'2–5', type:'Mixed', score:74,
+  {id:'tilalgaf', name:'Tilal Al Ghaf', tier:'mid', psf:1720, yoy:11.4, yld:6.6, txn:2800, off:78, rdy:22, beds:'2–5', type:'Mixed', score:74, prox:{conn:7,life:3,airport:20.8,coast:14.9,metro:10.1,dt:15.8},
    hist:[1069, 1176, 1293, 1422, 1564, 1720], desc:'Majid Al Futtaim\'s master-planned lagoon community. Strong off-plan demand, lifestyle-focused design.', listings:[
     {t:'🏢',type:'Apartment',name:'Tilal Al Ghaf Residences',price:'AED 1.4M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Tilal Al Ghaf Villas',price:'AED 4.3M',size:'2,500 sqft'},
   ]},
-  {id:'productionc', name:'Dubai Production City', tier:'value', psf:820, yoy:6.8, yld:9.1, txn:2400, off:35, rdy:65, beds:'Studio–2', type:'Mixed', score:61,
+  {id:'productionc', name:'Dubai Production City', tier:'value', psf:820, yoy:6.8, yld:9.1, txn:2400, off:35, rdy:65, beds:'Studio–2', type:'Mixed', score:61, prox:{conn:11,life:0,airport:16.9,coast:12.7,metro:7.5,dt:18.8},
    hist:[591, 631, 674, 719, 768, 820], desc:'Formerly IMPZ. Affordable studios and apartments with improving community infrastructure.', listings:[
     {t:'🏢',type:'Apartment',name:'Dubai Production City Residences',price:'AED 0.7M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Dubai Production City Villas',price:'AED 2.0M',size:'2,500 sqft'},
@@ -1034,17 +1075,17 @@ const AREAS = [
     {t:'🏢',type:'Apartment',name:'Dubai Studio City Residences',price:'AED 0.7M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Dubai Studio City Villas',price:'AED 2.2M',size:'2,500 sqft'},
   ]},
-  {id:'albarari', name:'Al Barari', tier:'prime', psf:3200, yoy:16.8, yld:5.2, txn:420, off:18, rdy:82, beds:'4–7', type:'Villa', score:84,
+  {id:'albarari', name:'Al Barari', tier:'prime', psf:3200, yoy:16.8, yld:5.2, txn:420, off:18, rdy:82, beds:'4–7', type:'Villa', score:84, prox:{conn:18,life:15,airport:18.9,coast:14.2,metro:9.6,dt:11.6},
    hist:[1680, 1911, 2174, 2473, 2813, 3200], desc:'Lush botanical villa estate with 60% green space. Dubai\'s most private organic luxury community.', listings:[
     {t:'🏢',type:'Apartment',name:'Al Barari Residences',price:'AED 2.6M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Al Barari Villas',price:'AED 8.0M',size:'2,500 sqft'},
   ]},
-  {id:'jebalipalm', name:'Palm Jebel Ali', tier:'prime', psf:2800, yoy:45.0, yld:5.8, txn:800, off:98, rdy:2, beds:'3–7', type:'Villa', score:89,
+  {id:'jebalipalm', name:'Palm Jebel Ali', tier:'prime', psf:2800, yoy:45.0, yld:5.8, txn:800, off:98, rdy:2, beds:'3–7', type:'Villa', score:89, prox:{conn:17,life:0,airport:15.3,coast:9.0,metro:4.4,dt:32.3},
    hist:[660, 882, 1177, 1571, 2097, 2800], desc:'Nakheel\'s revived mega-project. Largest off-plan launch in Dubai history. Ultra-high appreciation potential.', listings:[
     {t:'🏢',type:'Apartment',name:'Palm Jebel Ali Residences',price:'AED 2.2M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'Palm Jebel Ali Villas',price:'AED 7.0M',size:'2,500 sqft'},
   ]},
-  {id:'oasis', name:'The Oasis', tier:'prime', psf:2400, yoy:32.0, yld:5.4, txn:600, off:98, rdy:2, beds:'3–6', type:'Villa', score:86,
+  {id:'oasis', name:'The Oasis', tier:'prime', psf:2400, yoy:32.0, yld:5.4, txn:600, off:98, rdy:2, beds:'3–6', type:'Villa', score:86, prox:{conn:10,life:0,airport:17.2,coast:16.6,metro:10.8,dt:20.3},
    hist:[806, 1002, 1247, 1551, 1929, 2400], desc:'Emaar\'s flagship mega-development. Lagoon-fronted villas in Mohammed Bin Rashid City. Top-tier demand.', listings:[
     {t:'🏢',type:'Apartment',name:'The Oasis Residences',price:'AED 1.9M',size:'800 sqft'},
     {t:'🏠',type:'Villa',name:'The Oasis Villas',price:'AED 6.0M',size:'2,500 sqft'},
@@ -1286,6 +1327,54 @@ let _heatMode = 'psf', _viewMode = '2d', _satMode = false, _tierFilter = 'all';
 let _layerState = { areas: true, extrude: true, metro: true, labels: false };
 let _sortMode = 'psf', _searchTerm = '';
 let _areaList = [...AREAS];
+let _currency = 'AED';
+let _fxRates = { AED:1, USD:0.2723, GBP:0.2034, EUR:0.2351, INR:25.12, CNY:1.8837, RUB:21.31 };
+let _fxLoaded = false;
+
+const CURRENCY_SYMBOLS = { AED:'AED', USD:'$', GBP:'£', EUR:'€', INR:'₹', CNY:'¥', RUB:'₽' };
+
+async function loadFXRates() {
+  try {
+    const r = await fetch('https://open.er-api.com/v6/latest/AED');
+    const d = await r.json();
+    if (d.rates) {
+      _fxRates = { AED:1, USD:d.rates.USD, GBP:d.rates.GBP, EUR:d.rates.EUR,
+                   INR:d.rates.INR, CNY:d.rates.CNY, RUB:d.rates.RUB };
+      _fxLoaded = true;
+      document.querySelectorAll('.fx-live').forEach(el => el.textContent = '● LIVE');
+      document.querySelectorAll('.fx-live').forEach(el => el.style.color = '#00E676');
+    }
+  } catch(e) { console.warn('FX fallback to defaults'); }
+}
+
+function aedTo(aed) {
+  const rate = _fxRates[_currency] || 1;
+  const sym = CURRENCY_SYMBOLS[_currency];
+  const val = aed * rate;
+  if (_currency === 'AED') return `AED ${Math.round(val).toLocaleString()}`;
+  if (val >= 1e6) return `${sym}${(val/1e6).toFixed(2)}M`;
+  if (val >= 1e3) return `${sym}${Math.round(val/1000)}K`;
+  return `${sym}${Math.round(val).toLocaleString()}`;
+}
+
+function aedPSF(psf) {
+  const rate = _fxRates[_currency] || 1;
+  const sym = CURRENCY_SYMBOLS[_currency];
+  const val = psf * rate;
+  return _currency === 'AED' ? `AED ${Math.round(val)}` : `${sym}${val < 100 ? val.toFixed(1) : Math.round(val)}`;
+}
+
+function setCurrency(cur) {
+  _currency = cur;
+  document.querySelectorAll('.cur-btn').forEach(b => b.classList.toggle('active', b.dataset.cur === cur));
+  // Refresh panel if open
+  if (_selId) {
+    const a = AREAS.find(x => x.id === _selId);
+    if (a) openDetail(a);
+  }
+  // Refresh list values
+  renderAreaList();
+}
 
 /* ── Heat colour scale ───────────────────────── */
 const HEAT_CONFIGS = {
@@ -1561,7 +1650,7 @@ function addAreaLayers() {
         <div class="rp-hc-tier">${a.tier.toUpperCase()} · ${a.type}</div>
         <div class="rp-hc-swatch" style="background:${col}"></div>
         <div class="rp-hc-grid">
-          <div class="rp-hc-kpi"><div class="rp-hc-l">Avg PSF</div><div class="rp-hc-v">AED ${a.psf.toLocaleString()}</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">Avg PSF</div><div class="rp-hc-v">${aedPSF(a.psf)}</div></div>
           <div class="rp-hc-kpi"><div class="rp-hc-l">YoY</div><div class="rp-hc-v ${trend?'up':'dn'}">${trend?'+':''}${a.yoy}%</div></div>
           <div class="rp-hc-kpi"><div class="rp-hc-l">Yield</div><div class="rp-hc-v">${a.yld}%</div></div>
           <div class="rp-hc-kpi"><div class="rp-hc-l">Score</div><div class="rp-hc-v">${a.score}/100</div></div>
@@ -2189,20 +2278,22 @@ function openDetail(a) {
   document.getElementById('rp-name').textContent = a.name;
   document.getElementById('rp-sub').textContent = `${a.tier.toUpperCase()} · ${a.type.toUpperCase()} · DUBAI`;
 
-  // Hero 3-metric strip
+  // Hero 3-metric strip — currency-aware, with Est. label
+  const estBadge = '<span class="data-est" title="Estimated based on published market reports">Est.</span>';
+  const liveBadge = '<span class="data-live" title="Live computed from coordinates">Computed</span>';
   document.getElementById('rp-hero').innerHTML = `
     <div class="rp-hero-metric">
-      <div class="rp-hero-metric-l">Avg PSF</div>
-      <div class="rp-hero-metric-v">AED ${a.psf.toLocaleString()}</div>
+      <div class="rp-hero-metric-l">Avg PSF ${estBadge}</div>
+      <div class="rp-hero-metric-v">${aedPSF(a.psf)}</div>
       <div class="rp-hero-metric-d ${trend?'up':'dn'}">${trend?'▲':' ▼'} ${trend?'+':''}${a.yoy}% YoY</div>
     </div>
     <div class="rp-hero-metric">
-      <div class="rp-hero-metric-l">Yield</div>
+      <div class="rp-hero-metric-l">Yield ${estBadge}</div>
       <div class="rp-hero-metric-v">${a.yld}%</div>
       <div class="rp-hero-metric-d ${a.yld>6.5?'up':'dn'}">${a.yld>6.5?'▲ Above avg':'▼ Below avg'}</div>
     </div>
     <div class="rp-hero-metric">
-      <div class="rp-hero-metric-l">Score</div>
+      <div class="rp-hero-metric-l">Inv. Score</div>
       <div class="rp-hero-metric-v" style="color:${scoreColor(a.score)}">${a.score}<span style="font-size:10px;opacity:.5">/100</span></div>
       <div class="rp-hero-metric-d" style="color:var(--text3)">${a.txn.toLocaleString()} txns</div>
     </div>
@@ -2211,10 +2302,10 @@ function openDetail(a) {
   // ── OVERVIEW TAB ──
   // KPIs
   const kpis = [
-    ['Avg PSF', `AED ${a.psf.toLocaleString()}`, '▲ All time high', 'up'],
-    ['YoY Growth', `${trend?'+':''}${a.yoy}%`, `${trend?'▲ Above':'▼ Below'} market avg`, trend?'up':'dn'],
-    ['Rental Yield', `${a.yld}%`, a.yld>6.5?'▲ Above avg':'▼ Below avg', a.yld>6.5?'up':'dn'],
-    ['Transactions', a.txn.toLocaleString(), '2024 YTD', 'up'],
+    ['Avg PSF <span class="data-est-sm">Est.</span>', aedPSF(a.psf), '▲ All time high', 'up'],
+    ['YoY Growth <span class="data-est-sm">Est.</span>', `${trend?'+':''}${a.yoy}%`, `${trend?'▲ Above':'▼ Below'} market avg`, trend?'up':'dn'],
+    ['Rental Yield <span class="data-est-sm">Est.</span>', `${a.yld}%`, a.yld>6.5?'▲ Above avg':'▼ Below avg', a.yld>6.5?'up':'dn'],
+    ['Transactions <span class="data-est-sm">Est.</span>', a.txn.toLocaleString(), '2024 YTD', 'up'],
   ];
   document.getElementById('rp-kpis').innerHTML = kpis.map(([l,v,d,c]) => `
     <div class="rp-kpi">
@@ -2222,6 +2313,64 @@ function openDetail(a) {
       <div class="rp-kpi-v">${v}</div>
       <div class="rp-kpi-d ${c}">${d}</div>
     </div>`).join('');
+
+  // ── PROXIMITY BLOCK (real computed data) ──
+  const prox = a.prox || {};
+  const hasProx = prox.conn !== undefined;
+  if (hasProx) {
+    const proxHtml = `
+      <div class="prox-block">
+        <div class="prox-header">
+          <span>Location Intelligence</span>
+          <span class="data-live-sm">Computed</span>
+        </div>
+        <div class="prox-grid">
+          <div class="prox-item">
+            <div class="prox-icon">✈</div>
+            <div class="prox-info">
+              <div class="prox-val">${prox.airport}km</div>
+              <div class="prox-label">Airport</div>
+            </div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.airport*4)}%;background:#6366F1"></div></div>
+          </div>
+          <div class="prox-item">
+            <div class="prox-icon">🚇</div>
+            <div class="prox-info">
+              <div class="prox-val">${prox.metro}km</div>
+              <div class="prox-label">Metro</div>
+            </div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.metro*20)}%;background:#FF3355"></div></div>
+          </div>
+          <div class="prox-item">
+            <div class="prox-icon">🏖</div>
+            <div class="prox-info">
+              <div class="prox-val">${prox.coast}km</div>
+              <div class="prox-label">Coast</div>
+            </div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.coast*10)}%;background:#06B6D4"></div></div>
+          </div>
+          <div class="prox-item">
+            <div class="prox-icon">🏙</div>
+            <div class="prox-info">
+              <div class="prox-val">${prox.dt}km</div>
+              <div class="prox-label">Downtown</div>
+            </div>
+            <div class="prox-bar-wrap"><div class="prox-bar-fill" style="width:${Math.min(100,100-prox.dt*4)}%;background:#FBBF24"></div></div>
+          </div>
+        </div>
+        <div class="prox-scores">
+          <div class="prox-score-pill" style="background:rgba(99,102,241,.15);color:#818CF8">
+            <span>Connectivity</span><strong>${prox.conn}/100</strong>
+          </div>
+          <div class="prox-score-pill" style="background:rgba(6,182,212,.15);color:#67E8F9">
+            <span>Lifestyle</span><strong>${prox.life}/100</strong>
+          </div>
+        </div>
+      </div>`;
+    // Insert proximity block after KPIs by adding to rp-overview-extra
+    const extra = document.getElementById('rp-overview-extra');
+    if (extra) extra.innerHTML = proxHtml;
+  }
 
   // Score bar
   const scCol = scoreColor(a.score);
@@ -2244,6 +2393,12 @@ function openDetail(a) {
 
   // Description
   document.getElementById('rp-desc').textContent = a.desc;
+
+  // Data source note
+  const srcNote = document.getElementById('rp-data-source');
+  if (srcNote) srcNote.innerHTML = `
+    <span class="data-est-sm">Est.</span> PSF/Yield/Volume — calibrated estimates based on JLL, CBRE & Savills Dubai market reports.
+    <span class="data-live-sm">Computed</span> Location scores from coordinates. Last updated: Q1 2025.`;
 
   // ── ANALYTICS TAB ──
   // Score breakdown bars
@@ -2582,7 +2737,7 @@ function renderComparePanel() {
           <div class="cp-slot-name">${a.name}</div>
           <div class="cp-slot-tier">${a.tier} · Score ${a.score}/100${i === winnerIdx ? ' 🏆' : ''}</div>
           <div class="cp-slot-metrics">
-            <div><div class="cp-metric-l">PSF</div><div class="cp-metric-v">AED ${a.psf.toLocaleString()}</div></div>
+            <div><div class="cp-metric-l">PSF</div><div class="cp-metric-v">${aedPSF(a.psf)}</div></div>
             <div><div class="cp-metric-l">Growth</div><div class="cp-metric-v ${yoyClass}">${a.yoy > 0 ? '+' : ''}${a.yoy}%</div></div>
             <div><div class="cp-metric-l">Yield</div><div class="cp-metric-v">${a.yld}%</div></div>
           </div>
@@ -2732,7 +2887,7 @@ function renderAreaList() {
   el.innerHTML = list.map((a, i) => {
     const col = areaColor(a);
     const trend = a.yoy > 0;
-    const val = _sortMode === 'yield' ? `${a.yld}%` : _sortMode === 'yoy' ? `${a.yoy}%` : `${a.psf.toLocaleString()}`;
+    const val = _sortMode === 'yield' ? `${a.yld}%` : _sortMode === 'yoy' ? `${a.yoy}%` : aedPSF(a.psf);
     const inCompare = _compareAreas.some(x => x && x.id === a.id);
     const cpBtn = _compareMode ? `<button class="ar-compare${inCompare?' in-compare':''}" onclick="addToCompare('${a.id}',event)" title="${inCompare?'Remove from compare':'Add to compare'}">⇄</button>` : '';
     return `
@@ -2840,6 +2995,7 @@ window.addEventListener('load', () => {
   try { buildTicker(); } catch(e) { console.warn('Ticker error:', e); }
   try { renderAreaList(); } catch(e) { console.warn('List error:', e); }
   try { updateLegend(); } catch(e) { console.warn('Legend error:', e); }
+  loadFXRates().then(() => renderAreaList()).catch(()=>{});
   initMap();
 });
 </script>
