@@ -860,6 +860,47 @@ const MAPTILER_KEY = 'ecydpiGmOMxHOQIYou4e';
 const STYLE_DARK  = `https://api.maptiler.com/maps/backdrop-dark/style.json?key=${MAPTILER_KEY}`;
 const STYLE_LIGHT = `https://api.maptiler.com/maps/backdrop/style.json?key=${MAPTILER_KEY}`;
 const STYLE_SAT   = `https://api.maptiler.com/maps/hybrid/style.json?key=${MAPTILER_KEY}`;
+
+// Minimal inline fallback styles (used when MapTiler tiles are blocked by CSP)
+const STYLE_FALLBACK_DARK = {
+  version: 8,
+  name: 'RAQAM Dark',
+  glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://a.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+              'https://b.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenStreetMap © CARTO'
+    }
+  },
+  layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#03060F' } },
+           { id: 'osm', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.88 } }]
+};
+const STYLE_FALLBACK_LIGHT = {
+  version: 8,
+  name: 'RAQAM Light',
+  glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+  sources: {
+    osm: {
+      type: 'raster',
+      tiles: ['https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png',
+              'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png'],
+      tileSize: 256,
+      attribution: '© OpenStreetMap © CARTO'
+    }
+  },
+  layers: [{ id: 'bg', type: 'background', paint: { 'background-color': '#EEF1F8' } },
+           { id: 'osm', type: 'raster', source: 'osm', paint: { 'raster-opacity': 0.9 } }]
+};
+
+// Detect sandboxed iframe (claudeusercontent.com) — use CARTO tiles which allow cross-origin
+const IS_SANDBOXED = location.hostname.includes('claudeusercontent') || location.hostname.includes('claude.ai');
+function getStyle(mode) {
+  if (IS_SANDBOXED) return mode === 'sat' ? STYLE_FALLBACK_DARK : (mode === 'light' ? STYLE_FALLBACK_LIGHT : STYLE_FALLBACK_DARK);
+  return mode === 'sat' ? STYLE_SAT : (mode === 'light' ? STYLE_LIGHT : STYLE_DARK);
+}
 const DUBAI_CENTER = [55.2708, 25.2048];
 const DUBAI_ZOOM   = 10.5;
 
@@ -928,29 +969,66 @@ const _markers = {}; // id -> maplibregl.Marker
 /* ══════════════════════════════════════════════
    MAP INIT
 ══════════════════════════════════════════════ */
-function initMap() {
-  const isDark = document.documentElement.dataset.theme === 'dark';
-  map = new maplibregl.Map({
-    container: 'map',
-    style: isDark ? STYLE_DARK : STYLE_LIGHT,
-    center: DUBAI_CENTER,
-    zoom: DUBAI_ZOOM,
-    pitch: 0,
-    bearing: 0,
-    maxBounds: [[54.5, 24.5], [56.0, 25.8]],
-  });
-
-  map.on('load', () => {
-    addAreaLayers();
-    addMetroLayer();
-    // Hide loading screen
-    const l = document.getElementById('loading');
+function dismissLoading() {
+  const l = document.getElementById('loading');
+  if (l && l.style.display !== 'none') {
     l.classList.add('fade');
     setTimeout(() => l.style.display = 'none', 700);
+  }
+}
+
+function initMap() {
+  const isDark = document.documentElement.dataset.theme === 'dark';
+
+  try {
+    map = new maplibregl.Map({
+      container: 'map',
+      style: isDark ? getStyle('dark') : getStyle('light'),
+      center: DUBAI_CENTER,
+      zoom: DUBAI_ZOOM,
+      pitch: 0,
+      bearing: 0,
+      maxBounds: [[54.5, 24.5], [56.0, 25.8]],
+      transformRequest: (url) => ({ url }),
+    });
+  } catch(e) {
+    document.getElementById('load-status').textContent = 'Init error: ' + e.message;
+    // Still dismiss after delay so UI is usable
+    setTimeout(dismissLoading, 3000);
+    return;
+  }
+
+  // Fallback: if load event never fires within 8s, dismiss anyway
+  const loadTimeout = setTimeout(() => {
+    document.getElementById('load-status').textContent = 'Map timeout — rendering markers';
+    try { addAreaLayers(); addMetroLayer(); } catch(e) {}
+    dismissLoading();
+  }, 8000);
+
+  map.on('load', () => {
+    clearTimeout(loadTimeout);
+    addAreaLayers();
+    addMetroLayer();
+    dismissLoading();
   });
 
   map.on('error', e => {
-    document.getElementById('load-status').textContent = 'Map error: ' + e.error?.message;
+    const msg = e.error?.message || String(e);
+    document.getElementById('load-status').textContent = 'Map error: ' + msg;
+    // If it's a style/worker error, still dismiss after a moment
+    if (msg.includes('style') || msg.includes('Worker') || msg.includes('worker')) {
+      setTimeout(dismissLoading, 2000);
+    }
+  });
+
+  // Also catch styledata as a fallback trigger
+  map.once('styledata', () => {
+    setTimeout(() => {
+      if (document.getElementById('loading')?.style.display !== 'none') {
+        try { addAreaLayers(); addMetroLayer(); } catch(e) {}
+        dismissLoading();
+      }
+    }, 500);
   });
 }
 
@@ -1236,7 +1314,7 @@ function toggleSatellite() {
   _satMode = !_satMode;
   document.getElementById('sat-btn').classList.toggle('active', _satMode);
   const isDark = document.documentElement.dataset.theme === 'dark';
-  const style = _satMode ? STYLE_SAT : (isDark ? STYLE_DARK : STYLE_LIGHT);
+  const style = _satMode ? getStyle('sat') : (isDark ? getStyle('dark') : getStyle('light'));
   map.setStyle(style);
   map.once('styledata', () => {
     setTimeout(() => {
@@ -1255,7 +1333,7 @@ function toggleTheme() {
   document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
   document.getElementById('theme-btn').textContent = isDark ? '☽' : '☀';
   if (!_satMode) {
-    map.setStyle(isDark ? STYLE_LIGHT : STYLE_DARK);
+    map.setStyle(isDark ? getStyle('light') : getStyle('dark'));
     map.once('styledata', () => {
       setTimeout(() => { addAreaLayers(); addMetroLayer(); applyLayerVisibility(); }, 200);
     });
