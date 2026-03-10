@@ -1118,12 +1118,113 @@ function initMap() {
 /* ══════════════════════════════════════════════
    AREA LAYERS
 ══════════════════════════════════════════════ */
+function buildGeoJSON() {
+  return {
+    type: 'FeatureCollection',
+    features: AREAS.map(a => {
+      const ring = AREA_POLYS[a.id];
+      if (!ring) return null;
+      // AREA_POLYS entries are arrays of [lng,lat] pairs
+      const coords = Array.isArray(ring[0][0]) ? ring : [ring];
+      return {
+        type: 'Feature',
+        properties: {
+          id: a.id,
+          name: a.name,
+          psf: a.psf,
+          yoy: a.yoy,
+          yld: a.yld,
+          txn: a.txn,
+          score: a.score,
+          tier: a.tier,
+          color: areaColor(a),
+        },
+        geometry: { type: 'Polygon', coordinates: coords }
+      };
+    }).filter(Boolean)
+  };
+}
+
 function addAreaLayers() {
-  // Clean up any old polygon layers if leftover
-  ['area-label','area-fill','area-line','area-line-hi','area-extrude'].forEach(id => {
+  // Clean up existing layers + source
+  ['area-extrude','area-fill','area-line','area-line-hi','area-label'].forEach(id => {
     try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {}
   });
   try { if (map.getSource('areas')) map.removeSource('areas'); } catch(e) {}
+
+  const geojson = buildGeoJSON();
+
+  map.addSource('areas', { type: 'geojson', data: geojson });
+
+  // ── Fill (choropleth heatmap) ────────────────
+  map.addLayer({
+    id: 'area-fill',
+    type: 'fill',
+    source: 'areas',
+    paint: {
+      'fill-color': ['get', 'color'],
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 9, 0.35, 12, 0.22, 14, 0.15],
+    }
+  });
+
+  // ── Border lines ─────────────────────────────
+  map.addLayer({
+    id: 'area-line',
+    type: 'line',
+    source: 'areas',
+    paint: {
+      'line-color': ['get', 'color'],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1, 12, 2, 15, 3],
+      'line-opacity': 0.7,
+    }
+  });
+
+  // ── Highlighted border on hover/select ───────
+  map.addLayer({
+    id: 'area-line-hi',
+    type: 'line',
+    source: 'areas',
+    filter: ['==', 'id', ''],
+    paint: {
+      'line-color': '#FFFFFF',
+      'line-width': 3,
+      'line-opacity': 0.9,
+    }
+  });
+
+  // ── 3D extrusion ─────────────────────────────
+  map.addLayer({
+    id: 'area-extrude',
+    type: 'fill-extrusion',
+    source: 'areas',
+    layout: { visibility: _layerState.extrude ? 'visible' : 'none' },
+    paint: {
+      'fill-extrusion-color': ['get', 'color'],
+      'fill-extrusion-height': ['interpolate', ['linear'], ['get', 'psf'],
+        800, 80, 1500, 200, 2500, 380, 4200, 600
+      ],
+      'fill-extrusion-base': 0,
+      'fill-extrusion-opacity': 0.55,
+    }
+  });
+
+  // ── Click handler on polygons ─────────────────
+  map.on('click', 'area-fill', (e) => {
+    const props = e.features[0]?.properties;
+    if (!props) return;
+    const area = AREAS.find(a => a.id === props.id);
+    if (area) selectArea(area);
+  });
+
+  map.on('mouseenter', 'area-fill', () => { map.getCanvas().style.cursor = 'pointer'; });
+  map.on('mouseleave', 'area-fill', () => { map.getCanvas().style.cursor = ''; });
+
+  if (!_layerState.areas) {
+    ['area-fill','area-line','area-line-hi','area-extrude'].forEach(id => {
+      try { map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
+    });
+  }
+
   renderMarkers();
 }
 
@@ -1198,6 +1299,23 @@ function renderMarkers() {
 }
 
 function refreshAreaColors() {
+  // Update GeoJSON source with new colors (heatmap mode changed)
+  try {
+    const src = map.getSource('areas');
+    if (src) {
+      src.setData(buildGeoJSON());
+      // Re-apply color paint to fill and extrude layers
+      AREAS.forEach(a => {}); // colors now in GeoJSON properties
+    } else {
+      addAreaLayers();
+    }
+  } catch(e) {
+    addAreaLayers();
+  }
+  // Also highlight selected area
+  try {
+    if (_selId) map.setFilter('area-line-hi', ['==', 'id', _selId]);
+  } catch(e) {}
   renderMarkers();
 }
 
@@ -1261,6 +1379,9 @@ function onAreaClick(e) {}
 ══════════════════════════════════════════════ */
 function selectArea(a) {
   _selId = a.id;
+
+  // Highlight polygon border
+  try { map.setFilter('area-line-hi', ['==', 'id', a.id]); } catch(e) {}
 
   // Update marker selected states
   Object.entries(_markers).forEach(([id, marker]) => {
@@ -1604,12 +1725,12 @@ function setView(mode, btn) {
   btn.classList.add('active');
   if (mode === '3d') {
     map.easeTo({ pitch: 52, bearing: -20, duration: 900 });
-    // Enable Mapbox Standard 3D buildings + landmarks
     try { map.setConfigProperty('basemap', 'show3dObjects', true); } catch(e) {}
   } else {
     map.easeTo({ pitch: 0, bearing: 0, duration: 900 });
     try { map.setConfigProperty('basemap', 'show3dObjects', false); } catch(e) {}
   }
+  applyLayerVisibility();
   refreshAreaColors();
 }
 
@@ -1665,6 +1786,15 @@ function applyLayerVisibility() {
   if (!map) return;
   const vis = on => on ? 'visible' : 'none';
   try {
+    // Area polygon layers
+    ['area-fill','area-line','area-line-hi'].forEach(id => {
+      if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis(_layerState.areas));
+    });
+    // 3D extrusions (only visible when areas + extrude both on AND in 3D view)
+    if (map.getLayer('area-extrude')) {
+      map.setLayoutProperty('area-extrude', 'visibility',
+        vis(_layerState.areas && _layerState.extrude && _viewMode === '3d'));
+    }
     // Markers visibility
     Object.values(_markers).forEach(m => {
       m.getElement().style.display = _layerState.areas ? '' : 'none';
