@@ -338,6 +338,171 @@ body.lp-collapsed #heat-legend { left: 12px; }
 /* ══ MAPLIBRE OVERRIDES ══ */
 .maplibregl-popup-content { background: none !important; padding: 0 !important; box-shadow: none !important; }
 .maplibregl-popup-tip { display: none !important; }
+
+/* ══ AREA MARKERS ══ */
+.area-marker {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s cubic-bezier(.4,0,.2,1);
+  transform-origin: bottom center;
+}
+.area-marker:hover { transform: scale(1.12) translateY(-2px); z-index: 10; }
+.area-marker.selected { transform: scale(1.18) translateY(-3px); z-index: 20; }
+
+.am-pin {
+  width: 44px;
+  height: 44px;
+  border-radius: 50% 50% 50% 4px;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255,255,255,0.18);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 0 0 rgba(255,255,255,0.1);
+  transition: box-shadow 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+.area-marker:hover .am-pin,
+.area-marker.selected .am-pin {
+  border-color: rgba(255,255,255,0.45);
+  box-shadow: 0 6px 28px rgba(0,0,0,0.6), 0 0 0 4px rgba(255,255,255,0.08);
+}
+
+.am-pin-inner {
+  transform: rotate(45deg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.am-psf {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.95);
+  white-space: nowrap;
+  letter-spacing: -0.02em;
+}
+.am-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 7px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.6);
+  white-space: nowrap;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 1px;
+}
+
+/* Hover card */
+.am-card {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surf2);
+  border: 1px solid var(--bord2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  min-width: 190px;
+  pointer-events: none;
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+  opacity: 0;
+  transform: translateX(-50%) translateY(6px) scale(0.96);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  z-index: 100;
+  white-space: nowrap;
+}
+.area-marker:hover .am-card,
+.area-marker.selected .am-card {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0) scale(1);
+}
+.am-card-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 2px;
+  letter-spacing: -0.02em;
+}
+.am-card-tier {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.am-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.am-card-kpi {}
+.am-card-kpi-l {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 2px;
+}
+.am-card-kpi-v {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+.am-card-kpi-v.up { color: var(--green); }
+.am-card-kpi-v.dn { color: var(--red); }
+.am-card-divider {
+  height: 1px;
+  background: var(--bord);
+  margin: 9px 0;
+}
+.am-card-txn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.am-card-txn-l {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 7px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text3);
+}
+.am-card-txn-v {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--text);
+}
+/* Pulse ring for selected */
+.am-pulse {
+  position: absolute;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  animation: none;
+  top: 0; left: 0;
+  pointer-events: none;
+}
+.area-marker.selected .am-pulse {
+  animation: markerPulse 1.8s ease-out infinite;
+}
+@keyframes markerPulse {
+  0%   { transform: scale(1);   opacity: 0.6; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
 </style>
 </head>
 <body>
@@ -751,31 +916,8 @@ function scoreColor(score) {
   return 'var(--red)';
 }
 
-/* ── GeoJSON builder ──────────────────────────── */
-function buildGeoJSON(areaIds) {
-  const features = [];
-  const source = areaIds ? AREAS.filter(a => areaIds.includes(a.id)) : AREAS;
-  source.forEach(a => {
-    const coords = AREA_POLYS[a.id];
-    if (!coords || coords.length < 3) return;
-    const ring = [...coords];
-    if (ring[0][0] !== ring[ring.length-1][0] || ring[0][1] !== ring[ring.length-1][1]) ring.push(ring[0]);
-    const col = areaColor(a);
-    const isVisible = _tierFilter === 'all' || a.tier === _tierFilter;
-    features.push({
-      type: 'Feature',
-      id: AREAS.indexOf(a),
-      properties: {
-        id: a.id, name: a.name, col, tier: a.tier,
-        psf: a.psf, yoy: a.yoy, yld: a.yld, txn: a.txn, score: a.score,
-        visible: isVisible,
-        extrude: Math.max(50, (heatVal(a) / HEAT_CONFIGS[_heatMode].stops.slice(-1)[0][0]) * 600),
-      },
-      geometry: { type: 'Polygon', coordinates: [ring] }
-    });
-  });
-  return { type: 'FeatureCollection', features };
-}
+/* ── Marker registry ──────────────────────────── */
+const _markers = {}; // id -> maplibregl.Marker
 
 /* ══════════════════════════════════════════════
    MAP INIT
@@ -810,98 +952,86 @@ function initMap() {
    AREA LAYERS
 ══════════════════════════════════════════════ */
 function addAreaLayers() {
-  const geo = buildGeoJSON();
-
-  // Remove existing
+  // Clean up any old polygon layers if leftover
   ['area-label','area-fill','area-line','area-line-hi','area-extrude'].forEach(id => {
     try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {}
   });
   try { if (map.getSource('areas')) map.removeSource('areas'); } catch(e) {}
+  renderMarkers();
+}
 
-  map.addSource('areas', { type: 'geojson', data: geo, generateId: true });
+function renderMarkers() {
+  // Remove all existing markers
+  Object.values(_markers).forEach(m => m.remove());
+  Object.keys(_markers).forEach(k => delete _markers[k]);
 
-  // Extrusion (3D fill)
-  map.addLayer({
-    id: 'area-extrude', type: 'fill-extrusion', source: 'areas',
-    paint: {
-      'fill-extrusion-color': ['get', 'col'],
-      'fill-extrusion-height': ['*', ['get', 'extrude'], _viewMode === '3d' ? 1 : 0],
-      'fill-extrusion-base': 0,
-      'fill-extrusion-opacity': _viewMode === '3d' ? 0.75 : 0,
-    },
-    filter: ['==', ['get', 'visible'], true],
+  const visible = _tierFilter === 'all'
+    ? AREAS
+    : AREAS.filter(a => a.tier === _tierFilter);
+
+  visible.forEach(a => {
+    const col = areaColor(a);
+    const ctr = CENTROIDS[a.id];
+    if (!ctr) return;
+
+    const trend = a.yoy > 0;
+    const psfK = a.psf >= 1000 ? (a.psf / 1000).toFixed(1) + 'K' : a.psf;
+
+    const el = document.createElement('div');
+    el.className = 'area-marker' + (a.id === _selId ? ' selected' : '');
+    el.dataset.id = a.id;
+    el.innerHTML = `
+      <div class="am-card">
+        <div class="am-card-name">${a.name}</div>
+        <div class="am-card-tier">${a.tier.toUpperCase()} · ${a.type}</div>
+        <div class="am-card-grid">
+          <div class="am-card-kpi">
+            <div class="am-card-kpi-l">Avg PSF</div>
+            <div class="am-card-kpi-v">AED ${a.psf.toLocaleString()}</div>
+          </div>
+          <div class="am-card-kpi">
+            <div class="am-card-kpi-l">YoY</div>
+            <div class="am-card-kpi-v ${trend ? 'up' : 'dn'}">${trend ? '+' : ''}${a.yoy}%</div>
+          </div>
+          <div class="am-card-kpi">
+            <div class="am-card-kpi-l">Yield</div>
+            <div class="am-card-kpi-v">${a.yld}%</div>
+          </div>
+          <div class="am-card-kpi">
+            <div class="am-card-kpi-l">Score</div>
+            <div class="am-card-kpi-v">${a.score}/100</div>
+          </div>
+        </div>
+        <div class="am-card-divider"></div>
+        <div class="am-card-txn">
+          <div class="am-card-txn-l">Transactions 2024</div>
+          <div class="am-card-txn-v">${a.txn.toLocaleString()}</div>
+        </div>
+      </div>
+      <div class="am-pulse" style="color:${col}"></div>
+      <div class="am-pin" style="background:${col}">
+        <div class="am-pin-inner">
+          <div class="am-psf">${psfK}</div>
+          <div class="am-label">/sqft</div>
+        </div>
+      </div>
+    `;
+
+    el.addEventListener('click', () => {
+      const area = AREAS.find(x => x.id === a.id);
+      if (area) selectArea(area);
+    });
+
+    const marker = new maplibregl.Marker({ element: el, anchor: 'bottom' })
+      .setLngLat(ctr)
+      .addTo(map);
+
+    _markers[a.id] = marker;
   });
-
-  // Flat fill
-  map.addLayer({
-    id: 'area-fill', type: 'fill', source: 'areas',
-    paint: {
-      'fill-color': ['get', 'col'],
-      'fill-opacity': ['case',
-        ['boolean', ['feature-state', 'hover'], false], 0.72,
-        ['interpolate', ['linear'], ['zoom'], 9, 0.45, 12, 0.35, 15, 0.22]
-      ]
-    },
-    filter: ['==', ['get', 'visible'], true],
-  });
-
-  // Border
-  map.addLayer({
-    id: 'area-line', type: 'line', source: 'areas',
-    paint: {
-      'line-color': ['get', 'col'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 9, 1.5, 11, 2.5, 14, 3],
-      'line-opacity': 0.9,
-    },
-    filter: ['==', ['get', 'visible'], true],
-  });
-
-  // Inner highlight
-  map.addLayer({
-    id: 'area-line-hi', type: 'line', source: 'areas',
-    paint: {
-      'line-color': 'rgba(255,255,255,0.18)',
-      'line-width': ['interpolate', ['linear'], ['zoom'], 9, 0.5, 13, 1],
-      'line-offset': -1,
-    },
-    filter: ['==', ['get', 'visible'], true],
-  });
-
-  // Price labels
-  map.addLayer({
-    id: 'area-label', type: 'symbol', source: 'areas',
-    layout: {
-      'text-field': ['concat', ['get', 'name'], '\n', 'AED ', ['to-string', ['get', 'psf']], '/sqft'],
-      'text-size': 10,
-      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
-      'text-anchor': 'center',
-      'text-max-width': 8,
-    },
-    paint: {
-      'text-color': 'rgba(232,237,245,0.9)',
-      'text-halo-color': 'rgba(3,6,15,0.8)',
-      'text-halo-width': 2,
-    },
-    filter: ['all', ['==', ['get', 'visible'], true]],
-  });
-  if (!_layerState.labels) map.setLayoutProperty('area-label', 'visibility', 'none');
-
-  // Hover interactions
-  map.on('mousemove', 'area-fill', onAreaHover);
-  map.on('mouseleave', 'area-fill', onAreaLeave);
-  map.on('click', 'area-fill', onAreaClick);
 }
 
 function refreshAreaColors() {
-  if (!map || !map.getSource('areas')) return;
-  map.getSource('areas').setData(buildGeoJSON());
-  // Update extrusion height for 3D mode
-  const h = _viewMode === '3d' ? 1 : 0;
-  const op = _viewMode === '3d' ? 0.75 : 0;
-  try {
-    map.setPaintProperty('area-extrude', 'fill-extrusion-height', ['*', ['get', 'extrude'], h]);
-    map.setPaintProperty('area-extrude', 'fill-extrusion-opacity', op);
-  } catch(e) {}
+  renderMarkers();
 }
 
 /* ══════════════════════════════════════════════
@@ -953,56 +1083,22 @@ function addMetroLayer() {
 }
 
 /* ══════════════════════════════════════════════
-   HOVER / CLICK
+   HOVER / CLICK  (handled by markers directly)
 ══════════════════════════════════════════════ */
-function onAreaHover(e) {
-  map.getCanvas().style.cursor = 'pointer';
-  const feat = e.features[0];
-  if (!feat) return;
-
-  if (_hoverId !== null) map.setFeatureState({source:'areas',id:_hoverId}, {hover:false});
-  _hoverId = feat.id;
-  map.setFeatureState({source:'areas',id:_hoverId}, {hover:true});
-
-  const a = AREAS.find(x => x.id === feat.properties.id);
-  if (!a) return;
-
-  // Tooltip
-  if (!_tooltip) {
-    _tooltip = new maplibregl.Popup({ closeButton: false, closeOnClick: false, maxWidth: '220px' });
-  }
-  const trend = a.yoy > 0;
-  _tooltip.setLngLat(e.lngLat).setHTML(`
-    <div class="map-tooltip">
-      <div class="mt-name">${a.name}</div>
-      <div class="mt-grid">
-        <div class="mt-l">PSF</div><div class="mt-v">AED ${a.psf.toLocaleString()}</div>
-        <div class="mt-l">YoY</div><div class="mt-v" style="color:${trend?'var(--green)':'var(--red)'}">${trend?'+':''}${a.yoy}%</div>
-        <div class="mt-l">Yield</div><div class="mt-v">${a.yld}%</div>
-        <div class="mt-l">Transactions</div><div class="mt-v">${a.txn.toLocaleString()}</div>
-      </div>
-    </div>
-  `).addTo(map);
-}
-
-function onAreaLeave() {
-  map.getCanvas().style.cursor = '';
-  if (_hoverId !== null) { map.setFeatureState({source:'areas',id:_hoverId},{hover:false}); _hoverId = null; }
-  if (_tooltip) { _tooltip.remove(); _tooltip = null; }
-}
-
-function onAreaClick(e) {
-  const feat = e.features[0];
-  if (!feat) return;
-  const a = AREAS.find(x => x.id === feat.properties.id);
-  if (a) selectArea(a);
-}
+function onAreaHover(e) {}
+function onAreaLeave() {}
+function onAreaClick(e) {}
 
 /* ══════════════════════════════════════════════
    SELECT AREA
 ══════════════════════════════════════════════ */
 function selectArea(a) {
   _selId = a.id;
+
+  // Update marker selected states
+  Object.entries(_markers).forEach(([id, marker]) => {
+    marker.getElement().classList.toggle('selected', id === a.id);
+  });
 
   // Highlight in list
   document.querySelectorAll('.area-row').forEach(r => r.classList.toggle('active', r.dataset.id === a.id));
@@ -1173,11 +1269,11 @@ function applyLayerVisibility() {
   if (!map) return;
   const vis = on => on ? 'visible' : 'none';
   try {
-    if (map.getLayer('area-fill')) map.setLayoutProperty('area-fill', 'visibility', vis(_layerState.areas));
-    if (map.getLayer('area-line')) map.setLayoutProperty('area-line', 'visibility', vis(_layerState.areas));
-    if (map.getLayer('area-line-hi')) map.setLayoutProperty('area-line-hi', 'visibility', vis(_layerState.areas));
-    if (map.getLayer('area-extrude')) map.setLayoutProperty('area-extrude', 'visibility', vis(_layerState.extrude));
-    if (map.getLayer('area-label')) map.setLayoutProperty('area-label', 'visibility', vis(_layerState.labels));
+    // Markers visibility
+    Object.values(_markers).forEach(m => {
+      m.getElement().style.display = _layerState.areas ? '' : 'none';
+    });
+    // Metro lines
     if (map.getLayer('metro-red')) map.setLayoutProperty('metro-red', 'visibility', vis(_layerState.metro));
     if (map.getLayer('metro-green')) map.setLayoutProperty('metro-green', 'visibility', vis(_layerState.metro));
   } catch(e) {}
