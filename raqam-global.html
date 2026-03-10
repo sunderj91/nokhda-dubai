@@ -527,16 +527,38 @@ function applyRings() {
 ══════════════════════════════════════════════ */
 function applyLabels() {
   if (!globe) return;
-  const isDark = document.documentElement.dataset.theme !== 'light';
   const labels = layerState.labels ? MARKETS.filter(m => m.score >= 68) : [];
+
+  // Use native labelsData — WebGL rendered, tracks globe perfectly during rotation/drag
+  // htmlElementsData causes labels to lag/detach and shows ?? for emoji on many systems
   globe.labelsData(labels)
-    .labelLat('lat').labelLng('lng')
-    .labelText(d => `${d.flag} ${d.country}`)
-    .labelSize(d => d.score >= 80 ? 1.1 : 0.82)
-    .labelDotRadius(0)
-    .labelColor(() => isDark ? 'rgba(232,237,245,0.72)' : 'rgba(10,15,30,0.72)')
-    .labelAltitude(0.022)
+    .labelLat('lat')
+    .labelLng('lng')
+    .labelAltitude(0.04)
+    .labelText(d => {
+      const SHORT = {
+        'United Arab Emirates': 'UAE',
+        'United States of America': 'USA',
+        'United Kingdom': 'UK',
+        'Saudi Arabia': 'Saudi Arabia',
+        'South Korea': 'Korea',
+        'New Zealand': 'N. Zealand',
+        'South Africa': 'S. Africa',
+      };
+      return SHORT[d.country] || d.country;
+    })
+    .labelSize(d => d.score >= 85 ? 0.72 : d.score >= 75 ? 0.60 : 0.50)
+    .labelDotRadius(d => d.score >= 80 ? 0.45 : 0.32)
+    .labelDotOrientation(() => 'bottom')
+    .labelColor(d => {
+      if (d.score >= 80) return '#30FFB4';
+      if (d.score >= 72) return '#F7C948';
+      return '#8FB4D8';
+    })
     .labelResolution(3);
+
+  // Clear any old htmlElements overlays
+  globe.htmlElementsData([]);
 }
 
 /* ══════════════════════════════════════════════
