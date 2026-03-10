@@ -18,7 +18,7 @@
   --trans: 0.24s cubic-bezier(.4,0,.2,1);
 }
 [data-theme="dark"] {
-  --bg: #03060F; --bg2: #060A16; --surf: rgba(6,10,22,0.92); --surf2: rgba(8,13,26,0.86);
+  --bg: #03060F; --bg2: #060A16; --surf: rgba(6,10,22,0.97); --surf2: rgba(8,13,26,0.95);
   --bord: rgba(255,255,255,0.07); --bord2: rgba(255,255,255,0.13);
   --text: #E8EDF5; --text2: rgba(232,237,245,0.52); --text3: rgba(232,237,245,0.28);
   --accent: #00D4FF; --accent2: rgba(0,212,255,0.1); --accent3: rgba(0,212,255,0.06);
@@ -28,7 +28,7 @@
   --map-sat: https://api.maptiler.com/maps/hybrid/style.json?key=ecydpiGmOMxHOQIYou4e;
 }
 [data-theme="light"] {
-  --bg: #EEF1F8; --bg2: #E4E8F2; --surf: rgba(255,255,255,0.92); --surf2: rgba(240,243,250,0.9);
+  --bg: #EEF1F8; --bg2: #E4E8F2; --surf: rgba(248,250,255,0.97); --surf2: rgba(240,243,250,0.95);
   --bord: rgba(0,0,0,0.07); --bord2: rgba(0,0,0,0.13);
   --text: #0A0F1E; --text2: rgba(10,15,30,0.52); --text3: rgba(10,15,30,0.28);
   --accent: #0052CC; --accent2: rgba(0,82,204,0.09); --accent3: rgba(0,82,204,0.04);
@@ -50,16 +50,17 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 }
 
 /* ══ MAP ══ */
-#map { position: fixed; inset: 0; }
+#map { position: fixed; inset: 0; z-index: 0; }
 .maplibregl-ctrl-attrib { display: none !important; }
 .maplibregl-ctrl-logo { display: none !important; }
 
 /* ══ TOP BAR ══ */
 #topbar {
   position: fixed; top: 0; left: 0; right: 0; height: var(--th);
-  z-index: 200; display: flex; align-items: center; gap: 0;
+  z-index: 1000; display: flex; align-items: center; gap: 0;
   border-bottom: 1px solid var(--bord);
   background: var(--surf); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+  isolation: isolate;
 }
 .tb-logo {
   display: flex; align-items: center; gap: 10px;
@@ -109,10 +110,11 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 /* ══ LAYER TOOLBAR (horizontal below topbar) ══ */
 #layerbar {
   position: fixed; top: var(--th); left: 0; right: 0; height: 38px;
-  z-index: 190; display: flex; align-items: center;
+  z-index: 999; display: flex; align-items: center;
   border-bottom: 1px solid var(--bord);
   background: var(--surf2); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
   padding: 0 14px; gap: 0; overflow-x: auto;
+  isolation: isolate;
 }
 #layerbar::-webkit-scrollbar { display: none; }
 .lb-group {
@@ -145,8 +147,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 
 /* ══ LEFT PANEL — AREA LIST ══ */
 #left-panel {
-  position: fixed; left: 0; top: calc(var(--th) + 40px); bottom: var(--bh);
-  width: var(--lw); z-index: 150; display: flex; flex-direction: column;
+  position: fixed; left: 0; top: calc(var(--th) + 38px); bottom: var(--bh);
+  width: var(--lw); z-index: 500; display: flex; flex-direction: column;
   border-right: 1px solid var(--bord);
   background: var(--surf); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
   transition: transform var(--trans);
@@ -198,8 +200,8 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 
 /* ══ RIGHT PANEL — AREA DETAIL ══ */
 #right-panel {
-  position: fixed; right: 0; top: calc(var(--th) + 40px); bottom: var(--bh);
-  width: var(--rw); z-index: 150; display: flex; flex-direction: column;
+  position: fixed; right: 0; top: calc(var(--th) + 38px); bottom: var(--bh);
+  width: var(--rw); z-index: 500; display: flex; flex-direction: column;
   border-left: 1px solid var(--bord);
   background: var(--surf); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
   transition: transform var(--trans); transform: translateX(var(--rw));
@@ -297,7 +299,7 @@ html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg);
 /* ══ LEFT PANEL TOGGLE ══ */
 #lp-toggle {
   position: fixed; left: var(--lw); top: 50%; transform: translateY(-50%);
-  z-index: 160; width: 20px; height: 44px; border-radius: 0 8px 8px 0;
+  z-index: 501; width: 20px; height: 44px; border-radius: 0 8px 8px 0;
   border: 1px solid var(--bord2); border-left: none;
   background: var(--surf); backdrop-filter: var(--blur);
   cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -308,7 +310,7 @@ body.lp-collapsed #lp-toggle { left: 0; }
 
 /* ══ HEAT LEGEND ══ */
 #heat-legend {
-  position: fixed; left: calc(var(--lw) + 12px); top: calc(var(--th) + 40px + 12px);
+  position: fixed; left: calc(var(--lw) + 12px); top: calc(var(--th) + 38px + 12px);
   z-index: 160; padding: 10px 13px; border-radius: 10px;
   transition: left var(--trans);
 }
