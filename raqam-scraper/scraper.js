@@ -101,8 +101,8 @@ function normaliseProject(pf) {
   if (pf.downPaymentPercentage) downPayment = pf.downPaymentPercentage;
   
   // Status
-  const statusMap = { under_construction: 'Under Construction', off_plan: 'Off-Plan', completed: 'Completed', ready: 'Ready' };
-  const status = statusMap[pf.constructionPhase] || 'Off-Plan';
+  const statusMap = { under_construction: 'under-construction', off_plan: 'off-plan', completed: 'ready', ready: 'ready' };
+  const status = statusMap[pf.constructionPhase] || 'off-plan';
   
   // Bedrooms array
   const beds = (pf.bedrooms || [])
