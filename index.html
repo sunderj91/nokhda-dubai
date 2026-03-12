@@ -1828,7 +1828,7 @@ function getStyle(mode) {
   return mode === 'sat' ? STYLE_SAT : (mode === 'light' ? STYLE_LIGHT : STYLE_DARK);
 }
 const DUBAI_CENTER = [55.2708, 25.2048];
-const DUBAI_ZOOM   = 10.5;
+const DUBAI_ZOOM   = 9.2;
 
 /* ── State ──────────────────────────────────── */
 let map, _tooltip, _selId = null, _hoverId = null;
@@ -2222,6 +2222,15 @@ function refreshAreaColors() {
     if (_selId) map.setFilter('area-line-hi', ['==', 'id', _selId]);
   } catch(e) {}
   renderMarkers();
+
+  // If metro layers exist, move them above area-label so they stay visible
+  const stationDotLayers = [
+    'stations-red-dot','stations-2020-dot','stations-airport-dot',
+    'stations-green-dot','stations-tram-dot','stations-label'
+  ];
+  stationDotLayers.forEach(id => {
+    try { if (map.getLayer(id)) map.moveLayer(id); } catch(e) {}
+  });
 }
 
 /* ══════════════════════════════════════════════
@@ -3486,11 +3495,15 @@ function applyLayerVisibility() {
   if (!map) return;
   const vis = on => on ? 'visible' : 'none';
   try {
-    // Area polygon layers
-    ['area-fill','area-glow','area-line','area-line-hi','area-label'].forEach(id => {
+    // Area fill/border layers (controlled by AREAS toggle)
+    ['area-fill','area-glow','area-line','area-line-hi'].forEach(id => {
       if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis(_layerState.areas));
     });
-    // 3D extrusions (only visible when areas + extrude both on AND in 3D view)
+    // Area labels (controlled by LABELS toggle, only when areas are on)
+    if (map.getLayer('area-label')) {
+      map.setLayoutProperty('area-label', 'visibility', vis(_layerState.areas && _layerState.labels));
+    }
+    // 3D extrusions
     if (map.getLayer('area-extrude')) {
       map.setLayoutProperty('area-extrude', 'visibility',
         vis(_layerState.areas && _layerState.extrude && _viewMode === '3d'));
@@ -3507,6 +3520,11 @@ function setTierFilter(tier, btn) {
   _tierFilter = tier;
   document.querySelectorAll('[id^="tier-"]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  // Apply map filter to show only matching tier areas
+  const tierFilter = tier === 'all' ? null : ['==', ['get', 'tier'], tier];
+  ['area-fill','area-glow','area-line','area-label'].forEach(id => {
+    try { if (map.getLayer(id)) map.setFilter(id, tierFilter); } catch(e) {}
+  });
   refreshAreaColors();
   renderAreaList();
 }
