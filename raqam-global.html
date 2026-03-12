@@ -560,11 +560,11 @@ function applyRings() {
 function applyLabels() {
   if (!globe) return;
   const isDark = document.documentElement.dataset.theme !== 'light';
-  const labels = layerState.labels ? MARKETS.filter(m => m.score >= 68) : [];
+  const labels = layerState.labels ? MARKETS.filter(m => m.score >= 60) : [];
   globe.labelsData(labels)
     .labelLat('lat').labelLng('lng')
-    .labelText(d => `${d.flag} ${d.country}`)
-    .labelSize(d => d.score >= 80 ? 1.1 : 0.82)
+    .labelText(d => d.country)
+    .labelSize(d => d.score >= 85 ? 1.2 : d.score >= 75 ? 0.95 : 0.72)
     .labelDotRadius(0)
     .labelColor(() => isDark ? 'rgba(232,237,245,0.72)' : 'rgba(10,15,30,0.72)')
     .labelAltitude(0.022)
