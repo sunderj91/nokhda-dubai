@@ -1922,6 +1922,15 @@ function initMap() {
 
   map.on('load', () => {
     clearTimeout(loadTimeout);
+    // Hide Mapbox basemap neighborhood/district labels that clash with our labels
+    const hideBaseLayers = [
+      'settlement-subdivision-label','neighborhood-label',
+      'settlement-minor-label','road-label-simple',
+      'road-number-shield','road-exit-shield'
+    ];
+    hideBaseLayers.forEach(id => {
+      try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
+    });
     try { addAreaLayers(); } catch(e) { console.error('addAreaLayers failed:', e); }
     try { addMetroLayer(); } catch(e) { console.error('addMetroLayer failed:', e); }
     dismissLoading();
@@ -2418,10 +2427,10 @@ function addMetroLayer() {
     map.addSource(`road-src-${key}`, {type:'geojson',
       data:{type:'Feature',geometry:{type:'LineString',coordinates:road.coords}}});
     map.addLayer({id:`road-${key}-glow`,type:'line',source:`road-src-${key}`,
-      paint:{'line-color':road.glow,'line-width':8,'line-opacity':0.15,'line-blur':6}
+      paint:{'line-color':road.glow,'line-width':['interpolate',['linear'],['zoom'],8,6,11,10,13,16],'line-opacity':0.22,'line-blur':4}
     },'area-fill');
     map.addLayer({id:`road-${key}-core`,type:'line',source:`road-src-${key}`,
-      paint:{'line-color':road.color,'line-width':1,'line-opacity':0.45,'line-dasharray':[6,3]}
+      paint:{'line-color':road.color,'line-width':['interpolate',['linear'],['zoom'],8,1.5,11,2.5,13,4],'line-opacity':0.75,'line-dasharray':[8,4]}
     },'area-line');
   });
 
@@ -2441,7 +2450,7 @@ function addMetroLayer() {
       layout:{'line-cap':'round','line-join':'round'},
       paint:{
         'line-color':'rgba(0,0,0,0.75)',
-        'line-width':['interpolate',['linear'],['zoom'],9,3,11,6,13,10,15,13],
+        'line-width':['interpolate',['linear'],['zoom'],9,4,10,6,11,9,13,13,15,16],
         'line-opacity':['interpolate',['linear'],['zoom'],9,0.0,10,0.8,12,1.0]
       }
     }, insertBefore);
@@ -2451,7 +2460,7 @@ function addMetroLayer() {
       layout:{'line-cap':'round','line-join':'round'},
       paint:{
         'line-color':color,
-        'line-width':['interpolate',['linear'],['zoom'],9,2,11,4.5,13,8,15,11],
+        'line-width':['interpolate',['linear'],['zoom'],9,2.5,10,4,11,6,13,9,15,12],
         'line-opacity':['interpolate',['linear'],['zoom'],9,0.0,10,0.9,12,1.0]
       }
     }, insertBefore);
@@ -2470,31 +2479,33 @@ function addMetroLayer() {
     const fc = {type:'FeatureCollection', features: stationsArr};
     map.addSource(srcId, {type:'geojson', data:fc});
 
-    // Black shadow (depth)
+    // Dark outline shadow
     map.addLayer({id:ringId+'_shadow', type:'circle', source:srcId,
       paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,5,12,8,13,11,15,14],
-        'circle-color':'rgba(0,0,0,0.6)',
-        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,0.7,13,0.9],
-        'circle-blur':0.3
+        'circle-radius':['interpolate',['linear'],['zoom'],9,0,10,4,11,7,12,10,13,13,15,16],
+        'circle-color':'rgba(0,0,0,0.85)',
+        'circle-opacity':['interpolate',['linear'],['zoom'],9,0,10,0.9,11,1],
+        'circle-blur':0.15
       }
     }, insertBefore);
 
     // White filled station circle
     map.addLayer({id:ringId, type:'circle', source:srcId,
       paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,4,12,6.5,13,9,15,12],
+        'circle-radius':['interpolate',['linear'],['zoom'],9,0,10,3,11,5.5,12,8,13,11,15,14],
         'circle-color':'#FFFFFF',
-        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,1,13,1]
+        'circle-opacity':['interpolate',['linear'],['zoom'],9,0,10,1,11,1]
       }
     }, insertBefore);
 
-    // Colored inner dot (line color)
+    // Colored inner dot — clearly visible, good contrast
     map.addLayer({id:dotId, type:'circle', source:srcId,
       paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,2,12,3.5,13,5,15,7],
+        'circle-radius':['interpolate',['linear'],['zoom'],9,0,10,2,11,3.5,12,5.5,13,7.5,15,10],
         'circle-color':color,
-        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,1,13,1]
+        'circle-stroke-color':'rgba(255,255,255,0.9)',
+        'circle-stroke-width':['interpolate',['linear'],['zoom'],10,0,11,1.5,13,2],
+        'circle-opacity':['interpolate',['linear'],['zoom'],9,0,10,1,11,1]
       }
     }, insertBefore);
   }
@@ -3394,7 +3405,17 @@ function toggleTheme() {
     const newStyle = isDark ? getStyle('light') : getStyle('dark');
     map.setStyle(newStyle);
     map.once('styledata', () => {
-      setTimeout(() => { addAreaLayers(); addMetroLayer(); applyLayerVisibility(); updateLegend(); }, 300);
+      setTimeout(() => {
+        const hideBaseLayers = [
+          'settlement-subdivision-label','neighborhood-label',
+          'settlement-minor-label','road-label-simple',
+          'road-number-shield','road-exit-shield'
+        ];
+        hideBaseLayers.forEach(id => {
+          try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
+        });
+        addAreaLayers(); addMetroLayer(); applyLayerVisibility(); updateLegend();
+      }, 300);
     });
   }
 }
