@@ -1,0 +1,89 @@
+name: RAQAM Daily Scraper
+
+on:
+  schedule:
+    - cron: '0 23 * * *'   # 3:00 AM Dubai time (UTC+4) every day
+    - cron: '0 5 * * *'    # 9:00 AM Dubai time — price refresh
+  workflow_dispatch:        # Manual trigger from GitHub UI anytime
+    inputs:
+      area:
+        description: 'Specific area to scrape (leave blank for all)'
+        required: false
+        default: ''
+      dry_run:
+        description: 'Dry run (no DB writes)'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+jobs:
+  scrape:
+    name: Scrape Dubai Projects
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: raqam-scraper/package-lock.json
+
+      - name: Install dependencies
+        working-directory: raqam-scraper
+        run: npm install
+
+      - name: Run scraper (full — 3am run)
+        if: github.event.schedule == '0 23 * * *' || (github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'false')
+        working-directory: raqam-scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          AREA_FLAG=""
+          if [ -n "${{ github.event.inputs.area }}" ]; then
+            AREA_FLAG="--area=${{ github.event.inputs.area }}"
+          fi
+          node scraper.js $AREA_FLAG
+
+      - name: Run price refresh (9am run — Bayut only, faster)
+        if: github.event.schedule == '0 5 * * *'
+        working-directory: raqam-scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scraper.js --source=bayut
+
+      - name: Dry run (manual trigger)
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true'
+        working-directory: raqam-scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: node scraper.js --dry-run
+
+      - name: Report results
+        if: always()
+        working-directory: raqam-scraper
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          echo "=== Scraper Run Summary ==="
+          curl -s "$SUPABASE_URL/rest/v1/scraper_runs?order=started_at.desc&limit=1" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" | python3 -m json.tool || true
+          echo ""
+          echo "=== Total Projects in DB ==="
+          curl -s "$SUPABASE_URL/rest/v1/projects?select=count" \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY" \
+            -H "Prefer: count=exact" -I 2>/dev/null | grep content-range || true
