@@ -633,6 +633,130 @@ body.lp-collapsed #heat-legend { left: 12px; }
   border:1.5px solid rgba(255,255,255,0.4);
   flex-shrink:0;
 }
+
+/* ═══════════════════════════════════════
+   AI INSIGHTS STYLES
+═══════════════════════════════════════ */
+.ai-loading {
+  padding: 20px 0;
+}
+.ai-loading-bar {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  border-radius: 1px;
+  animation: ai-shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 12px;
+}
+@keyframes ai-shimmer {
+  0% { background-position: -200% center; opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { background-position: 200% center; opacity: 0.4; }
+}
+.ai-loading-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: .06em;
+}
+.ai-pulse-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: ai-pulse 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes ai-pulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+.ai-brief {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.ai-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 12px;
+}
+.ai-badge {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  letter-spacing: .10em;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(var(--accent-rgb, 99,102,241), 0.12);
+  padding: 3px 8px;
+  border-radius: 4px;
+  border: 1px solid rgba(var(--accent-rgb, 99,102,241), 0.25);
+}
+.ai-timestamp {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.25);
+  letter-spacing: .04em;
+}
+.ai-content {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.75);
+}
+.ai-section-head {
+  font-family: 'Syne', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text);
+  margin: 14px 0 6px;
+  padding: 0;
+}
+.ai-section-head:first-child { margin-top: 0; }
+.ai-para {
+  margin: 0 0 8px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.72);
+}
+.ai-signal-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  border: 1px solid;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+.ai-footer {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 8.5px;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: .04em;
+}
+.ai-fallback-notice {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: .06em;
+  padding: 6px 0 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 </style>
 </head>
 <body>
@@ -851,10 +975,15 @@ body.lp-collapsed #heat-legend { left: 12px; }
   <!-- INSIGHTS TAB -->
   <div class="rp-tab-content" id="tab-insights">
     <div style="padding:14px 16px;border-bottom:1px solid var(--bord)">
-      <div class="rp-section-title" style="display:flex;align-items:center;gap:6px">
-        <span style="color:var(--accent)">◈</span> AI Market Insights
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div class="rp-section-title" style="display:flex;align-items:center;gap:6px;margin:0">
+          <span style="color:var(--accent)">◈</span> AI Market Insights
+        </div>
+        <button onclick="if(_pendingInsightsArea){delete _insightsCache[_pendingInsightsArea.id+'_'+_currency];loadAIInsights(_pendingInsightsArea);}"
+          style="background:none;border:1px solid rgba(255,255,255,0.1);border-radius:4px;color:rgba(255,255,255,0.35);font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;cursor:pointer;letter-spacing:.06em"
+          title="Refresh analysis">↺ refresh</button>
       </div>
-      <div id="rp-insights-body" style="margin-top:10px"></div>
+      <div id="rp-insights-body"></div>
     </div>
     <div style="padding:14px 16px">
       <div class="rp-section-title">Search Listings</div>
@@ -2300,41 +2429,32 @@ function addMetroLayer() {
   // Insert point: above area-extrude but below area-label
   const insertBefore = map.getLayer('area-label') ? 'area-label' : undefined;
 
+  // Subway-map style: dark outline + colored fill = clean transit line
   function addMetroLine(srcId, coords, color, casingId, coreId, dashId) {
     const geom = {type:'FeatureCollection',features:[
       {type:'Feature',geometry:{type:'LineString',coordinates:coords}}
     ]};
     map.addSource(srcId, {type:'geojson', data:geom});
 
-    // White casing for contrast (renders first = below)
-    map.addLayer({id:casingId, type:'line', source:srcId, layout:{'line-cap':'round','line-join':'round'},
+    // Dark border/outline (renders below, slightly wider)
+    map.addLayer({id:casingId, type:'line', source:srcId,
+      layout:{'line-cap':'round','line-join':'round'},
       paint:{
-        'line-color':'#FFFFFF',
-        'line-width':['interpolate',['linear'],['zoom'],9,2,11,4,13,6,15,8],
-        'line-opacity':['interpolate',['linear'],['zoom'],9,0.0,10,0.4,12,0.6]
+        'line-color':'rgba(0,0,0,0.75)',
+        'line-width':['interpolate',['linear'],['zoom'],9,3,11,6,13,10,15,13],
+        'line-opacity':['interpolate',['linear'],['zoom'],9,0.0,10,0.8,12,1.0]
       }
     }, insertBefore);
 
-    // Colored core
-    map.addLayer({id:coreId, type:'line', source:srcId, layout:{'line-cap':'round','line-join':'round'},
+    // Colored subway fill (on top of outline)
+    map.addLayer({id:coreId, type:'line', source:srcId,
+      layout:{'line-cap':'round','line-join':'round'},
       paint:{
         'line-color':color,
-        'line-width':['interpolate',['linear'],['zoom'],9,1.5,11,3,13,5,15,6],
-        'line-opacity':['interpolate',['linear'],['zoom'],9,0.5,10,0.85,12,0.95]
+        'line-width':['interpolate',['linear'],['zoom'],9,2,11,4.5,13,8,15,11],
+        'line-opacity':['interpolate',['linear'],['zoom'],9,0.0,10,0.9,12,1.0]
       }
     }, insertBefore);
-
-    // Subtle white dash overlay (only at high zoom)
-    if (dashId) {
-      map.addLayer({id:dashId, type:'line', source:srcId,
-        paint:{
-          'line-color':'rgba(255,255,255,0.5)',
-          'line-width':['interpolate',['linear'],['zoom'],11,0.5,13,1],
-          'line-dasharray':[4,5],
-          'line-opacity':['interpolate',['linear'],['zoom'],11,0,12,0.5,14,0.7]
-        }
-      }, insertBefore);
-    }
   }
 
   addMetroLine('metro-src-red',   METRO_LINES.red.coords,          '#EF4444','metro-red-casing',    'metro-red-core',    'metro-red-dash');
@@ -2345,23 +2465,34 @@ function addMetroLayer() {
   addMetroLine('metro-src-tram',  METRO_LINES.tram.coords,         '#F59E0B','metro-tram-casing',   'metro-tram-core',   null);
 
   /* ── Station dots helper ── */
+  // Subway-style station: white filled circle with colored stroke
   function addStationDots(srcId, ringId, dotId, stationsArr, color) {
     const fc = {type:'FeatureCollection', features: stationsArr};
     map.addSource(srcId, {type:'geojson', data:fc});
 
-    // White ring (outer)
-    map.addLayer({id:ringId, type:'circle', source:srcId,
+    // Black shadow (depth)
+    map.addLayer({id:ringId+'_shadow', type:'circle', source:srcId,
       paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,3,12,5,13,7,15,9],
-        'circle-color':'#FFFFFF',
-        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,0.9,13,1]
+        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,5,12,8,13,11,15,14],
+        'circle-color':'rgba(0,0,0,0.6)',
+        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,0.7,13,0.9],
+        'circle-blur':0.3
       }
     }, insertBefore);
 
-    // Colored dot (inner)
+    // White filled station circle
+    map.addLayer({id:ringId, type:'circle', source:srcId,
+      paint:{
+        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,4,12,6.5,13,9,15,12],
+        'circle-color':'#FFFFFF',
+        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,1,13,1]
+      }
+    }, insertBefore);
+
+    // Colored inner dot (line color)
     map.addLayer({id:dotId, type:'circle', source:srcId,
       paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,2,12,3.5,13,5,15,6.5],
+        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,2,12,3.5,13,5,15,7],
         'circle-color':color,
         'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,1,13,1]
       }
@@ -2438,17 +2569,17 @@ function startMetroAnimation() {
 function applyMetroVisibility() {
   const vis = _layerState.metro ? 'visible' : 'none';
   [
-    'metro-red-casing','metro-red-core','metro-red-dash',
+    'metro-red-casing','metro-red-core',
     'metro-2020-casing','metro-2020-core',
     'metro-airport-casing','metro-airport-core',
-    'metro-green-casing','metro-green-core','metro-green-dash',
+    'metro-green-casing','metro-green-core',
     'metro-greenE-casing','metro-greenE-core',
     'metro-tram-casing','metro-tram-core',
-    'stations-red','stations-red-dot',
-    'stations-2020','stations-2020-dot',
-    'stations-airport','stations-airport-dot',
-    'stations-green','stations-green-dot',
-    'stations-tram','stations-tram-dot',
+    'stations-red_shadow','stations-red','stations-red-dot',
+    'stations-2020_shadow','stations-2020','stations-2020-dot',
+    'stations-airport_shadow','stations-airport','stations-airport-dot',
+    'stations-green_shadow','stations-green','stations-green-dot',
+    'stations-tram_shadow','stations-tram','stations-tram-dot',
     'stations-label',
     'road-e11-glow','road-e11-core',
     'road-e311-glow','road-e311-core'
@@ -2499,6 +2630,8 @@ function switchTab(name, btn) {
   }
   const el = document.getElementById('tab-' + name);
   if (el) el.classList.add('active');
+  // Trigger AI insights load when switching to insights tab
+  if (name === 'insights' && _pendingInsightsArea) loadAIInsights(_pendingInsightsArea);
 }
 
 /* ══════════════════════════════════════════════
@@ -2560,6 +2693,138 @@ function getScoreBreakdown(a) {
 /* ══════════════════════════════════════════════
    AI INSIGHTS
 ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   AI INSIGHTS — Claude API integration
+══════════════════════════════════════════════ */
+
+async function loadAIInsights(a) {
+  if (!a) return;
+  const container = document.getElementById('rp-insights-body');
+  if (!container) return;
+
+  // Cache hit
+  const cacheKey = a.id + '_' + _currency;
+  if (_insightsCache[cacheKey]) {
+    renderInsightsMarkdown(container, _insightsCache[cacheKey]);
+    return;
+  }
+
+  // Loading state — premium skeleton
+  container.innerHTML = `
+    <div class="ai-loading">
+      <div class="ai-loading-bar"></div>
+      <div class="ai-loading-label">
+        <span class="ai-pulse-dot"></span>
+        Generating analysis for ${a.name}…
+      </div>
+    </div>`;
+
+  // Build rich context prompt
+  const avgYoy = (AREAS.reduce((s,x) => s + x.yoy, 0) / AREAS.length).toFixed(1);
+  const avgYld = (AREAS.reduce((s,x) => s + x.yld, 0) / AREAS.length).toFixed(1);
+  const avgPsf = Math.round(AREAS.reduce((s,x) => s + x.psf, 0) / AREAS.length);
+  const rank_psf = [...AREAS].sort((x,y) => y.psf - x.psf).findIndex(x => x.id === a.id) + 1;
+  const rank_yoy = [...AREAS].sort((x,y) => y.yoy - x.yoy).findIndex(x => x.id === a.id) + 1;
+  const rank_yld = [...AREAS].sort((x,y) => y.yld - x.yld).findIndex(x => x.id === a.id) + 1;
+  const total = AREAS.length;
+  const nearbyNames = METRO_STATIONS.red.concat(METRO_STATIONS.green, METRO_STATIONS.tram)
+    .map(s => s.properties?.name)
+    .filter(Boolean)
+    .slice(0, 5).join(', ');
+
+  const prompt = `You are RAQAM, a senior Dubai real estate investment analyst. Generate a sharp, data-driven investment brief for ${a.name}.
+
+AREA DATA (Q1 2025 estimates):
+- Type: ${a.type === 'villa' ? 'Villa/Townhouse community' : a.type === 'apt' ? 'Apartment-led' : 'Mixed residential'}
+- Tier: ${a.tier === 'prime' ? 'Prime' : a.tier === 'mid' ? 'Mid-market' : 'Value/emerging'}
+- Price per sqft: AED ${a.psf.toLocaleString()} (Dubai avg: AED ${avgPsf.toLocaleString()}) — ranked #${rank_psf} of ${total}
+- YoY growth: +${a.yoy}% (Dubai avg: +${avgYoy}%) — ranked #${rank_yoy} of ${total}
+- Gross rental yield: ${a.yld}% (Dubai avg: ${avgYld}%) — ranked #${rank_yld} of ${total}
+- Annual transactions: ~${a.txn.toLocaleString()}
+- Off-plan ratio: ${a.off}% off-plan / ${a.rdy}% ready
+- Proximity score: ${a.prox?.conn ?? 'n/a'}/100 connectivity, ${a.prox?.life ?? 'n/a'}/100 lifestyle
+- Airport distance: ~${a.prox?.airport ?? '?'} km to DXB
+- Coastline distance: ~${a.prox?.coast ?? '?'} km
+- Downtown distance: ~${a.prox?.dt ?? '?'} km
+
+Write a concise investment brief with EXACTLY these 4 sections using markdown:
+
+## Investment Case
+2–3 sentences on what makes this area compelling (or not) for investors right now.
+
+## Key Risks
+2 specific risks — market, oversupply, location, or liquidity risks relevant to this area.
+
+## Best For
+One sentence naming the ideal buyer profile (end-user, yield investor, capital appreciation play, etc.).
+
+## RAQAM Signal
+Rate this area: **Strong Buy / Buy / Hold / Cautious / Avoid** with a one-line rationale.
+
+Be specific, opinionated, and reference the actual data. No generic platitudes. Respond in plain markdown only.`;
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    if (!resp.ok) throw new Error('API ' + resp.status);
+    const data = await resp.json();
+    const text = data.content?.[0]?.text || '';
+
+    _insightsCache[cacheKey] = text;
+    renderInsightsMarkdown(container, text);
+
+  } catch(err) {
+    // Fallback to enhanced static insights
+    const staticInsights = getInsights(a);
+    container.innerHTML = `
+      <div class="ai-fallback-notice">
+        <span style="color:var(--accent)">◈</span>
+        Pattern-based analysis (AI unavailable)
+      </div>
+      ${staticInsights.map(ins => `
+        <div class="rp-insight-item">
+          <div class="rp-insight-icon">${ins.icon}</div>
+          <div class="rp-insight-text">${ins.text}</div>
+        </div>`).join('')}`;
+  }
+}
+
+function renderInsightsMarkdown(container, md) {
+  // Parse markdown into styled HTML
+  let html = md
+    .replace(/^## (.+)$/gm, '<h4 class="ai-section-head">$1</h4>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/<strong>(Strong Buy|Buy|Hold|Cautious|Avoid)<\/strong>/g, (m, rating) => {
+      const colors = {'Strong Buy':'#10B981','Buy':'#34D399','Hold':'#F59E0B','Cautious':'#FB923C','Avoid':'#EF4444'};
+      const col = colors[rating] || 'var(--accent)';
+      return `<span class="ai-signal-badge" style="background:${col}20;color:${col};border-color:${col}40">${rating}</span>`;
+    })
+    .replace(/\n\n/g, '</p><p class="ai-para">')
+    .replace(/\n/g, '<br>');
+
+  container.innerHTML = `
+    <div class="ai-brief">
+      <div class="ai-header">
+        <span class="ai-badge">&#9672; RAQAM AI</span>
+        <span class="ai-timestamp">Live analysis</span>
+      </div>
+      <div class="ai-content"><p class="ai-para">${html}</p></div>
+      <div class="ai-footer">
+        Powered by Claude &middot; Estimates calibrated from JLL, CBRE &amp; Savills Q1 2025
+      </div>
+    </div>`;
+}
+
+
 function getInsights(a) {
   const insights = [];
   const avgYoy = AREAS.reduce((s,x) => s + x.yoy, 0) / AREAS.length;
@@ -2740,13 +3005,9 @@ function openDetail(a) {
   // ── TRANSACTIONS TAB ──
   loadTransactions(a);
 
-  // ── INSIGHTS TAB ──
-  document.getElementById('rp-insights-body').innerHTML =
-    getInsights(a).map(ins => `
-      <div class="rp-insight-item">
-        <div class="rp-insight-icon">${ins.icon}</div>
-        <div class="rp-insight-text">${ins.text}</div>
-      </div>`).join('');
+  // ── INSIGHTS TAB ── (AI powered — loads on tab switch)
+  _pendingInsightsArea = a;
+  if (_activeTab === 'insights') loadAIInsights(a);
 
   // Listings search links
   const enc = encodeURIComponent(a.name);
@@ -3328,3 +3589,6 @@ window.addEventListener('load', () => {
 </div>
 </body>
 </html>
+let _pendingInsightsArea = null;
+let _insightsCache = {};
+let _insightsLoading = false;
