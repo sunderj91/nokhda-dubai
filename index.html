@@ -757,6 +757,136 @@ body.lp-collapsed #heat-legend { left: 12px; }
   gap: 6px;
 }
 
+
+/* ══════════════════════════════════════════════
+   MAIN TAB SWITCHER
+══════════════════════════════════════════════ */
+.main-tabs { display:flex; gap:2px; background:rgba(255,255,255,0.06); border-radius:8px; padding:3px; }
+.main-tab { padding:5px 18px; border-radius:6px; border:none; background:transparent; color:var(--text2); font-family:'IBM Plex Mono',monospace; font-size:11px; letter-spacing:.06em; cursor:pointer; transition:all .2s; font-weight:600; }
+.main-tab.active { background:var(--accent); color:#000; }
+.main-tab:hover:not(.active) { background:rgba(255,255,255,0.1); color:var(--text1); }
+
+/* ══════════════════════════════════════════════
+   PROJECTS LEFT PANEL
+══════════════════════════════════════════════ */
+#projects-panel { position:absolute; left:0; top:52px; bottom:0; width:320px; background:var(--bg2); border-right:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
+#projects-panel.visible { display:flex; }
+.pp-filters { padding:10px 12px 6px; border-bottom:1px solid var(--bord); display:flex; flex-direction:column; gap:8px; }
+.pp-search { width:100%; background:var(--surf); border:1px solid var(--bord); border-radius:6px; padding:7px 10px; color:var(--text1); font-size:12px; font-family:inherit; outline:none; box-sizing:border-box; }
+.pp-search:focus { border-color:var(--accent); }
+.pp-search::placeholder { color:var(--text3); }
+.pp-filter-row { display:flex; gap:5px; flex-wrap:wrap; }
+.pp-filter-btn { padding:3px 9px; border-radius:4px; border:1px solid var(--bord); background:var(--surf); color:var(--text2); font-size:10px; font-family:'IBM Plex Mono',monospace; cursor:pointer; transition:all .15s; letter-spacing:.04em; }
+.pp-filter-btn.active { background:var(--accent); color:#000; border-color:var(--accent); }
+.pp-filter-btn:hover:not(.active) { border-color:var(--accent); color:var(--text1); }
+.pp-stats-row { display:flex; gap:1px; background:var(--bord); border-bottom:1px solid var(--bord); }
+.pp-stat { flex:1; padding:7px 10px; background:var(--bg2); text-align:center; }
+.pp-stat-l { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.06em; margin-bottom:2px; }
+.pp-stat-v { font-size:14px; font-weight:700; color:var(--text1); font-family:'IBM Plex Mono',monospace; }
+.pp-list { flex:1; overflow-y:auto; padding:4px 0; }
+.pp-list::-webkit-scrollbar { width:4px; }
+.pp-list::-webkit-scrollbar-thumb { background:var(--bord); border-radius:2px; }
+.proj-row { padding:10px 14px; border-bottom:1px solid var(--bord); cursor:pointer; transition:background .15s; display:flex; gap:10px; align-items:flex-start; }
+.proj-row:hover { background:rgba(255,255,255,0.04); }
+.proj-row.active { background:rgba(0,194,203,0.08); border-left:3px solid var(--accent); padding-left:11px; }
+.proj-dot-mini { width:10px; height:10px; border-radius:50%; margin-top:4px; flex-shrink:0; }
+.proj-row-body { flex:1; min-width:0; }
+.proj-row-name { font-size:12px; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px; }
+.proj-row-dev { font-size:10px; color:var(--text3); margin-bottom:4px; }
+.proj-row-meta { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+.proj-badge { font-size:8.5px; font-family:'IBM Plex Mono',monospace; padding:1px 5px; border-radius:3px; letter-spacing:.04em; font-weight:600; text-transform:uppercase; }
+.proj-badge.off-plan { background:rgba(245,158,11,0.18); color:#F59E0B; }
+.proj-badge.ready { background:rgba(34,197,94,0.18); color:#22C55E; }
+.proj-badge.construction { background:rgba(99,102,241,0.18); color:#818CF8; }
+.proj-row-price { font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--accent); font-weight:600; margin-left:auto; white-space:nowrap; }
+
+/* ══ PRICE LEGEND ══ */
+#price-legend { position:absolute; top:64px; left:330px; background:rgba(10,14,30,0.92); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:10px 14px; display:none; z-index:9; min-width:210px; backdrop-filter:blur(8px); }
+#price-legend.visible { display:block; }
+.pl-bar { height:8px; border-radius:4px; background:linear-gradient(to right,#00C2CB,#22C55E,#F59E0B,#EF4444); margin-bottom:6px; }
+.pl-labels { display:flex; justify-content:space-between; margin-bottom:8px; }
+.pl-label { font-size:9px; color:var(--text3); font-family:'IBM Plex Mono',monospace; }
+.pl-stats { display:flex; flex-direction:column; gap:4px; }
+.pl-stat { display:flex; align-items:center; gap:7px; }
+.pl-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+.pl-stat-l { font-size:9px; color:var(--text3); text-transform:uppercase; letter-spacing:.04em; }
+.pl-stat-v { font-size:11px; color:var(--text1); font-family:'IBM Plex Mono',monospace; font-weight:600; margin-left:auto; }
+
+/* ══ PROJECT DETAIL RIGHT PANEL ══ */
+#proj-right-panel { position:absolute; right:0; top:52px; bottom:0; width:380px; background:var(--bg2); border-left:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
+#proj-right-panel.open { display:flex; }
+.prp-header { padding:14px 16px 12px; border-bottom:1px solid var(--bord); }
+.prp-header-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.prp-name { font-size:15px; font-weight:700; color:var(--text1); line-height:1.3; }
+.prp-dev { font-size:11px; color:var(--text3); margin-top:2px; }
+.prp-close { background:none; border:none; color:var(--text3); font-size:18px; cursor:pointer; padding:0 4px; line-height:1; }
+.prp-close:hover { color:var(--text1); }
+.prp-badges { display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap; }
+.prp-badge { font-size:9px; font-family:'IBM Plex Mono',monospace; padding:3px 8px; border-radius:4px; letter-spacing:.05em; font-weight:700; text-transform:uppercase; }
+.prp-badge.off-plan { background:rgba(245,158,11,0.2); color:#F59E0B; border:1px solid rgba(245,158,11,0.3); }
+.prp-badge.ready { background:rgba(34,197,94,0.2); color:#22C55E; border:1px solid rgba(34,197,94,0.3); }
+.prp-badge.construction { background:rgba(99,102,241,0.2); color:#818CF8; border:1px solid rgba(99,102,241,0.3); }
+.prp-badge.type-b { background:rgba(255,255,255,0.08); color:var(--text2); border:1px solid var(--bord); }
+.prp-badge.featured { background:rgba(201,168,76,0.2); color:#C9A84C; border:1px solid rgba(201,168,76,0.4); }
+.prp-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--bord); border:1px solid var(--bord); border-radius:6px; overflow:hidden; }
+.prp-kpi { background:var(--surf); padding:8px 4px; text-align:center; }
+.prp-kpi-l { font-size:8px; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
+.prp-kpi-v { font-size:12px; font-weight:700; color:var(--text1); font-family:'IBM Plex Mono',monospace; }
+.prp-kpi-v.gold { color:#C9A84C; }
+.prp-kpi-v.cyan { color:var(--accent); }
+.prp-tabs { display:flex; border-bottom:1px solid var(--bord); }
+.prp-tab { flex:1; padding:9px 4px; border:none; background:none; color:var(--text3); font-size:10px; font-family:'IBM Plex Mono',monospace; cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; letter-spacing:.03em; }
+.prp-tab.active { color:var(--accent); border-bottom-color:var(--accent); }
+.prp-tab:hover:not(.active) { color:var(--text1); }
+.prp-body { flex:1; overflow-y:auto; padding:14px 16px; }
+.prp-body::-webkit-scrollbar { width:4px; }
+.prp-body::-webkit-scrollbar-thumb { background:var(--bord); }
+.prp-section { margin-bottom:16px; }
+.prp-section-title { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--text3); margin-bottom:8px; font-family:'IBM Plex Mono',monospace; }
+.prp-desc { font-size:12px; color:var(--text2); line-height:1.65; }
+.prp-beds { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px; }
+.prp-bed-tag { padding:4px 10px; border-radius:4px; background:var(--surf); border:1px solid var(--bord); font-size:11px; color:var(--text1); font-family:'IBM Plex Mono',monospace; }
+.prp-amenities { display:flex; gap:5px; flex-wrap:wrap; }
+.prp-amenity { padding:3px 8px; border-radius:4px; background:rgba(0,194,203,0.08); border:1px solid rgba(0,194,203,0.2); font-size:10px; color:var(--accent); }
+.prp-unit-table { width:100%; border-collapse:collapse; font-size:11px; }
+.prp-unit-table th { text-align:left; padding:5px 8px; background:var(--surf); color:var(--text3); font-size:9px; text-transform:uppercase; letter-spacing:.05em; font-weight:600; border-bottom:1px solid var(--bord); }
+.prp-unit-table td { padding:7px 8px; border-bottom:1px solid rgba(255,255,255,0.04); color:var(--text2); font-family:'IBM Plex Mono',monospace; }
+.prp-unit-table tr:hover td { background:rgba(255,255,255,0.03); }
+.prp-payment-bar { height:20px; border-radius:4px; overflow:hidden; display:flex; margin-bottom:8px; }
+.prp-payment-seg { height:100%; display:flex; align-items:center; justify-content:center; font-size:9px; font-weight:700; color:#fff; }
+.prp-payment-legend { display:flex; flex-direction:column; gap:4px; }
+.prp-payment-leg-item { display:flex; align-items:center; gap:8px; font-size:11px; color:var(--text2); }
+.prp-payment-leg-dot { width:10px; height:10px; border-radius:2px; flex-shrink:0; }
+.prp-area-link { display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--surf); border:1px solid var(--bord); border-radius:6px; cursor:pointer; transition:border-color .15s; margin-bottom:10px; }
+.prp-area-link:hover { border-color:var(--accent); }
+.prp-area-link-icon { font-size:18px; }
+.prp-area-link-body { flex:1; }
+.prp-area-link-text { font-size:12px; color:var(--text1); font-weight:600; }
+.prp-area-link-sub { font-size:10px; color:var(--text3); margin-top:1px; }
+.prp-area-link-arr { font-size:14px; color:var(--text3); }
+.prp-ai-box { padding:12px; background:var(--surf); border-radius:6px; border:1px solid var(--bord); }
+.prp-ai-loading { display:flex; align-items:center; gap:8px; color:var(--text3); font-size:12px; }
+.prp-ai-spinner { width:14px; height:14px; border:2px solid var(--bord); border-top-color:var(--accent); border-radius:50%; animation:spin .8s linear infinite; }
+.prp-signal { display:inline-block; padding:4px 12px; border-radius:4px; font-size:11px; font-weight:700; font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:.06em; margin-bottom:10px; }
+.prp-signal.strong-buy { background:rgba(34,197,94,0.2); color:#22C55E; border:1px solid rgba(34,197,94,0.4); }
+.prp-signal.buy { background:rgba(0,194,203,0.2); color:var(--accent); border:1px solid rgba(0,194,203,0.4); }
+.prp-signal.hold { background:rgba(245,158,11,0.2); color:#F59E0B; border:1px solid rgba(245,158,11,0.4); }
+.prp-signal.caution { background:rgba(239,68,68,0.2); color:#EF4444; border:1px solid rgba(239,68,68,0.4); }
+.prp-ai-text { font-size:12px; color:var(--text2); line-height:1.65; }
+.prp-ai-stitle { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin:10px 0 5px; font-family:'IBM Plex Mono',monospace; }
+
+/* Projects mode body class toggles */
+body.projects-mode #heat-mode-pills,
+body.projects-mode #view-2d,
+body.projects-mode #view-3d,
+body.projects-mode #left-panel,
+body.projects-mode #right-panel,
+body.projects-mode #lp-toggle,
+body.projects-mode .map-legend,
+body.projects-mode #tier-filter { display:none !important; }
+body.areas-mode #projects-panel,
+body.areas-mode #proj-right-panel,
+body.areas-mode #price-legend { display:none !important; }
 </style>
 </head>
 <body>
@@ -780,6 +910,11 @@ body.lp-collapsed #heat-legend { left: 12px; }
       <div class="tb-logo-text">RAQAM</div>
       <div class="tb-logo-sub">Dubai Intelligence</div>
     </div>
+  </div>
+  <div class="tb-sep"></div>
+  <div class="main-tabs">
+    <button class="main-tab active" id="main-tab-areas" onclick="switchMainTab('areas')">AREAS</button>
+    <button class="main-tab" id="main-tab-projects" onclick="switchMainTab('projects')">PROJECTS</button>
   </div>
   <div class="tb-sep"></div>
   <div class="tb-pills" id="heat-mode-pills">
@@ -871,6 +1006,62 @@ body.lp-collapsed #heat-legend { left: 12px; }
   </div>
   <div class="lp-list" id="area-list"></div>
 </div>
+<!-- PROJECTS LEFT PANEL -->
+<div id="projects-panel">
+  <div class="pp-filters">
+    <input type="text" class="pp-search" id="proj-search" placeholder="Search projects or developers..." oninput="filterProjects()">
+    <div class="pp-filter-row">
+      <button class="pp-filter-btn active" data-status="all" onclick="setProjFilter('status','all',this)">All</button>
+      <button class="pp-filter-btn" data-status="off-plan" onclick="setProjFilter('status','off-plan',this)">Off-Plan</button>
+      <button class="pp-filter-btn" data-status="ready" onclick="setProjFilter('status','ready',this)">Ready</button>
+      <button class="pp-filter-btn" data-status="construction" onclick="setProjFilter('status','construction',this)">U/C</button>
+    </div>
+    <div class="pp-filter-row">
+      <button class="pp-filter-btn active" data-type="all" onclick="setProjFilter('type','all',this)">All Types</button>
+      <button class="pp-filter-btn" data-type="apartment" onclick="setProjFilter('type','apartment',this)">Apt</button>
+      <button class="pp-filter-btn" data-type="villa" onclick="setProjFilter('type','villa',this)">Villa</button>
+      <button class="pp-filter-btn" data-type="townhouse" onclick="setProjFilter('type','townhouse',this)">Townhouse</button>
+    </div>
+  </div>
+  <div class="pp-stats-row">
+    <div class="pp-stat"><div class="pp-stat-l">Projects</div><div class="pp-stat-v" id="pp-count">0</div></div>
+    <div class="pp-stat"><div class="pp-stat-l">Avg PSF</div><div class="pp-stat-v" id="pp-avg-psf">--</div></div>
+    <div class="pp-stat"><div class="pp-stat-l">Min Price</div><div class="pp-stat-v" id="pp-min-price">--</div></div>
+  </div>
+  <div class="pp-list" id="proj-list"></div>
+</div>
+
+<!-- PRICE LEGEND -->
+<div id="price-legend">
+  <div class="pl-bar"></div>
+  <div class="pl-labels"><span class="pl-label">Low</span><span class="pl-label">Starting Price</span><span class="pl-label">High</span></div>
+  <div class="pl-stats">
+    <div class="pl-stat"><div class="pl-dot" style="background:#EF4444"></div><div class="pl-stat-l">Highest</div><div class="pl-stat-v" id="pl-high">--</div></div>
+    <div class="pl-stat"><div class="pl-dot" style="background:#F59E0B"></div><div class="pl-stat-l">Average</div><div class="pl-stat-v" id="pl-avg">--</div></div>
+    <div class="pl-stat"><div class="pl-dot" style="background:#00C2CB"></div><div class="pl-stat-l">Lowest</div><div class="pl-stat-v" id="pl-low">--</div></div>
+  </div>
+</div>
+
+<!-- PROJECT DETAIL PANEL -->
+<div id="proj-right-panel">
+  <div class="prp-header">
+    <div class="prp-header-top">
+      <div style="flex:1;min-width:0"><div class="prp-name" id="prp-name">--</div><div class="prp-dev" id="prp-dev">--</div></div>
+      <button class="prp-close" onclick="closeProjectDetail()">x</button>
+    </div>
+    <div class="prp-badges" id="prp-badges"></div>
+    <div class="prp-kpis" id="prp-kpis"></div>
+  </div>
+  <div class="prp-tabs">
+    <button class="prp-tab active" onclick="switchProjTab('overview',this)">Overview</button>
+    <button class="prp-tab" onclick="switchProjTab('units',this)">Units</button>
+    <button class="prp-tab" onclick="switchProjTab('payment',this)">Payment</button>
+    <button class="prp-tab" onclick="switchProjTab('location',this)">Location</button>
+    <button class="prp-tab" onclick="switchProjTab('ai',this)">AI Brief</button>
+  </div>
+  <div class="prp-body" id="prp-body"></div>
+</div>
+
 
 <!-- LEFT PANEL TOGGLE -->
 <div id="lp-toggle" onclick="toggleLeftPanel()">‹</div>
@@ -2248,6 +2439,1071 @@ function bringMetroToTop() {
 }
 
 /* ── Metro & Roads ─────────────────────────── */
+
+/* ══════════════════════════════════════════════
+   PROJECTS DATA — 42 Real Dubai Projects
+══════════════════════════════════════════════ */
+const PROJECTS = [
+  // ── DOWNTOWN DUBAI ──
+  {
+    id:'address-res-downtown', name:'Address Residences Downtown', developer:'Emaar Properties',
+    area:'downtown', coords:[55.2744,25.1972], type:'apartment', status:'off-plan',
+    completionDate:'Q4 2027', priceMin:3200000, priceMax:85000000, priceAvg:11500000,
+    psfMin:2800, psfMax:5200, units:544, floors:72,
+    bedrooms:['1BR','2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'80/20', downPayment:20, onCompletion:20, duringConstruction:60,
+    amenities:['Infinity Pool','Full-Service Spa','Concierge','Valet','Gym','Kids Club','Fine Dining'],
+    description:'Iconic tower by Emaar adjacent to the Dubai Mall and Burj Khalifa. Offers hotel-branded residences with panoramic views of the fountain and city skyline. One of Downtown\'s most prestigious addresses.',
+    featured:true, areaAvgPsf:2900, areaYield:5.8,
+  },
+  {
+    id:'st-regis-downtown', name:'St. Regis The Residences', developer:'Emaar Properties',
+    area:'downtown', coords:[55.2762,25.1958], type:'apartment', status:'ready',
+    completionDate:'2024', priceMin:4500000, priceMax:62000000, priceAvg:14000000,
+    psfMin:3200, psfMax:5800, units:281, floors:66,
+    bedrooms:['1BR','2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['St. Regis Butler Service','Rooftop Pool','Spa','Private Cinema','Concierge'],
+    description:'Ultra-luxury branded residences offering St. Regis hotel services. Completed and ready for immediate handover. Spectacular Burj Khalifa and fountain views. High rental demand from premium tenants.',
+    featured:false, areaAvgPsf:2900, areaYield:5.8,
+  },
+  {
+    id:'burj-crown', name:'Burj Crown', developer:'Emaar Properties',
+    area:'downtown', coords:[55.2798,25.1940], type:'apartment', status:'ready',
+    completionDate:'2023', priceMin:1800000, priceMax:12000000, priceAvg:4200000,
+    psfMin:2100, psfMax:3400, units:469, floors:44,
+    bedrooms:['Studio','1BR','2BR','3BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Rooftop Pool','Gym','Retail Podium','Kids Play Area'],
+    description:'Established Downtown tower with strong rental demand. Competitive entry price for the Downtown area. Walking distance to Burj Khalifa, Dubai Mall, and the metro.',
+    featured:false, areaAvgPsf:2900, areaYield:5.8,
+  },
+
+  // ── DUBAI MARINA ──
+  {
+    id:'marina-gate', name:'Marina Gate', developer:'Select Group',
+    area:'marina', coords:[55.1468,25.0760], type:'apartment', status:'ready',
+    completionDate:'2022', priceMin:1200000, priceMax:18000000, priceAvg:3500000,
+    psfMin:1800, psfMax:3200, units:840, floors:58,
+    bedrooms:['Studio','1BR','2BR','3BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Marina Views','Pool Deck','Gym','Padel Court','Retail'],
+    description:'Premium Marina tower with direct marina frontage. Three interconnected towers offering a full lifestyle ecosystem. Strong rental demand driven by waterfront location and DMCC proximity.',
+    featured:false, areaAvgPsf:1950, areaYield:6.8,
+  },
+  {
+    id:'address-marina', name:'Address The Bay', developer:'Emaar Properties',
+    area:'marina', coords:[55.1398,25.0892], type:'apartment', status:'ready',
+    completionDate:'2023', priceMin:2800000, priceMax:38000000, priceAvg:8500000,
+    psfMin:2400, psfMax:4500, units:350, floors:54,
+    bedrooms:['1BR','2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Address Hotel Services','Infinity Pool','Private Beach Access','Spa','Concierge'],
+    description:'Hotel-branded residences offering Address hotel amenities with spectacular bay and Ain Dubai views. Strong short-term rental performance. Premium positioning in EMAAR Beachfront.',
+    featured:true, areaAvgPsf:1950, areaYield:6.8,
+  },
+  {
+    id:'sobha-seahaven', name:'Sobha Seahaven', developer:'Sobha Realty',
+    area:'marina', coords:[55.1345,25.0871], type:'apartment', status:'off-plan',
+    completionDate:'Q1 2026', priceMin:2200000, priceMax:25000000, priceAvg:6800000,
+    psfMin:2100, psfMax:4200, units:432, floors:62,
+    bedrooms:['1BR','2BR','3BR','Sky Duplex'],
+    paymentPlan:'60/40', downPayment:20, onCompletion:40, duringConstruction:40,
+    amenities:['Private Beach','Sky Pool','Yacht Marina','Gym','Concierge','Helipad'],
+    description:'Sobha\'s flagship waterfront development with private beach access. Sky duplex units with double-height ceilings and panoramic sea views. High-quality finishes typical of Sobha brand.',
+    featured:false, areaAvgPsf:1950, areaYield:6.8,
+  },
+
+  // ── BUSINESS BAY ──
+  {
+    id:'bayz-101', name:'Bayz 101', developer:'Danube Properties',
+    area:'business-bay', coords:[55.2620,25.1865], type:'apartment', status:'off-plan',
+    completionDate:'Q2 2027', priceMin:890000, priceMax:8500000, priceAvg:2200000,
+    psfMin:1600, psfMax:2800, units:700, floors:101,
+    bedrooms:['Studio','1BR','2BR','3BR'],
+    paymentPlan:'1% Monthly', downPayment:10, onCompletion:30, duringConstruction:60,
+    amenities:['Sky Pool on 101st Floor','Gym','Concierge','Retail','Co-working'],
+    description:'Tallest Danube tower with iconic 101-floor design. Danube\'s signature 1% monthly payment plan reduces entry barrier. Business Bay\'s canal views with Downtown proximity. Strong investment fundamentals.',
+    featured:false, areaAvgPsf:1850, areaYield:7.2,
+  },
+  {
+    id:'paramount-tower', name:'Paramount Tower Hotel & Residences', developer:'DAMAC Properties',
+    area:'business-bay', coords:[55.2700,25.1890], type:'apartment', status:'ready',
+    completionDate:'2019', priceMin:1100000, priceMax:9500000, priceAvg:2800000,
+    psfMin:1700, psfMax:3100, units:800, floors:64,
+    bedrooms:['Studio','1BR','2BR','3BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Paramount Hotel Services','Pool','Gym','Cinema','Rooftop Bar'],
+    description:'Hollywood-branded residences operated by Paramount Hotels. Fully operational hotel services available to residents. Strong short-term rental performance. Established Business Bay location.',
+    featured:false, areaAvgPsf:1850, areaYield:7.2,
+  },
+  {
+    id:'volta', name:'Volta', developer:'DAMAC Properties',
+    area:'business-bay', coords:[55.2648,25.1872], type:'apartment', status:'off-plan',
+    completionDate:'Q4 2028', priceMin:1500000, priceMax:15000000, priceAvg:3800000,
+    psfMin:2000, psfMax:3600, units:654, floors:60,
+    bedrooms:['1BR','2BR','3BR'],
+    paymentPlan:'70/30', downPayment:20, onCompletion:30, duringConstruction:50,
+    amenities:['Sky Infinity Pool','Rock Climbing Wall','Gym','Spa','Party Hall'],
+    description:'DAMAC\'s lifestyle-focused tower in Business Bay with an emphasis on amenity-rich living. Rock climbing wall and high-octane amenities target younger professionals and active residents.',
+    featured:false, areaAvgPsf:1850, areaYield:7.2,
+  },
+
+  // ── PALM JUMEIRAH ──
+  {
+    id:'comme-des-garcons', name:'Palme Couture Residences', developer:'Palme Couture',
+    area:'palm-jumeirah', coords:[55.1390,25.1120], type:'apartment', status:'off-plan',
+    completionDate:'Q3 2027', priceMin:8500000, priceMax:120000000, priceAvg:28000000,
+    psfMin:3800, psfMax:9500, units:90, floors:18,
+    bedrooms:['2BR','3BR','4BR','Penthouse','Sky Villa'],
+    paymentPlan:'50/50', downPayment:20, onCompletion:50, duringConstruction:30,
+    amenities:['Private Beach','Infinity Pool','Concierge','Valet','Private Cinema','Wine Cellar'],
+    description:'Ultra-luxury boutique residences on Palm Jumeirah with only 90 units. Bespoke finishes, private beach access, and curated lifestyle services. Targeting the ultra-HNW segment.',
+    featured:true, areaAvgPsf:4200, areaYield:4.9,
+  },
+  {
+    id:'one-at-palm', name:'One at Palm Jumeirah', developer:'Omniyat',
+    area:'palm-jumeirah', coords:[55.1195,25.1065], type:'apartment', status:'ready',
+    completionDate:'2021', priceMin:12000000, priceMax:95000000, priceAvg:32000000,
+    psfMin:4800, psfMax:9800, units:90, floors:21,
+    bedrooms:['2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Dorchester Collection Services','Private Beach','Infinity Pool','Spa','Concierge'],
+    description:'The most prestigious address on Palm Jumeirah managed by Dorchester Collection. Only 90 units with exceptionally high quality finishes. One of Dubai\'s most sought-after ultra-luxury buildings.',
+    featured:false, areaAvgPsf:4200, areaYield:4.9,
+  },
+  {
+    id:'palm-beach-towers', name:'Palm Beach Towers', developer:'Nakheel',
+    area:'palm-jumeirah', coords:[55.1280,25.0985], type:'apartment', status:'off-plan',
+    completionDate:'Q2 2026', priceMin:2200000, priceMax:22000000, priceAvg:5800000,
+    psfMin:2200, psfMax:4200, units:1232, floors:52,
+    bedrooms:['1BR','2BR','3BR','4BR'],
+    paymentPlan:'60/40', downPayment:10, onCompletion:40, duringConstruction:50,
+    amenities:['Private Beach','Pools','Gym','Retail','Kids Club'],
+    description:'Three-tower Nakheel development at the entry of Palm Jumeirah. Relatively accessible price point for Palm. Strong demand from end-users seeking Palm lifestyle. Developer track record excellent.',
+    featured:false, areaAvgPsf:4200, areaYield:4.9,
+  },
+
+  // ── DUBAI HILLS ──
+  {
+    id:'hills-park', name:'Hills Park', developer:'Emaar Properties',
+    area:'dubai-hills', coords:[55.2468,25.1168], type:'apartment', status:'ready',
+    completionDate:'2023', priceMin:1400000, priceMax:9500000, priceAvg:3200000,
+    psfMin:1600, psfMax:2800, units:596, floors:28,
+    bedrooms:['1BR','2BR','3BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Hills Park Views','Pool','Gym','Kids Area','Cycling Tracks'],
+    description:'Established Emaar development in Dubai Hills Estate with golf course and park views. Family-oriented community with strong school catchment. Consistent rental demand from families and professionals.',
+    featured:false, areaAvgPsf:1780, areaYield:6.4,
+  },
+  {
+    id:'golf-suites', name:'Golf Suites', developer:'Emaar Properties',
+    area:'dubai-hills', coords:[55.2512,25.1145], type:'apartment', status:'off-plan',
+    completionDate:'Q1 2028', priceMin:1650000, priceMax:12000000, priceAvg:4100000,
+    psfMin:1750, psfMax:2950, units:320, floors:22,
+    bedrooms:['1BR','2BR','3BR','4BR'],
+    paymentPlan:'80/20', downPayment:10, onCompletion:20, duringConstruction:70,
+    amenities:['Golf Course Views','Community Pool','Gym','Golf Club Access'],
+    description:'Premium golf-facing apartments in Dubai Hills Estate. Direct views of the championship golf course. Part of Emaar\'s masterplanned community with full retail, schools, and hospital nearby.',
+    featured:false, areaAvgPsf:1780, areaYield:6.4,
+  },
+  {
+    id:'elvira', name:'Elvira', developer:'Emaar Properties',
+    area:'dubai-hills', coords:[55.2538,25.1088], type:'townhouse', status:'off-plan',
+    completionDate:'Q4 2027', priceMin:3200000, priceMax:8500000, priceAvg:5200000,
+    psfMin:1650, psfMax:2200, units:180, floors:3,
+    bedrooms:['3BR','4BR'],
+    paymentPlan:'80/20', downPayment:10, onCompletion:20, duringConstruction:70,
+    amenities:['Private Garden','Community Pool','BBQ Area','Kids Play','Bike Tracks'],
+    description:'Townhouse cluster in Dubai Hills offering private gardens and direct community access. Family-targeted product in one of Dubai\'s most complete masterplanned communities. Strong capital appreciation trend.',
+    featured:false, areaAvgPsf:1780, areaYield:6.4,
+  },
+
+  // ── CREEK HARBOUR ──
+  {
+    id:'creek-crescent', name:'Creek Crescent', developer:'Emaar Properties',
+    area:'creek-harbour', coords:[55.3498,25.2015], type:'apartment', status:'ready',
+    completionDate:'2022', priceMin:1350000, priceMax:14000000, priceAvg:3800000,
+    psfMin:1650, psfMax:3200, units:648, floors:38,
+    bedrooms:['1BR','2BR','3BR','4BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Creek Views','Waterfront Promenade','Pool','Gym','Retail'],
+    description:'Creek Harbour\'s established residential community with direct creek views. Waterfront promenade at doorstep. Growing area with improving amenities. Strong rental demand from younger professionals.',
+    featured:false, areaAvgPsf:1720, areaYield:6.9,
+  },
+  {
+    id:'harbour-gate', name:'Harbour Gate', developer:'Emaar Properties',
+    area:'creek-harbour', coords:[55.3522,25.2032], type:'apartment', status:'ready',
+    completionDate:'2021', priceMin:1200000, priceMax:12000000, priceAvg:3400000,
+    psfMin:1580, psfMax:2900, units:734, floors:36,
+    bedrooms:['1BR','2BR','3BR','4BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Creek Views','Retail Podium','Pool','Gym','Kids Area'],
+    description:'One of the first completed towers in Dubai Creek Harbour. Good entry point for Creek Harbour exposure. Area benefits from ongoing masterplan development and infrastructure improvement.',
+    featured:false, areaAvgPsf:1720, areaYield:6.9,
+  },
+  {
+    id:'creek-palace', name:'Creek Palace', developer:'Emaar Properties',
+    area:'creek-harbour', coords:[55.3465,25.2055], type:'apartment', status:'off-plan',
+    completionDate:'Q2 2026', priceMin:2800000, priceMax:32000000, priceAvg:8500000,
+    psfMin:2200, psfMax:4800, units:480, floors:55,
+    bedrooms:['2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'70/30', downPayment:10, onCompletion:30, duringConstruction:60,
+    amenities:['Creek Tower Views','Palace Hotel Services','Pool','Spa','Concierge'],
+    description:'Premium branded offering in Creek Harbour with views of the future Creek Tower (to surpass Burj Khalifa). Positioned as the luxury anchor of the Creek Harbour masterplan. Strong long-term appreciation thesis.',
+    featured:true, areaAvgPsf:1720, areaYield:6.9,
+  },
+
+  // ── JVC ──
+  {
+    id:'elitz-danube', name:'Elitz by Danube', developer:'Danube Properties',
+    area:'jvc', coords:[55.2135,25.0545], type:'apartment', status:'construction',
+    completionDate:'Q1 2026', priceMin:580000, priceMax:3200000, priceAvg:1150000,
+    psfMin:980, psfMax:1650, units:618, floors:44,
+    bedrooms:['Studio','1BR','2BR','3BR'],
+    paymentPlan:'1% Monthly', downPayment:10, onCompletion:30, duringConstruction:60,
+    amenities:['Rooftop Pool','Gym','Kids Play','Co-working Space','Retail'],
+    description:'Danube\'s flagship JVC project with accessible price point and 1% monthly payment plan. JVC\'s highest yield area. Strong rental demand from young professionals and small families. Near Circle Mall.',
+    featured:false, areaAvgPsf:1120, areaYield:8.2,
+  },
+  {
+    id:'binghatti-onyx', name:'Binghatti Onyx', developer:'Binghatti Developers',
+    area:'jvc', coords:[55.2168,25.0562], type:'apartment', status:'ready',
+    completionDate:'2023', priceMin:520000, priceMax:2800000, priceAvg:980000,
+    psfMin:920, psfMax:1580, units:250, floors:22,
+    bedrooms:['Studio','1BR','2BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Pool','Gym','Retail Podium'],
+    description:'Binghatti\'s distinctive architectural aesthetic in JVC. Competitive pricing with immediate availability. JVC is Dubai\'s highest-yielding established area for apartment rentals.',
+    featured:false, areaAvgPsf:1120, areaYield:8.2,
+  },
+
+  // ── MBR CITY / SOBHA HARTLAND ──
+  {
+    id:'sobha-hartland-ii', name:'Sobha Hartland II', developer:'Sobha Realty',
+    area:'mbr-city', coords:[55.3098,25.1768], type:'apartment', status:'off-plan',
+    completionDate:'Q3 2027', priceMin:1450000, priceMax:22000000, priceAvg:4200000,
+    psfMin:1750, psfMax:3400, units:980, floors:50,
+    bedrooms:['1BR','2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'60/40', downPayment:20, onCompletion:40, duringConstruction:40,
+    amenities:['Crystal Lagoon','Private Beach','School','Retail','Gym','Kids Club'],
+    description:'Sobha Realty\'s second phase in MBR City with crystal lagoon access. Community-oriented masterplan with schools and retail within walking distance. Sobha\'s quality finishes at competitive pricing.',
+    featured:false, areaAvgPsf:1890, areaYield:6.5,
+  },
+  {
+    id:'forest-villas', name:'Forest Villas', developer:'Sobha Realty',
+    area:'mbr-city', coords:[55.3145,25.1792], type:'villa', status:'off-plan',
+    completionDate:'Q4 2026', priceMin:9500000, priceMax:28000000, priceAvg:16000000,
+    psfMin:1850, psfMax:2800, units:60, floors:3,
+    bedrooms:['5BR','6BR'],
+    paymentPlan:'60/40', downPayment:20, onCompletion:40, duringConstruction:40,
+    amenities:['Private Pool','Garden','Crystal Lagoon Access','Smart Home','Fully Fitted Kitchen'],
+    description:'Limited collection of ultra-luxury standalone villas in Sobha Hartland surrounded by greenery. Among the most private villa addresses in Dubai with community nature reserve views.',
+    featured:false, areaAvgPsf:1890, areaYield:6.5,
+  },
+
+  // ── DUBAI SOUTH ──
+  {
+    id:'emaar-south-golf-links', name:'Golf Links', developer:'Emaar South',
+    area:'dubai-south', coords:[55.1645,24.9995], type:'villa', status:'off-plan',
+    completionDate:'Q2 2028', priceMin:2800000, priceMax:9500000, priceAvg:5200000,
+    psfMin:1100, psfMax:1750, units:350, floors:3,
+    bedrooms:['3BR','4BR','5BR'],
+    paymentPlan:'80/20', downPayment:10, onCompletion:20, duringConstruction:70,
+    amenities:['Golf Course Views','Community Pool','Bike Tracks','Kids Area','Retail'],
+    description:'Golf-fronting villas in Emaar South, one of Dubai\'s fastest growing communities adjacent to Al Maktoum International Airport. Expo City proximity. Long-term appreciation driven by airport expansion.',
+    featured:false, areaAvgPsf:1250, areaYield:6.1,
+  },
+  {
+    id:'urbana-dubai-south', name:'Urbana', developer:'Emaar South',
+    area:'dubai-south', coords:[55.1598,24.9968], type:'townhouse', status:'construction',
+    completionDate:'Q3 2025', priceMin:1250000, priceMax:3800000, priceAvg:2100000,
+    psfMin:950, psfMax:1450, units:240, floors:3,
+    bedrooms:['2BR','3BR'],
+    paymentPlan:'80/20', downPayment:10, onCompletion:20, duringConstruction:70,
+    amenities:['Community Pool','Gym','Kids Play Area','BBQ Zone','Cycling Track'],
+    description:'Townhouse community by Emaar in Dubai South. Among the most affordable townhouse options by a tier-1 developer. Near completion — reduced construction risk for investors.',
+    featured:false, areaAvgPsf:1250, areaYield:6.1,
+  },
+
+  // ── JBR ──
+  {
+    id:'la-vie-jbr', name:'La Vie', developer:'Dubai Properties',
+    area:'jbr', coords:[55.1368,25.0785], type:'apartment', status:'ready',
+    completionDate:'2022', priceMin:2400000, priceMax:28000000, priceAvg:7200000,
+    psfMin:2200, psfMax:4200, units:496, floors:55,
+    bedrooms:['1BR','2BR','3BR','4BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Beach Access','Infinity Pool','Gym','Retail','JBR Promenade'],
+    description:'Beachfront tower with direct beach access on JBR\'s The Walk. Strong short-term rental performance year-round. Among the best investment options on JBR for rental income.',
+    featured:false, areaAvgPsf:2350, areaYield:6.2,
+  },
+  {
+    id:'five-jbr', name:'FIVE Jumeirah Village', developer:'FIVE Holdings',
+    area:'jbr', coords:[55.1442,25.0820], type:'apartment', status:'ready',
+    completionDate:'2021', priceMin:1800000, priceMax:22000000, priceAvg:5500000,
+    psfMin:2100, psfMax:4000, units:697, floors:48,
+    bedrooms:['Studio','1BR','2BR','3BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['FIVE Hotel Services','Private Beach','4 Pools','Nightclub','Fine Dining'],
+    description:'FIVE\'s signature party-lifestyle hotel and residences on JBR. Extremely high short-term rental yields driven by hotel demand and beach access. Not suitable for family living but exceptional investment returns.',
+    featured:true, areaAvgPsf:2350, areaYield:6.2,
+  },
+
+  // ── DAMAC HILLS ──
+  {
+    id:'damac-hills-golf-gate', name:'Golf Gate', developer:'DAMAC Properties',
+    area:'damac-hills', coords:[55.2318,25.0412], type:'apartment', status:'ready',
+    completionDate:'2021', priceMin:680000, priceMax:4500000, priceAvg:1450000,
+    psfMin:850, psfMax:1580, units:385, floors:26,
+    bedrooms:['Studio','1BR','2BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Golf Course Views','Trump International Golf Club Access','Pool','Gym'],
+    description:'Golf-facing apartments in DAMAC Hills offering Trump Golf Club access. Established community with full amenities including Malibu beach. Affordable entry point to a premium lifestyle community.',
+    featured:false, areaAvgPsf:980, areaYield:7.1,
+  },
+  {
+    id:'portofino-damac', name:'Portofino', developer:'DAMAC Properties',
+    area:'damac-hills', coords:[55.2285,25.0435], type:'villa', status:'off-plan',
+    completionDate:'Q4 2027', priceMin:4500000, priceMax:18000000, priceAvg:8500000,
+    psfMin:1100, psfMax:1850, units:158, floors:3,
+    bedrooms:['4BR','5BR','6BR'],
+    paymentPlan:'70/30', downPayment:20, onCompletion:30, duringConstruction:50,
+    amenities:['Private Pool','Smart Home','Golf Views','DAMAC Hills Amenities'],
+    description:'Italian-inspired villa community in DAMAC Hills with Trump Golf Club views. Standalone villas with private pools. DAMAC Hills has emerged as one of Dubai\'s premier villa communities.',
+    featured:false, areaAvgPsf:980, areaYield:7.1,
+  },
+
+  // ── ARJAN / DUBAILAND ──
+  {
+    id:'vincitore-dolce', name:'Vincitore Dolce Vita', developer:'Vincitore Real Estate',
+    area:'arjan', coords:[55.2248,25.0612], type:'apartment', status:'off-plan',
+    completionDate:'Q2 2026', priceMin:780000, priceMax:4200000, priceAvg:1650000,
+    psfMin:1100, psfMax:1850, units:428, floors:35,
+    bedrooms:['Studio','1BR','2BR'],
+    paymentPlan:'60/40', downPayment:20, onCompletion:40, duringConstruction:40,
+    amenities:['Rooftop Pool','Gym','Retail','Kids Area','Italian-Inspired Architecture'],
+    description:'Boutique Italian-themed development in Arjan. Competitive pricing in a growing area near Dubai Miracle Garden. Good yield potential in an improving micro-location.',
+    featured:false, areaAvgPsf:1180, areaYield:7.8,
+  },
+
+  // ── DIFC / CULTURE VILLAGE ──
+  {
+    id:'me-do-re', name:'Me Do Re Tower', developer:'Me Do Re Real Estate',
+    area:'jumeirah-lake-towers', coords:[55.1562,25.0675], type:'apartment', status:'ready',
+    completionDate:'2022', priceMin:950000, priceMax:12000000, priceAvg:2800000,
+    psfMin:1450, psfMax:2800, units:196, floors:40,
+    bedrooms:['1BR','2BR','3BR','Penthouse'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['JLT Lake Views','Pool','Gym','Concierge','Retail'],
+    description:'Premium boutique tower in JLT with lake views. Well-positioned for DMCC Free Zone professionals. JLT remains one of Dubai\'s highest-yielding established clusters.',
+    featured:false, areaAvgPsf:1520, areaYield:7.5,
+  },
+
+  // ── MEYDAN / DISTRICT ONE ──
+  {
+    id:'district-one-mansions', name:'District One Mansions', developer:'Meydan Group',
+    area:'meydan', coords:[55.3168,25.1625], type:'villa', status:'ready',
+    completionDate:'2022', priceMin:18000000, priceMax:95000000, priceAvg:38000000,
+    psfMin:2800, psfMax:5500, units:49, floors:3,
+    bedrooms:['6BR','7BR','8BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Crystal Lagoon Access','Private Pool','Smart Home','Meydan Golf','Racecourse'],
+    description:'Mega-mansions fronting the Crystal Lagoon in District One. Among Dubai\'s most exclusive villa addresses. Ultra-HNW clientele. Limited supply with genuine trophy asset characteristics.',
+    featured:true, areaAvgPsf:2100, areaYield:3.8,
+  },
+  {
+    id:'district-one-west', name:'District One West', developer:'Meydan Group',
+    area:'meydan', coords:[55.3185,25.1648], type:'villa', status:'off-plan',
+    completionDate:'Q1 2027', priceMin:9500000, priceMax:55000000, priceAvg:22000000,
+    psfMin:2200, psfMax:4200, units:280, floors:3,
+    bedrooms:['4BR','5BR','6BR'],
+    paymentPlan:'65/35', downPayment:20, onCompletion:35, duringConstruction:45,
+    amenities:['Crystal Lagoon','Private Pool','Gym','Kids Area','Racecourse Views'],
+    description:'District One\'s expansion phase with more accessible entry than the Mansions. Crystal Lagoon lifestyle at a lower price point. Strong demand from move-up buyers from established villa communities.',
+    featured:false, areaAvgPsf:2100, areaYield:3.8,
+  },
+
+  // ── AL JADDAF / CULTURE VILLAGE ──
+  {
+    id:'waterfront-jaddaf', name:'Waterfront Residences', developer:'Azizi Developments',
+    area:'al-jaddaf', coords:[55.3322,25.2245], type:'apartment', status:'ready',
+    completionDate:'2021', priceMin:680000, priceMax:4800000, priceAvg:1650000,
+    psfMin:1050, psfMax:2100, units:520, floors:32,
+    bedrooms:['Studio','1BR','2BR','3BR'],
+    paymentPlan:'100 on Transfer', downPayment:100, onCompletion:0, duringConstruction:0,
+    amenities:['Creek Views','Pool','Gym','Retail','Near Meydan'],
+    description:'Azizi waterfront development offering creek views at competitive pricing. Al Jaddaf is an emerging area with improving infrastructure. Near Meydan Racecourse and Healthcare City.',
+    featured:false, areaAvgPsf:1180, areaYield:7.4,
+  },
+
+  // ── DUBAI MARINA JLT extra ──
+  {
+    id:'damac-bay2', name:'DAMAC Bay 2 by Cavalli', developer:'DAMAC Properties',
+    area:'dubai-harbour', coords:[55.1325,25.0905], type:'apartment', status:'off-plan',
+    completionDate:'Q4 2027', priceMin:3500000, priceMax:45000000, priceAvg:12000000,
+    psfMin:2800, psfMax:6200, units:325, floors:49,
+    bedrooms:['1BR','2BR','3BR','4BR','Sky Villa'],
+    paymentPlan:'70/30', downPayment:20, onCompletion:30, duringConstruction:50,
+    amenities:['Roberto Cavalli Design','Infinity Pool','Private Beach','Yacht Club','Spa','Concierge'],
+    description:'Roberto Cavalli-branded ultra-luxury residences at Dubai Harbour. Fashion-house design aesthetic with seahorse-shaped architecture. Stunning views of Palm Jumeirah and Dubai Marina skyline.',
+    featured:true, areaAvgPsf:3100, areaYield:5.2,
+  },
+  {
+    id:'six-senses-residences', name:'Six Senses Residences Palm', developer:'Select Group',
+    area:'palm-jumeirah', coords:[55.1268,25.1052], type:'villa', status:'off-plan',
+    completionDate:'Q2 2026', priceMin:12000000, priceMax:180000000, priceAvg:42000000,
+    psfMin:5500, psfMax:12000, units:162, floors:2,
+    bedrooms:['3BR','4BR','5BR','7BR'],
+    paymentPlan:'50/50', downPayment:20, onCompletion:50, duringConstruction:30,
+    amenities:['Six Senses Wellness','Private Beach','Infinity Pool','Organic Farm','Spa','Biohacking Lab'],
+    description:'World\'s first Six Senses branded residences on The Palm. Wellness-first architecture with biohacking amenities, organic farming, and the iconic Six Senses spa. Targeting global wellness-focused UHNW buyers.',
+    featured:true, areaAvgPsf:4200, areaYield:4.9,
+  },
+  {
+    id:'emaar-grove', name:'The Grove', developer:'Emaar Properties',
+    area:'dubai-hills', coords:[55.2492,25.1108], type:'apartment', status:'off-plan',
+    completionDate:'Q3 2027', priceMin:1300000, priceMax:7800000, priceAvg:2900000,
+    psfMin:1580, psfMax:2600, units:420, floors:25,
+    bedrooms:['1BR','2BR','3BR'],
+    paymentPlan:'80/20', downPayment:10, onCompletion:20, duringConstruction:70,
+    amenities:['Park Views','Community Pool','Gym','Retail','Kids Area'],
+    description:'Mid-tier Emaar offering in Dubai Hills Estate at a competitive price point. Park-facing with lush greenery views. Dubai Hills remains one of the most complete masterplanned communities in UAE.',
+    featured:false, areaAvgPsf:1780, areaYield:6.4,
+  },
+];
+
+/* ══════════════════════════════════════════════
+   PROJECT STATE
+══════════════════════════════════════════════ */
+let _mainTab = 'areas'; // 'areas' | 'projects'
+let _projFilters = { status: 'all', type: 'all', search: '' };
+let _selProjId = null;
+let _projTab = 'overview';
+let _projAiCache = {};
+
+/* ══════════════════════════════════════════════
+   MAIN TAB SWITCH
+══════════════════════════════════════════════ */
+function switchMainTab(tab) {
+  _mainTab = tab;
+  document.getElementById('main-tab-areas').classList.toggle('active', tab === 'areas');
+  document.getElementById('main-tab-projects').classList.toggle('active', tab === 'projects');
+
+  if (tab === 'projects') {
+    document.body.classList.add('projects-mode');
+    document.body.classList.remove('areas-mode');
+    document.getElementById('projects-panel').classList.add('visible');
+    document.getElementById('price-legend').classList.add('visible');
+    enableProjectsMap();
+  } else {
+    document.body.classList.add('areas-mode');
+    document.body.classList.remove('projects-mode');
+    document.getElementById('projects-panel').classList.remove('visible');
+    document.getElementById('price-legend').classList.remove('visible');
+    closeProjectDetail();
+    disableProjectsMap();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   PROJECTS MAP
+══════════════════════════════════════════════ */
+function enableProjectsMap() {
+  // Fly to 3D city view
+  map.easeTo({
+    center: [55.2708, 25.1972],
+    zoom: 12.5,
+    pitch: 55,
+    bearing: -20,
+    duration: 1400
+  });
+
+  // Enable Mapbox 3D buildings layer
+  try {
+    if (!map.getLayer('3d-buildings')) {
+      map.addLayer({
+        id: '3d-buildings',
+        source: 'composite',
+        'source-layer': 'building',
+        filter: ['==', 'extrude', 'true'],
+        type: 'fill-extrusion',
+        minzoom: 11,
+        paint: {
+          'fill-extrusion-color': ['interpolate', ['linear'], ['zoom'],
+            11, '#1a2035', 14, '#222c45'
+          ],
+          'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'],
+            11, 0, 11.5, ['get', 'height']
+          ],
+          'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'],
+            11, 0, 11.5, ['get', 'min_height']
+          ],
+          'fill-extrusion-opacity': 0.85
+        }
+      });
+    } else {
+      map.setLayoutProperty('3d-buildings', 'visibility', 'visible');
+    }
+  } catch(e) { console.warn('3d buildings:', e); }
+
+  // Hide area layers in projects mode
+  ['area-fill','area-glow','area-line','area-line-hi','area-label','area-extrude'].forEach(id => {
+    try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
+  });
+
+  addProjectDots();
+  renderProjectList();
+  updatePriceLegend();
+}
+
+function disableProjectsMap() {
+  // Hide 3D buildings
+  try { if (map.getLayer('3d-buildings')) map.setLayoutProperty('3d-buildings', 'visibility', 'none'); } catch(e) {}
+
+  // Remove project layers
+  ['proj-dots-shadow','proj-dots-ring','proj-dots','proj-labels'].forEach(id => {
+    try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {}
+  });
+  try { if (map.getSource('proj-src')) map.removeSource('proj-src'); } catch(e) {}
+
+  // Restore area layers
+  if (_layerState.areas) {
+    ['area-fill','area-glow','area-line','area-line-hi','area-label'].forEach(id => {
+      try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visible' ? 'visibility' : 'visibility', 'visible'); } catch(e) {}
+    });
+  }
+  if (_layerState.extrude) {
+    try { if (map.getLayer('area-extrude')) map.setLayoutProperty('area-extrude', 'visibility', 'visible'); } catch(e) {}
+  }
+
+  // Restore 2D view
+  map.easeTo({ pitch: 0, bearing: 0, zoom: 9.2, center: [55.27, 25.19], duration: 1000 });
+}
+
+function getFilteredProjects() {
+  return PROJECTS.filter(p => {
+    if (_projFilters.status !== 'all' && p.status !== _projFilters.status) return false;
+    if (_projFilters.type !== 'all' && p.type !== _projFilters.type) return false;
+    if (_projFilters.search) {
+      const q = _projFilters.search.toLowerCase();
+      if (!p.name.toLowerCase().includes(q) && !p.developer.toLowerCase().includes(q) && !p.area.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+}
+
+function projPriceColor(priceMin, allProjects) {
+  const prices = allProjects.map(p => p.priceMin);
+  const min = Math.min(...prices), max = Math.max(...prices);
+  const t = max === min ? 0 : (priceMin - min) / (max - min);
+  // Gradient: cyan → green → amber → red
+  if (t < 0.33) {
+    const s = t / 0.33;
+    return lerpHex('#00C2CB', '#22C55E', s);
+  } else if (t < 0.66) {
+    const s = (t - 0.33) / 0.33;
+    return lerpHex('#22C55E', '#F59E0B', s);
+  } else {
+    const s = (t - 0.66) / 0.34;
+    return lerpHex('#F59E0B', '#EF4444', s);
+  }
+}
+
+function addProjectDots() {
+  // Remove existing
+  ['proj-dots-shadow','proj-dots-ring','proj-dots','proj-labels'].forEach(id => {
+    try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {}
+  });
+  try { if (map.getSource('proj-src')) map.removeSource('proj-src'); } catch(e) {}
+
+  const filtered = getFilteredProjects();
+  const fc = {
+    type: 'FeatureCollection',
+    features: filtered.map(p => ({
+      type: 'Feature',
+      properties: {
+        id: p.id,
+        name: p.name,
+        developer: p.developer,
+        priceMin: p.priceMin,
+        status: p.status,
+        type: p.type,
+        color: projPriceColor(p.priceMin, filtered),
+        featured: p.featured,
+      },
+      geometry: { type: 'Point', coordinates: p.coords }
+    }))
+  };
+
+  map.addSource('proj-src', { type: 'geojson', data: fc });
+
+  // Shadow
+  map.addLayer({ id:'proj-dots-shadow', type:'circle', source:'proj-src',
+    paint: {
+      'circle-radius': ['interpolate',['linear'],['zoom'], 10,9, 12,13, 14,18],
+      'circle-color': '#000000', 'circle-opacity': 0.35, 'circle-blur': 0.5
+    }
+  });
+
+  // White ring
+  map.addLayer({ id:'proj-dots-ring', type:'circle', source:'proj-src',
+    paint: {
+      'circle-radius': ['interpolate',['linear'],['zoom'], 10,7, 12,11, 14,15],
+      'circle-color': '#FFFFFF', 'circle-opacity': 1,
+    }
+  });
+
+  // Colored dot (featured = larger)
+  map.addLayer({ id:'proj-dots', type:'circle', source:'proj-src',
+    paint: {
+      'circle-radius': ['interpolate',['linear'],['zoom'],
+        10, ['case', ['get','featured'], 6, 5],
+        12, ['case', ['get','featured'], 9, 8],
+        14, ['case', ['get','featured'], 13, 11]
+      ],
+      'circle-color': ['get','color'],
+      'circle-opacity': 1,
+      'circle-stroke-width': ['case', ['get','featured'], 2, 0],
+      'circle-stroke-color': '#C9A84C',
+    }
+  });
+
+  // Labels at high zoom
+  map.addLayer({ id:'proj-labels', type:'symbol', source:'proj-src',
+    minzoom: 13,
+    layout: {
+      'text-field': ['get','name'],
+      'text-font': ['DIN Pro Medium','Arial Unicode MS Regular'],
+      'text-size': ['interpolate',['linear'],['zoom'], 13,10, 15,12],
+      'text-offset': [0, 1.4],
+      'text-anchor': 'top',
+      'text-max-width': 8,
+      'text-allow-overlap': false,
+      'text-optional': true,
+    },
+    paint: {
+      'text-color': '#FFFFFF',
+      'text-halo-color': 'rgba(0,0,0,0.9)',
+      'text-halo-width': 1.5,
+      'text-opacity': ['interpolate',['linear'],['zoom'], 13,0, 13.5,1],
+    }
+  });
+
+  // Hover tooltip
+  const projPopup = new mapboxgl.Popup({ closeButton:false, closeOnClick:false, maxWidth:'220px', className:'raqam-popup', offset:12 });
+
+  map.on('mousemove', 'proj-dots', (e) => {
+    map.getCanvas().style.cursor = 'pointer';
+    const p = e.features[0]?.properties;
+    if (!p) return;
+    const proj = PROJECTS.find(x => x.id === p.id);
+    if (!proj) return;
+    projPopup.setLngLat(e.lngLat).setHTML(`
+      <div class="rp-hover-card">
+        <div class="rp-hc-name">${proj.name}</div>
+        <div class="rp-hc-tier">${proj.developer} · ${proj.type}</div>
+        <div class="rp-hc-swatch" style="background:${p.color}"></div>
+        <div class="rp-hc-grid">
+          <div class="rp-hc-kpi"><div class="rp-hc-l">From</div><div class="rp-hc-v">AED ${(proj.priceMin/1e6).toFixed(1)}M</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">PSF</div><div class="rp-hc-v">${proj.psfMin.toLocaleString()}</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">Units</div><div class="rp-hc-v">${proj.units}</div></div>
+          <div class="rp-hc-kpi"><div class="rp-hc-l">Completion</div><div class="rp-hc-v">${proj.completionDate}</div></div>
+        </div>
+      </div>`).addTo(map);
+  });
+  map.on('mouseleave', 'proj-dots', () => { map.getCanvas().style.cursor=''; projPopup.remove(); });
+
+  map.on('click', 'proj-dots', (e) => {
+    const p = e.features[0]?.properties;
+    if (!p) return;
+    const proj = PROJECTS.find(x => x.id === p.id);
+    if (proj) openProjectDetail(proj);
+  });
+}
+
+/* ══════════════════════════════════════════════
+   PROJECT LIST
+══════════════════════════════════════════════ */
+function renderProjectList() {
+  const filtered = getFilteredProjects();
+  const list = document.getElementById('proj-list');
+  if (!list) return;
+
+  // Update stats
+  const el = n => document.getElementById(n);
+  if (el('pp-count')) el('pp-count').textContent = filtered.length;
+  if (filtered.length) {
+    const avgPsf = Math.round(filtered.reduce((a,p)=>a+p.psfMin,0)/filtered.length);
+    const minPrice = Math.min(...filtered.map(p=>p.priceMin));
+    if (el('pp-avg-psf')) el('pp-avg-psf').textContent = avgPsf.toLocaleString();
+    if (el('pp-min-price')) el('pp-min-price').textContent = 'AED '+(minPrice/1e6).toFixed(1)+'M';
+  }
+
+  // Sort: featured first, then by price
+  const sorted = [...filtered].sort((a,b) => (b.featured?1:0)-(a.featured?1:0) || a.priceMin-b.priceMin);
+
+  list.innerHTML = sorted.map(p => {
+    const col = projPriceColor(p.priceMin, filtered);
+    const statusClass = p.status.replace(' ','-');
+    const statusLabel = p.status === 'off-plan' ? 'Off-Plan' : p.status === 'ready' ? 'Ready' : 'U/C';
+    const active = _selProjId === p.id ? ' active' : '';
+    return `<div class="proj-row${active}" onclick="openProjectDetail(PROJECTS.find(x=>x.id==='${p.id}'))" data-id="${p.id}">
+      <div class="proj-dot-mini" style="background:${col}"></div>
+      <div class="proj-row-body">
+        <div class="proj-row-name">${p.featured ? '★ ' : ''}${p.name}</div>
+        <div class="proj-row-dev">${p.developer}</div>
+        <div class="proj-row-meta">
+          <span class="proj-badge ${statusClass}">${statusLabel}</span>
+          <span class="proj-badge" style="background:rgba(255,255,255,0.06);color:var(--text3)">${p.type}</span>
+          <span class="proj-row-price">AED ${(p.priceMin/1e6).toFixed(1)}M+</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function updatePriceLegend() {
+  const filtered = getFilteredProjects();
+  if (!filtered.length) return;
+  const prices = filtered.map(p=>p.priceMin);
+  const high = Math.max(...prices), low = Math.min(...prices);
+  const avg = Math.round(prices.reduce((a,b)=>a+b,0)/prices.length);
+  const fmt = v => v >= 1e6 ? 'AED '+(v/1e6).toFixed(1)+'M' : 'AED '+v.toLocaleString();
+  const el = n => document.getElementById(n);
+  if (el('pl-high')) el('pl-high').textContent = fmt(high);
+  if (el('pl-avg')) el('pl-avg').textContent = fmt(avg);
+  if (el('pl-low')) el('pl-low').textContent = fmt(low);
+}
+
+function setProjFilter(key, val, btn) {
+  _projFilters[key] = val;
+  // Update button active states
+  const row = btn.parentElement;
+  row.querySelectorAll('.pp-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterProjects();
+}
+
+function filterProjects() {
+  const q = document.getElementById('proj-search')?.value || '';
+  _projFilters.search = q;
+  addProjectDots();
+  renderProjectList();
+  updatePriceLegend();
+}
+
+/* ══════════════════════════════════════════════
+   PROJECT DETAIL PANEL
+══════════════════════════════════════════════ */
+function openProjectDetail(proj) {
+  if (!proj) return;
+  _selProjId = proj.id;
+  _projTab = 'overview';
+
+  // Fly to project
+  map.flyTo({ center: proj.coords, zoom: Math.max(map.getZoom(), 14), pitch: 55, bearing: -20, duration: 900 });
+
+  // Highlight in list
+  document.querySelectorAll('.proj-row').forEach(r => r.classList.toggle('active', r.dataset.id === proj.id));
+
+  // Fill header
+  document.getElementById('prp-name').textContent = proj.name;
+  document.getElementById('prp-dev').textContent = proj.developer + ' · ' + proj.area.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
+
+  // Badges
+  const statusClass = proj.status.replace(' ','-');
+  const statusLabel = proj.status === 'off-plan' ? 'Off-Plan' : proj.status === 'ready' ? 'Ready' : 'Under Construction';
+  document.getElementById('prp-badges').innerHTML =
+    `<span class="prp-badge ${statusClass}">${statusLabel}</span>
+     <span class="prp-badge type-b">${proj.type}</span>
+     ${proj.featured ? '<span class="prp-badge featured">★ Featured</span>' : ''}
+     <span class="prp-badge type-b">${proj.completionDate}</span>`;
+
+  // KPIs
+  document.getElementById('prp-kpis').innerHTML =
+    `<div class="prp-kpi"><div class="prp-kpi-l">From</div><div class="prp-kpi-v gold">AED ${(proj.priceMin/1e6).toFixed(1)}M</div></div>
+     <div class="prp-kpi"><div class="prp-kpi-l">PSF</div><div class="prp-kpi-v cyan">${proj.psfMin.toLocaleString()}</div></div>
+     <div class="prp-kpi"><div class="prp-kpi-l">Units</div><div class="prp-kpi-v">${proj.units}</div></div>
+     <div class="prp-kpi"><div class="prp-kpi-l">Floors</div><div class="prp-kpi-v">${proj.floors}</div></div>`;
+
+  // Reset tabs
+  document.querySelectorAll('.prp-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.prp-tab')[0].classList.add('active');
+
+  // Open panel
+  const panel = document.getElementById('proj-right-panel');
+  panel.classList.add('open');
+
+  renderProjTab('overview', proj);
+}
+
+function closeProjectDetail() {
+  _selProjId = null;
+  const panel = document.getElementById('proj-right-panel');
+  if (panel) panel.classList.remove('open');
+  document.querySelectorAll('.proj-row').forEach(r => r.classList.remove('active'));
+}
+
+function switchProjTab(tab, btn) {
+  _projTab = tab;
+  document.querySelectorAll('.prp-tab').forEach(t => t.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const proj = PROJECTS.find(p => p.id === _selProjId);
+  if (proj) renderProjTab(tab, proj);
+}
+
+function renderProjTab(tab, proj) {
+  const body = document.getElementById('prp-body');
+  if (!body) return;
+
+  if (tab === 'overview') {
+    const areaData = AREAS.find(a => a.id === proj.area) || AREAS.find(a => proj.area.includes(a.id.split('-')[0]));
+    body.innerHTML = `
+      <div class="prp-section">
+        <div class="prp-section-title">About</div>
+        <div class="prp-desc">${proj.description}</div>
+      </div>
+      <div class="prp-section">
+        <div class="prp-section-title">Bedrooms</div>
+        <div class="prp-beds">${proj.bedrooms.map(b=>`<div class="prp-bed-tag">${b}</div>`).join('')}</div>
+      </div>
+      <div class="prp-section">
+        <div class="prp-section-title">Amenities</div>
+        <div class="prp-amenities">${proj.amenities.map(a=>`<div class="prp-amenity">${a}</div>`).join('')}</div>
+      </div>
+      ${areaData ? `
+      <div class="prp-section">
+        <div class="prp-section-title">Area Context vs Project</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Area Avg PSF</div>
+            <div class="prp-kpi-v">AED ${areaData.psf.toLocaleString()}</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Project PSF</div>
+            <div class="prp-kpi-v cyan">AED ${proj.psfMin.toLocaleString()}</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Area YoY</div>
+            <div class="prp-kpi-v">${areaData.yoy}%</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Area Yield</div>
+            <div class="prp-kpi-v gold">${areaData.yld}%</div>
+          </div>
+        </div>
+      </div>` : ''}`;
+
+  } else if (tab === 'units') {
+    const unitTypes = proj.bedrooms.map(br => {
+      const sizeLow = br === 'Studio' ? 380 : br === '1BR' ? 650 : br === '2BR' ? 1100 : br === '3BR' ? 1600 : br === '4BR' ? 2400 : br.includes('Penthouse') ? 4500 : br.includes('Sky') ? 6000 : 3200;
+      const priceFrom = Math.round(proj.psfMin * sizeLow * 0.95 / 10000) * 10000;
+      return `<tr>
+        <td>${br}</td>
+        <td>${sizeLow.toLocaleString()}+</td>
+        <td>AED ${(priceFrom/1e6).toFixed(1)}M</td>
+        <td style="color:var(--accent)">Available</td>
+      </tr>`;
+    });
+    body.innerHTML = `
+      <div class="prp-section">
+        <div class="prp-section-title">Unit Mix</div>
+        <table class="prp-unit-table">
+          <thead><tr><th>Type</th><th>Size (sqft)</th><th>From</th><th>Status</th></tr></thead>
+          <tbody>${unitTypes.join('')}</tbody>
+        </table>
+      </div>
+      <div class="prp-section" style="margin-top:14px">
+        <div class="prp-section-title">Project Summary</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Total Units</div><div class="prp-kpi-v">${proj.units}</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Floors</div><div class="prp-kpi-v">${proj.floors}</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">PSF Range</div><div class="prp-kpi-v">${proj.psfMin.toLocaleString()}–${proj.psfMax.toLocaleString()}</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Price Range</div><div class="prp-kpi-v gold">${(proj.priceMin/1e6).toFixed(1)}–${(proj.priceMax/1e6).toFixed(1)}M</div>
+          </div>
+        </div>
+      </div>`;
+
+  } else if (tab === 'payment') {
+    const dp = proj.downPayment;
+    const mid = proj.duringConstruction;
+    const comp = proj.onCompletion;
+    const total = dp + mid + comp;
+    body.innerHTML = `
+      <div class="prp-section">
+        <div class="prp-section-title">Payment Plan</div>
+        <div style="font-size:18px;font-weight:700;color:var(--accent);margin-bottom:12px;font-family:'IBM Plex Mono',monospace">${proj.paymentPlan}</div>
+        <div class="prp-payment-bar">
+          <div class="prp-payment-seg" style="width:${dp}%;background:#00C2CB">${dp}%</div>
+          <div class="prp-payment-seg" style="width:${mid}%;background:#818CF8">${mid > 5 ? mid+'%' : ''}</div>
+          <div class="prp-payment-seg" style="width:${comp}%;background:#C9A84C">${comp > 5 ? comp+'%' : ''}</div>
+        </div>
+        <div class="prp-payment-legend">
+          <div class="prp-payment-leg-item"><div class="prp-payment-leg-dot" style="background:#00C2CB"></div>Down Payment: ${dp}%</div>
+          <div class="prp-payment-leg-item"><div class="prp-payment-leg-dot" style="background:#818CF8"></div>During Construction: ${mid}%</div>
+          <div class="prp-payment-leg-item"><div class="prp-payment-leg-dot" style="background:#C9A84C"></div>On Completion: ${comp}%</div>
+        </div>
+      </div>
+      <div class="prp-section" style="margin-top:14px">
+        <div class="prp-section-title">Indicative Cash Flow</div>
+        <table class="prp-unit-table">
+          <thead><tr><th>Milestone</th><th>%</th><th>AED (Avg Unit)</th></tr></thead>
+          <tbody>
+            <tr><td>Booking Deposit</td><td>${dp}%</td><td>${Math.round(proj.priceAvg*dp/100).toLocaleString()}</td></tr>
+            <tr><td>Construction</td><td>${mid}%</td><td>${Math.round(proj.priceAvg*mid/100).toLocaleString()}</td></tr>
+            <tr><td>Handover</td><td>${comp}%</td><td>${Math.round(proj.priceAvg*comp/100).toLocaleString()}</td></tr>
+          </tbody>
+        </table>
+      </div>`;
+
+  } else if (tab === 'location') {
+    const areaData = AREAS.find(a => a.id === proj.area) || AREAS.find(a => proj.area.includes(a.id.split('-')[0]));
+    body.innerHTML = `
+      <div class="prp-area-link" onclick="viewProjectArea('${proj.area}')">
+        <div class="prp-area-link-icon">📍</div>
+        <div class="prp-area-link-body">
+          <div class="prp-area-link-text">${proj.area.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase())}</div>
+          <div class="prp-area-link-sub">View full area intelligence →</div>
+        </div>
+        <div class="prp-area-link-arr">›</div>
+      </div>
+      ${areaData ? `
+      <div class="prp-section">
+        <div class="prp-section-title">Area Intelligence</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Avg PSF</div><div class="prp-kpi-v">AED ${areaData.psf.toLocaleString()}</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">YoY Growth</div><div class="prp-kpi-v" style="color:#22C55E">+${areaData.yoy}%</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Rental Yield</div><div class="prp-kpi-v gold">${areaData.yld}%</div>
+          </div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+            <div class="prp-kpi-l">Inv. Score</div><div class="prp-kpi-v cyan">${areaData.score}/100</div>
+          </div>
+        </div>
+      </div>` : ''}
+      <div class="prp-section">
+        <div class="prp-section-title">Coordinates</div>
+        <div style="font-size:11px;color:var(--text3);font-family:'IBM Plex Mono',monospace">${proj.coords[1].toFixed(5)}°N, ${proj.coords[0].toFixed(5)}°E</div>
+      </div>`;
+
+  } else if (tab === 'ai') {
+    body.innerHTML = `<div class="prp-ai-box" id="prp-ai-content">
+      <div class="prp-ai-loading"><div class="prp-ai-spinner"></div>Generating AI investment brief...</div>
+    </div>`;
+    loadProjectAI(proj);
+  }
+}
+
+function viewProjectArea(areaId) {
+  // Switch to Areas tab and select the area
+  switchMainTab('areas');
+  setTimeout(() => {
+    const area = AREAS.find(a => a.id === areaId) || AREAS.find(a => areaId.includes(a.id));
+    if (area) {
+      selectArea(area);
+    }
+  }, 600);
+}
+
+async function loadProjectAI(proj) {
+  if (_projAiCache[proj.id]) {
+    renderProjectAI(proj, _projAiCache[proj.id]);
+    return;
+  }
+  try {
+    const areaData = AREAS.find(a => a.id === proj.area) || AREAS.find(a => proj.area.includes(a.id.split('-')[0]));
+    const prompt = `You are RAQAM, Dubai's AI real estate intelligence engine.
+
+Analyze this Dubai property project for investors:
+
+Project: ${proj.name}
+Developer: ${proj.developer}
+Type: ${proj.type} | Status: ${proj.status}
+Completion: ${proj.completionDate}
+Price from: AED ${(proj.priceMin/1e6).toFixed(1)}M | Avg: AED ${(proj.priceAvg/1e6).toFixed(1)}M
+PSF range: AED ${proj.psfMin}–${proj.psfMax}
+Units: ${proj.units} | Floors: ${proj.floors}
+Bedrooms: ${proj.bedrooms.join(', ')}
+Payment plan: ${proj.paymentPlan}
+Amenities: ${proj.amenities.join(', ')}
+${areaData ? `
+Area: ${areaData.name}
+Area avg PSF: AED ${areaData.psf} | YoY growth: ${areaData.yoy}% | Yield: ${areaData.yld}% | Score: ${areaData.score}/100 | Tier: ${areaData.tier}` : ''}
+
+Provide a concise investment brief with exactly these 4 sections. Be direct, specific, and data-driven. Max 60 words per section.
+
+INVESTMENT CASE: Why invest in this specific project right now.
+KEY RISKS: 2-3 specific risks for this project (completion, market, liquidity).
+BEST SUITED FOR: Who should buy this (investor profile, holding period).
+RAQAM SIGNAL: One of: STRONG BUY / BUY / HOLD / CAUTION — followed by one sentence explanation.
+
+Format with these exact headers: INVESTMENT CASE:, KEY RISKS:, BEST SUITED FOR:, RAQAM SIGNAL:`;
+
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 600,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text || 'Analysis unavailable.';
+    _projAiCache[proj.id] = text;
+    if (_selProjId === proj.id && _projTab === 'ai') renderProjectAI(proj, text);
+  } catch(e) {
+    const el = document.getElementById('prp-ai-content');
+    if (el) el.innerHTML = '<div style="font-size:12px;color:var(--text3)">AI brief unavailable. Check connection.</div>';
+  }
+}
+
+function renderProjectAI(proj, text) {
+  const el = document.getElementById('prp-ai-content');
+  if (!el) return;
+
+  const sections = ['INVESTMENT CASE','KEY RISKS','BEST SUITED FOR','RAQAM SIGNAL'];
+  let html = '';
+  let signalClass = 'hold';
+
+  sections.forEach((sec, i) => {
+    const re = new RegExp(sec + ':\\s*([\\s\\S]*?)(?=' + sections.slice(i+1).map(s=>s+':').join('|') + '|$)');
+    const match = text.match(re);
+    let content = match ? match[1].trim() : '';
+
+    if (sec === 'RAQAM SIGNAL') {
+      const upper = content.toUpperCase();
+      if (upper.includes('STRONG BUY')) signalClass = 'strong-buy';
+      else if (upper.includes('BUY')) signalClass = 'buy';
+      else if (upper.includes('CAUTION')) signalClass = 'caution';
+      else signalClass = 'hold';
+
+      const signalWord = upper.includes('STRONG BUY') ? 'STRONG BUY' : upper.includes('CAUTION') ? 'CAUTION' : upper.includes('BUY') ? 'BUY' : 'HOLD';
+      const explanation = content.replace(/STRONG BUY|BUY|HOLD|CAUTION/i,'').replace(/^[\s\-–—:]+/,'').trim();
+      html += `<div class="prp-ai-stitle">RAQAM SIGNAL</div>
+        <span class="prp-signal ${signalClass}">${signalWord}</span>
+        <div class="prp-ai-text">${explanation}</div>`;
+    } else {
+      html += `<div class="prp-ai-stitle">${sec}</div><div class="prp-ai-text">${content}</div>`;
+    }
+  });
+
+  el.innerHTML = html;
+}
+
+
 const METRO_LINES = {
   red: {
     color: '#FF3355', glow: '#FF335566',
@@ -3682,6 +4938,8 @@ window.addEventListener('load', () => {
   try { renderAreaList(); } catch(e) { console.warn('List error:', e); }
   try { updateLegend(); } catch(e) { console.warn('Legend error:', e); }
   loadFXRates().then(() => renderAreaList()).catch(()=>{});
+  // Set initial mode class
+  document.body.classList.add('areas-mode');
   initMap();
 });
 </script>
