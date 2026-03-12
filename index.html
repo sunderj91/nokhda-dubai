@@ -1834,6 +1834,7 @@ const DUBAI_ZOOM   = 9.2;
 let map, _tooltip, _selId = null, _hoverId = null;
 let _heatMode = 'psf', _viewMode = '2d', _satMode = false, _tierFilter = 'all';
 let _layerState = { areas: true, extrude: true, metro: true, labels: false };
+let _mapLoaded = false;
 let _sortMode = 'psf', _searchTerm = '';
 let _areaList = [...AREAS];
 let _currency = 'AED';
@@ -1981,6 +1982,7 @@ function initMap() {
 
   map.on('load', () => {
     clearTimeout(loadTimeout);
+    _mapLoaded = true;
     // Hide Mapbox basemap neighborhood/district labels that clash with our labels
     const hideBaseLayers = [
       'settlement-subdivision-label','neighborhood-label',
@@ -2007,6 +2009,7 @@ function initMap() {
   // Also catch styledata as a fallback trigger
   map.once('styledata', () => {
     setTimeout(() => {
+      if (_mapLoaded) return; // load event already handled it
       if (document.getElementById('loading')?.style.display !== 'none') {
         try { addAreaLayers(); addMetroLayer(); } catch(e) {}
         dismissLoading();
@@ -2223,19 +2226,27 @@ function refreshAreaColors() {
   } catch(e) {}
   renderMarkers();
 
-  // If metro layers exist, move them above area-label so they stay visible
-  const stationDotLayers = [
-    'stations-red-dot','stations-2020-dot','stations-airport-dot',
-    'stations-green-dot','stations-tram-dot','stations-label'
-  ];
-  stationDotLayers.forEach(id => {
-    try { if (map.getLayer(id)) map.moveLayer(id); } catch(e) {}
-  });
+  // Bring metro dots above area-label (only if they already exist)
+  bringMetroToTop();
 }
 
 /* ══════════════════════════════════════════════
    METRO LAYER
 ══════════════════════════════════════════════ */
+/* ── Bring station dots above area-label after any layer rebuild ── */
+function bringMetroToTop() {
+  const dotLayers = [
+    'stations-red_shadow','stations-2020_shadow','stations-airport_shadow',
+    'stations-green_shadow','stations-tram_shadow',
+    'stations-red','stations-2020','stations-airport','stations-green','stations-tram',
+    'stations-red-dot','stations-2020-dot','stations-airport-dot',
+    'stations-green-dot','stations-tram-dot','stations-label'
+  ];
+  dotLayers.forEach(id => {
+    try { if (map.getLayer(id)) map.moveLayer(id); } catch(e) {}
+  });
+}
+
 /* ── Metro & Roads ─────────────────────────── */
 const METRO_LINES = {
   red: {
@@ -2617,6 +2628,7 @@ function addMetroLayer() {
   });
 
   applyMetroVisibility();
+  bringMetroToTop();
   startMetroAnimation();
 }
 
