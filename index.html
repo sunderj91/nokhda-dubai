@@ -2198,27 +2198,6 @@ function addAreaLayers() {
   }
 
   renderMarkers();
-
-  // Re-raise metro/station layers above area layers (they may have been displaced)
-  const metroLayerOrder = [
-    'metro-red-casing','metro-red-core',
-    'metro-2020-casing','metro-2020-core',
-    'metro-airport-casing','metro-airport-core',
-    'metro-green-casing','metro-green-core',
-    'metro-greenE-casing','metro-greenE-core',
-    'metro-tram-casing','metro-tram-core',
-    'stations-red_shadow','stations-red','stations-red-dot',
-    'stations-2020_shadow','stations-2020','stations-2020-dot',
-    'stations-airport_shadow','stations-airport','stations-airport-dot',
-    'stations-green_shadow','stations-green','stations-green-dot',
-    'stations-tram_shadow','stations-tram','stations-tram-dot',
-    'stations-label',
-    'road-e11-glow','road-e11-core',
-    'road-e311-glow','road-e311-core'
-  ];
-  metroLayerOrder.forEach(id => {
-    try { if (map.getLayer(id)) map.moveLayer(id); } catch(e) {}
-  });
 }
 
 function renderMarkers() {
@@ -2483,11 +2462,11 @@ function addMetroLayer() {
     'metro-green-core','metro-green-casing','metro-green-dash',
     'metro-greenE-core','metro-greenE-casing',
     'metro-tram-core','metro-tram-casing',
-    'stations-red','stations-red-dot',
-    'stations-2020','stations-2020-dot',
-    'stations-airport','stations-airport-dot',
-    'stations-green','stations-green-dot',
-    'stations-tram','stations-tram-dot',
+    'stations-red_shadow','stations-red','stations-red-dot',
+    'stations-2020_shadow','stations-2020','stations-2020-dot',
+    'stations-airport_shadow','stations-airport','stations-airport-dot',
+    'stations-green_shadow','stations-green','stations-green-dot',
+    'stations-tram_shadow','stations-tram','stations-tram-dot',
     'stations-label',
     'road-e11-glow','road-e11-core',
     'road-e311-glow','road-e311-core'
@@ -2555,44 +2534,40 @@ function addMetroLayer() {
 
   /* ── Station dots helper ── */
   // Subway-style station: white filled circle with colored stroke
-  function addStationDots(srcId, ringId, dotId, stationsArr, color) {
-    const fc = {type:'FeatureCollection', features: stationsArr};
+
+
+  // Add stations in 3 passes: shadows first, rings second, dots last
+  // This ensures colored dots are always on top of all shadows/rings
+  const STATION_GROUPS = [
+    {srcId:'stations-src-red',     ringId:'stations-red',     dotId:'stations-red-dot',     stations:METRO_STATIONS.red,                   color:'#EF4444'},
+    {srcId:'stations-src-2020',    ringId:'stations-2020',    dotId:'stations-2020-dot',    stations:METRO_STATIONS.red.slice(5,10),        color:'#EF4444'},
+    {srcId:'stations-src-airport', ringId:'stations-airport', dotId:'stations-airport-dot', stations:METRO_STATIONS.redAirport,             color:'#EF4444'},
+    {srcId:'stations-src-green',   ringId:'stations-green',   dotId:'stations-green-dot',   stations:METRO_STATIONS.green,                 color:'#10B981'},
+    {srcId:'stations-src-tram',    ringId:'stations-tram',    dotId:'stations-tram-dot',    stations:METRO_STATIONS.tram,                  color:'#F59E0B'},
+  ];
+  // Pass 1: add all sources + shadow layers
+  STATION_GROUPS.forEach(({srcId, ringId, stations}) => {
+    const fc = {type:'FeatureCollection', features: stations};
     map.addSource(srcId, {type:'geojson', data:fc});
-
-    // Outer black drop-shadow ring
-    map.addLayer({id:ringId+'_shadow', type:'circle', source:srcId,
-      paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],8,5,10,8,11,11,12,14,13,17,15,20],
-        'circle-color':'#000000',
-        'circle-opacity':1,
-        'circle-blur':0
-      }
-    }, insertBefore);
-
-    // White station ring
-    map.addLayer({id:ringId, type:'circle', source:srcId,
-      paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],8,4,10,7,11,9.5,12,12,13,15,15,18],
-        'circle-color':'#FFFFFF',
-        'circle-opacity':1
-      }
-    }, insertBefore);
-
-    // Colored core dot
-    map.addLayer({id:dotId, type:'circle', source:srcId,
-      paint:{
-        'circle-radius':['interpolate',['linear'],['zoom'],8,2,10,4,11,6,12,8,13,10,15,13],
-        'circle-color':color,
-        'circle-opacity':1
-      }
-    }, insertBefore);
-  }
-
-  addStationDots('stations-src-red',     'stations-red',     'stations-red-dot',     METRO_STATIONS.red,      '#EF4444');
-  addStationDots('stations-src-2020',    'stations-2020',    'stations-2020-dot',    METRO_STATIONS.red.slice(5,10), '#EF4444');
-  addStationDots('stations-src-airport', 'stations-airport', 'stations-airport-dot', METRO_STATIONS.redAirport,'#EF4444');
-  addStationDots('stations-src-green',   'stations-green',   'stations-green-dot',   METRO_STATIONS.green,    '#10B981');
-  addStationDots('stations-src-tram',    'stations-tram',    'stations-tram-dot',    METRO_STATIONS.tram,     '#F59E0B');
+    map.addLayer({id:ringId+'_shadow', type:'circle', source:srcId, paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],8,5,10,7,11,9,12,11,13,13,15,16],
+      'circle-color':'#000000', 'circle-opacity':1, 'circle-blur':0
+    }});
+  });
+  // Pass 2: white rings
+  STATION_GROUPS.forEach(({srcId, ringId}) => {
+    map.addLayer({id:ringId, type:'circle', source:srcId, paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],8,4,10,6,11,7.5,12,9.5,13,11,15,14],
+      'circle-color':'#FFFFFF', 'circle-opacity':1
+    }});
+  });
+  // Pass 3: colored dots (top layer — always visible)
+  STATION_GROUPS.forEach(({srcId, dotId, color}) => {
+    map.addLayer({id:dotId, type:'circle', source:srcId, paint:{
+      'circle-radius':['interpolate',['linear'],['zoom'],8,2,10,3.5,11,5,12,6.5,13,8,15,10],
+      'circle-color':color, 'circle-opacity':1
+    }});
+  });
 
   /* ── Station labels (only at zoom 13+) ── */
   const allStFC = {type:'FeatureCollection', features:[
