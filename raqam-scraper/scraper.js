@@ -1,403 +1,328 @@
 /**
- * RAQAM Dubai Project Scraper v2
- * Uses Bayut's internal JSON API (same endpoint their mobile app uses)
- * Much more reliable than HTML scraping — returns structured data directly
+ * RAQAM Dubai Project Scraper v3
+ * Source: Property Finder /en/new-projects (embeds full JSON in page scripts)
+ * - No API key needed, no auth, public page, accessible from cloud IPs
+ * - ~2,600 projects across UAE → filter to Dubai
+ * - 109 pages × 24 projects/page
  */
 
 import axios from 'axios';
+import { HttpsProxyAgent } from 'https-proxy-agent';
+
+// Auto-use proxy if set (works in GitHub Actions and Claude environments)
+const _proxyUrl = process.env.https_proxy || process.env.HTTPS_PROXY;
+const httpsAgent = _proxyUrl ? new HttpsProxyAgent(_proxyUrl) : undefined;
+import * as cheerio from 'cheerio';
 import { createClient } from '@supabase/supabase-js';
 import pLimit from 'p-limit';
 import 'dotenv/config';
 
-// ── Config ────────────────────────────────────────────────────────────────────
-
 const DRY_RUN     = process.argv.includes('--dry-run');
-const SOURCE      = process.argv.find(a => a.startsWith('--source='))?.split('=')[1] || 'all';
-const AREA_FILTER = process.argv.find(a => a.startsWith('--area='))?.split('=')[1];
+const MODE        = process.argv.find(a => a.startsWith('--mode='))?.split('=')[1] || 'full';
 
 const SUPABASE_URL         = process.env.SUPABASE_URL;
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+
+const PF_BASE    = 'https://www.propertyfinder.ae';
+const PF_HEADERS = {
+  'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+  'Accept-Language': 'en-US,en;q=0.9',
+};
+
+const DUBAI_KEYWORDS = [
+  'dubai', 'jvc', 'jumeirah', 'marina', 'deira', 'bur dubai',
+  'downtown', 'business bay', 'palm', 'creek', 'meydan',
+  'sports city', 'motor city', 'arabian ranches', 'al furjan',
+  'dubai hills', 'damac', 'sobha', 'al jaddaf', 'bluewaters', 'emaar', 'akoya'
+];
 
 function log(msg) {
   console.log(`[${new Date().toISOString().split('T')[1].split('.')[0]}] ${msg}`);
 }
 
-// ── Bayut GraphQL API ─────────────────────────────────────────────────────────
-// Bayut uses a public GraphQL endpoint — no auth required, structured JSON response
+// ── Property Finder Scraper ───────────────────────────────────────────────────
 
-const BAYUT_API = 'https://gateway.bayut.com/api/graphql';
-
-const BAYUT_HEADERS = {
-  'Content-Type':  'application/json',
-  'User-Agent':    'Bayut/24.1.0 (iPhone; iOS 17.0; Scale/3.00)',
-  'X-Bayut-Site':  'bayut',
-  'Accept':        'application/json',
-  'Origin':        'https://www.bayut.com',
-  'Referer':       'https://www.bayut.com/',
-};
-
-const PROJECTS_QUERY = `
-query GetOffPlanProjects($locationExternalIDs: [String!], $page: Int, $hitsPerPage: Int) {
-  properties(
-    purpose: "for-sale"
-    rentFrequency: null
-    categoryExternalID: "4"
-    locationExternalIDs: $locationExternalIDs
-    offPlan: true
-    page: $page
-    hitsPerPage: $hitsPerPage
-    lang: "en"
-    sort: "date_desc"
-  ) {
-    total
-    properties {
-      id
-      externalID
-      title
-      slug
-      purpose
-      type { name }
-      category { name }
-      location { name externalID level }
-      geography { lat lng }
-      price
-      rentFrequency
-      rooms
-      baths
-      area
-      coverPhoto { url }
-      photos { url }
-      agency { name logo { url } }
-      project {
-        id
-        title
-        imageCount
-        coverPhoto { url }
-        photos { url }
-        description
-        amenities { text }
-        completionDetails {
-          completionDate
-          percentComplete
-          constructionStatus
-          isOffPlan
-        }
-        paymentPlanSummary {
-          downPaymentPercentage
-          installmentsPaymentPercentage
-          handoverPaymentPercentage
-        }
-        stats {
-          areaRange { min max }
-          priceRange { min max }
-          bedrooms { text count }
-        }
-        floorPlans { url }
-        developer { name url logoUrl }
-      }
-      floorArea { min max }
-      pricePerUnitArea
-      keywords
-      state
-    }
-  }
-}`;
-
-// ── Dubai area location IDs (Bayut's internal IDs) ────────────────────────────
-
-const DUBAI_LOCATIONS = [
-  { name: 'Downtown Dubai',             id: '5002' },
-  { name: 'Dubai Marina',               id: '5001' },
-  { name: 'Business Bay',               id: '5169' },
-  { name: 'Palm Jumeirah',              id: '5226' },
-  { name: 'Dubai Hills Estate',         id: '91006' },
-  { name: 'Dubai Creek Harbour',        id: '91011' },
-  { name: 'Jumeirah Village Circle',    id: '6020' },
-  { name: 'Mohammed Bin Rashid City',   id: '91007' },
-  { name: 'Dubai South',                id: '91009' },
-  { name: 'Jumeirah Beach Residence',   id: '5003' },
-  { name: 'DAMAC Hills',                id: '91015' },
-  { name: 'Arjan',                      id: '91017' },
-  { name: 'Jumeirah Lake Towers',       id: '5116' },
-  { name: 'Meydan',                     id: '91008' },
-  { name: 'Dubai Harbour',              id: '91012' },
-  { name: 'Al Jaddaf',                  id: '5172' },
-  { name: 'City Walk',                  id: '91013' },
-  { name: 'Bluewaters Island',          id: '91014' },
-  { name: 'Emaar Beachfront',           id: '91016' },
-  { name: 'Sobha Hartland',             id: '91018' },
-  { name: 'District One',               id: '91019' },
-  { name: 'Arabian Ranches',            id: '5246' },
-  { name: 'Al Furjan',                  id: '91020' },
-  { name: 'Dubai Investment Park',      id: '5178' },
-  { name: 'Dubai Sports City',          id: '91021' },
-  { name: 'Motor City',                 id: '5213' },
-  { name: 'Deira',                      id: '5010' },
-  { name: 'Bur Dubai',                  id: '5011' },
-  { name: 'Dubai Silicon Oasis',        id: '5174' },
-  { name: 'Ras Al Khor',                id: '5182' },
-];
-
-// ── Scrape one location ───────────────────────────────────────────────────────
-
-async function scrapeLocation(location) {
-  const projects = [];
-  let page = 0;
-  const hitsPerPage = 25;
-
-  while (true) {
+async function fetchPage(pageNum, retries = 3) {
+  const url = `${PF_BASE}/en/new-projects?page=${pageNum}`;
+  for (let attempt = 1; attempt <= retries; attempt++) {
     try {
-      const res = await axios.post(BAYUT_API, {
-        query: PROJECTS_QUERY,
-        variables: {
-          locationExternalIDs: [location.id],
-          page,
-          hitsPerPage,
+      const res = await axios.get(url, { headers: PF_HEADERS, timeout: 30000, ...(httpsAgent && { httpsAgent, proxy: false }) });
+      const $ = cheerio.load(res.data);
+      let nextData = null;
+      $('script').each((_, el) => {
+        const text = $(el).html() || '';
+        if (text.includes('pageProps') && text.includes('"projects"')) {
+          try {
+            const start = text.indexOf('{');
+            if (start >= 0) nextData = JSON.parse(text.slice(start));
+          } catch {}
         }
-      }, { headers: BAYUT_HEADERS, timeout: 20000 });
-
-      const data = res.data?.data?.properties;
-      if (!data || !data.properties?.length) break;
-
-      log(`  [${location.name}] page ${page}: ${data.properties.length} listings (total: ${data.total})`);
-
-      for (const p of data.properties) {
-        const proj = normalise(p, location);
-        if (proj) projects.push(proj);
-      }
-
-      // Check if more pages
-      if ((page + 1) * hitsPerPage >= data.total || data.properties.length < hitsPerPage) break;
-      page++;
-
-      await sleep(800);
+      });
+      if (!nextData) throw new Error('No page data found');
+      const sr = nextData?.props?.pageProps?.searchResult;
+      if (!sr) throw new Error('No searchResult');
+      return {
+        projects: sr.data?.projects || [],
+        totalPages: sr.meta?.pagination?.total || 1,
+        totalProjects: sr.meta?.count?.total || 0,
+      };
     } catch (err) {
-      log(`  [${location.name}] API error: ${err.message}`);
-      break;
+      if (attempt === retries) throw err;
+      log(`  Page ${pageNum} attempt ${attempt} failed: ${err.message}, retrying...`);
+      await new Promise(r => setTimeout(r, 2000 * attempt));
     }
   }
-
-  return projects;
 }
 
-// ── Normalise API response → our schema ──────────────────────────────────────
-
-function normalise(p, location) {
-  try {
-    const proj = p.project;
-    const name = proj?.title || p.title;
-    if (!name) return null;
-
-    const externalId = `bayut-${p.externalID || p.id}`;
-
-    // Price
-    const priceMin = proj?.stats?.priceRange?.min || p.price || null;
-    const priceMax = proj?.stats?.priceRange?.max || null;
-    const priceAvg = priceMin && priceMax ? Math.round((priceMin + priceMax) / 2) : priceMin;
-
-    // PSF
-    const psfAvg = p.pricePerUnitArea ? Math.round(p.pricePerUnitArea) : null;
-
-    // Completion
-    const completion = proj?.completionDetails;
-    const completionDate = completion?.completionDate || null;
-    const constructionProgress = completion?.percentComplete || null;
-    const status = completion?.isOffPlan === false ? 'ready'
-      : constructionProgress > 0 ? 'under-construction' : 'off-plan';
-
-    // Payment plan
-    const pp = proj?.paymentPlanSummary;
-    const downPayment = pp?.downPaymentPercentage || null;
-    const onCompletion = pp?.handoverPaymentPercentage || null;
-    const duringConstruction = pp?.installmentsPaymentPercentage || null;
-
-    // Bedrooms
-    const bedrooms = (proj?.stats?.bedrooms || []).map(b => b.text?.toLowerCase()
-      .replace('studio', 'studio')
-      .replace(' bedroom', 'br')
-      .replace(' bedrooms', 'br'));
-
-    // Images
-    const coverImage = proj?.coverPhoto?.url || p.coverPhoto?.url || null;
-    const extraImages = (proj?.photos || p.photos || []).map(ph => ph.url).filter(Boolean).slice(0, 8);
-
-    // Amenities
-    const amenities = (proj?.amenities || []).map(a => a.text).filter(Boolean).slice(0, 15);
-
-    // Developer
-    const developerName = proj?.developer?.name || p.agency?.name || null;
-
-    // Coordinates
-    const lat = p.geography?.lat || null;
-    const lng = p.geography?.lng || null;
-
-    // Type
-    const typeRaw = (p.type?.name || p.category?.name || '').toLowerCase();
-    const type = typeRaw.includes('villa') ? 'villa'
-      : typeRaw.includes('townhouse') ? 'townhouse'
-      : typeRaw.includes('penthouse') ? 'penthouse'
-      : typeRaw.includes('commercial') ? 'commercial' : 'apartment';
-
-    return {
-      external_id:            externalId,
-      name,
-      developer_name:         developerName,
-      area:                   location.name,
-      lat,
-      lng,
-      type,
-      status,
-      price_min:              priceMin,
-      price_max:              priceMax,
-      price_avg:              priceAvg,
-      psf_avg:                psfAvg,
-      bedrooms_available:     bedrooms.filter(Boolean),
-      completion_date:        completionDate ? completionDate.split('T')[0] : null,
-      construction_progress:  constructionProgress,
-      down_payment:           downPayment,
-      on_completion:          onCompletion,
-      during_construction:    duringConstruction,
-      amenities,
-      description:            proj?.description || null,
-      cover_image:            coverImage,
-      units_total:            null,
-      source:                 'bayut',
-      source_url:             `https://www.bayut.com/property/details-${p.externalID}.html`,
-      _extra_images:          extraImages,
-    };
-  } catch (err) {
-    return null;
-  }
+function isDubaiProject(pf) {
+  const loc = (pf.location?.fullName || '').toLowerCase();
+  if (loc.includes('dubai')) return true;
+  return DUBAI_KEYWORDS.some(kw => loc.includes(kw));
 }
 
-// ── Supabase upsert ───────────────────────────────────────────────────────────
-
-async function upsertProject(supabase, project) {
-  // Upsert developer
-  let developerId = null;
-  if (project.developer_name) {
-    const slug = project.developer_name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
-    const { data: dev } = await supabase
-      .from('developers')
-      .upsert({ name: project.developer_name, slug }, { onConflict: 'slug' })
-      .select('id').single();
-    developerId = dev?.id || null;
+function normaliseProject(pf) {
+  // Location: "Dubai, Downtown Dubai, Tower Name" → area = "Downtown Dubai"
+  const locParts = (pf.location?.fullName || '').split(',').map(s => s.trim());
+  const area = locParts.length >= 2 ? locParts[1] : locParts[0] || 'Dubai';
+  
+  // Completion date
+  let completionDate = null;
+  if (pf.deliveryDate) { try { completionDate = pf.deliveryDate.split('T')[0]; } catch {} }
+  
+  // Payment plan parsing
+  let downPayment = null, duringConstruction = null, onCompletion = null;
+  if (pf.paymentPlans?.length > 0) {
+    const pl = pf.paymentPlans[0];
+    downPayment       = pl.downPayment || null;
+    duringConstruction = pl.duringConstruction || null;
+    onCompletion      = pl.onHandover || null;
   }
-
+  if (pf.downPaymentPercentage) downPayment = pf.downPaymentPercentage;
+  
+  // Status
+  const statusMap = { under_construction: 'Under Construction', off_plan: 'Off-Plan', completed: 'Completed', ready: 'Ready' };
+  const status = statusMap[pf.constructionPhase] || 'Off-Plan';
+  
+  // Bedrooms array
+  const beds = (pf.bedrooms || [])
+    .map(b => b === 'studio' ? 0 : parseInt(b))
+    .filter(n => isFinite(n));
+  
   // Slug
-  const slug = `${project.name}-${project.area}`
-    .toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '').slice(0, 80)
-    + '-' + (project.external_id || '').split('-').pop();
-
-  const { _extra_images, ...projectData } = project;
-
-  const { data: saved, error } = await supabase
-    .from('projects')
-    .upsert({ ...projectData, slug, developer_id: developerId, last_scraped_at: new Date().toISOString() },
-      { onConflict: 'external_id' })
-    .select('id').single();
-
-  if (error) { log(`  DB error: ${error.message}`); return null; }
-
-  const projectId = saved.id;
-
-  // Images
-  if (_extra_images?.length > 0) {
-    const imageRecords = _extra_images.map((url, i) => ({
-      project_id: projectId, url, original_url: url,
-      sort_order: i, image_type: i === 0 ? 'cover' : 'gallery',
-    }));
-    await supabase.from('project_images')
-      .upsert(imageRecords, { onConflict: 'project_id,sort_order', ignoreDuplicates: true });
-  }
-
-  // Price history snapshot
-  if (project.psf_avg || project.price_min) {
-    await supabase.from('price_history').upsert({
-      project_id: projectId,
-      recorded_date: new Date().toISOString().split('T')[0],
-      psf_avg: project.psf_avg,
-      price_min: project.price_min,
-      price_max: project.price_max,
-      source: 'bayut',
-    }, { onConflict: 'project_id,recorded_date' });
-  }
-
-  return projectId;
+  const slug = (pf.title || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+    + '-' + (pf.id || '').split('-')[0];
+  
+  return {
+    // Table columns (matching actual schema)
+    external_id:          `pf-${pf.id}`,
+    source:               'scraped',
+    name:                 pf.title || 'Unknown Project',
+    slug,
+    developer_name:       pf.developer?.name || 'Unknown Developer',
+    area,
+    location:             pf.location?.fullName || area,
+    lat:                  pf.location?.coordinates?.lat || null,
+    lng:                  pf.location?.coordinates?.lng || pf.location?.coordinates?.lon || null,
+    price_min:            pf.startingPrice || null,
+    price_max:            pf.minResalePrice || pf.startingPrice || null,
+    status,
+    construction_progress: pf.constructionProgress ? Math.round(pf.constructionProgress) : null,
+    completion_date:      completionDate,
+    bedrooms_available:   beds.length > 0 ? beds : null,
+    down_payment:         downPayment,
+    during_construction:  duringConstruction,
+    on_completion:        onCompletion,
+    amenities:            pf.amenities?.map(a => a.name) || null,
+    cover_image:          pf.images?.[0] || null,
+    source_url:           pf.shareUrl ? `${PF_BASE}${pf.shareUrl}` : null,
+    last_scraped_at:      new Date().toISOString(),
+    
+    // Private (not in table, used for related tables)
+    _dev_logo:   pf.developer?.logoUrl || null,
+    _images:     pf.images || [],
+    _hotness:    pf.hotnessLevel || null,
+    _dev_id_ext: pf.developer?.id || null,
+  };
 }
 
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+// ── Supabase ──────────────────────────────────────────────────────────────────
 
-function dedup(arr) {
-  const seen = new Set();
-  return arr.filter(p => { const k = p.external_id; if (seen.has(k)) return false; seen.add(k); return true; });
+let sb = null;
+function getSupabase() {
+  if (!sb) {
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) throw new Error('Missing Supabase env vars');
+    sb = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+  }
+  return sb;
+}
+
+const devCache = new Map();
+async function upsertDeveloper(name, logoUrl) {
+  if (devCache.has(name)) return devCache.get(name);
+  const supabase = getSupabase();
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  let { data, error } = await supabase
+    .from('developers').upsert({ name, slug, logo_url: logoUrl }, { onConflict: 'name' })
+    .select('id').single();
+  if (error) {
+    const { data: ex } = await supabase.from('developers').select('id').eq('name', name).single();
+    data = ex;
+  }
+  devCache.set(name, data?.id || null);
+  return data?.id || null;
+}
+
+async function upsertProject(p, devId, runId) {
+  const supabase = getSupabase();
+  const rec = {
+    external_id:          p.external_id,
+    source:               p.source,
+    name:                 p.name,
+    slug:                 p.slug,
+    developer_id:         devId,
+    developer_name:       p.developer_name,
+    area:                 p.area,
+    location:             p.location,
+    price_min:            p.price_min,
+    price_max:            p.price_max,
+    status:               p.status,
+    construction_progress: p.construction_progress,
+    completion_date:      p.completion_date,
+    bedrooms_available:   p.bedrooms_available,
+    down_payment:         p.down_payment,
+    during_construction:  p.during_construction,
+    on_completion:        p.on_completion,
+    amenities:            p.amenities,
+    cover_image:          p.cover_image,
+    source_url:           p.source_url,
+    last_scraped_at:      p.last_scraped_at,
+  };
+  if (p.lat && p.lng) { rec.lat = p.lat; rec.lng = p.lng; }
+  
+  const { data, error } = await supabase.from('projects')
+    .upsert(rec, { onConflict: 'external_id' }).select('id').single();
+  if (error) { log(`  Upsert error ${p.name}: ${error.message}`); return null; }
+  return data?.id || null;
+}
+
+async function upsertImages(projectId, images) {
+  if (!images?.length) return;
+  const supabase = getSupabase();
+  const recs = images.slice(0, 10).map((url, i) => ({
+    project_id: projectId, url, sort_order: i,
+  }));
+  // Insert ignoring duplicates (no unique constraint on sort_order, just insert new)
+  await supabase.from('project_images').insert(recs, { ignoreDuplicates: true });
+}
+
+async function recordPrice(projectId, price) {
+  if (!projectId || !price) return;
+  const today = new Date().toISOString().split('T')[0];
+  await getSupabase().from('price_history').upsert(
+    { project_id: projectId, recorded_date: today, price_min: price, source: 'pf-html' },
+    { onConflict: 'project_id,recorded_date', ignoreDuplicates: true }
+  );
+}
+
+async function createRun() {
+  const { data } = await getSupabase().from('scraper_runs')
+    .insert({ source: 'pf-html', status: 'running', started_at: new Date().toISOString() })
+    .select('id').single();
+  return data?.id || null;
+}
+
+async function finaliseRun(runId, stats) {
+  await getSupabase().from('scraper_runs').update({
+    status: 'completed', completed_at: new Date().toISOString(),
+    projects_found: stats.found, projects_new: stats.created,
+    projects_updated: stats.updated, errors: stats.errors,
+  }).eq('id', runId);
 }
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 
 async function main() {
-  log(`🚀 RAQAM Scraper v2 — ${DRY_RUN ? 'DRY RUN' : 'LIVE'}`);
+  log(`RAQAM Scraper v3 | mode=${MODE} dry_run=${DRY_RUN}`);
 
-  const supabase = DRY_RUN ? null : createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-
-  const locations = AREA_FILTER
-    ? DUBAI_LOCATIONS.filter(l => l.name.toLowerCase().includes(AREA_FILTER.toLowerCase()))
-    : DUBAI_LOCATIONS;
-
-  log(`Scraping ${locations.length} areas via Bayut GraphQL API...`);
-
-  // Log run start
   let runId = null;
-  if (supabase) {
-    const { data: run } = await supabase.from('scraper_runs')
-      .insert({ source: 'bayut-graphql', status: 'running' }).select('id').single();
-    runId = run?.id;
+  if (!DRY_RUN) runId = await createRun();
+  if (runId) log(`Run ID: ${runId}`);
+
+  const stats = { found: 0, dubai: 0, created: 0, updated: 0, errors: 0 };
+
+  log('Fetching page 1 to get totals...');
+  const first = await fetchPage(1);
+  const { totalPages, totalProjects } = first;
+  log(`Total: ${totalProjects} projects, ${totalPages} pages`);
+
+  let allProjects = [...first.projects];
+
+  if (MODE !== 'price-refresh') {
+    const limit = pLimit(3);
+    const pages = Array.from({ length: totalPages - 1 }, (_, i) => i + 2);
+    log(`Fetching ${pages.length} more pages (3 concurrent)...`);
+
+    const results = await Promise.allSettled(
+      pages.map(n => limit(async () => {
+        const r = await fetchPage(n);
+        if (n % 20 === 0) log(`  Progress: page ${n}/${totalPages}`);
+        return r.projects;
+      }))
+    );
+
+    for (const r of results) {
+      if (r.status === 'fulfilled') allProjects = allProjects.concat(r.value);
+      else { stats.errors++; log(`  Page error: ${r.reason?.message}`); }
+    }
   }
 
-  const allProjects = [];
-
-  for (const loc of locations) {
-    log(`Scraping ${loc.name}...`);
-    const projects = await scrapeLocation(loc);
-    log(`  → ${projects.length} projects`);
-    allProjects.push(...projects);
-    await sleep(500);
-  }
-
-  const unique = dedup(allProjects);
-  log(`\nTotal unique projects: ${unique.length}`);
+  const dubaiProjects = allProjects.filter(isDubaiProject);
+  stats.found = allProjects.length;
+  stats.dubai = dubaiProjects.length;
+  log(`Found ${stats.found} total, ${stats.dubai} in Dubai`);
 
   if (DRY_RUN) {
-    log('\n=== DRY RUN — sample output ===');
-    unique.slice(0, 8).forEach(p =>
-      log(`  ${p.name} | ${p.developer_name || 'Unknown'} | ${p.area} | AED ${p.price_min?.toLocaleString() || 'N/A'} | ${p.status}`)
+    log('DRY RUN — first 5 Dubai projects:');
+    dubaiProjects.slice(0, 5).forEach(p =>
+      log(`  ${p.title} | ${p.location?.fullName} | AED ${p.startingPrice?.toLocaleString() || 'N/A'}`)
     );
-    log(`\nWould save ${unique.length} projects to Supabase.`);
+    log(`Would upsert ${stats.dubai} projects`);
     return;
   }
 
-  // Save to DB
-  log('\nSaving to Supabase...');
-  const limit = pLimit(3);
-  let saved = 0, errors = 0;
+  log('Upserting to Supabase...');
+  const upsertLimit = pLimit(5);
 
-  await Promise.all(unique.map(p => limit(async () => {
-    const id = await upsertProject(supabase, p);
-    if (id) saved++; else errors++;
-  })));
+  await Promise.all(
+    dubaiProjects.map(pfProject => upsertLimit(async () => {
+      try {
+        const n = normaliseProject(pfProject);
+        const devId = await upsertDeveloper(n.developer_name, n._dev_logo);
 
-  // Update run log
-  if (supabase && runId) {
-    await supabase.from('scraper_runs').update({
-      completed_at: new Date().toISOString(),
-      projects_found: unique.length,
-      projects_new: saved,
-      errors,
-      status: 'completed',
-    }).eq('id', runId);
-  }
+        const { data: existing } = await getSupabase()
+          .from('projects').select('id').eq('external_id', n.external_id).single();
 
-  log(`\n✅ Done — ${saved} saved, ${errors} errors`);
+        const projectId = await upsertProject(n, devId, runId);
+        if (!projectId) { stats.errors++; return; }
+
+        if (existing) stats.updated++; else stats.created++;
+
+        if (MODE !== 'price-refresh') await upsertImages(projectId, n._images);
+        if (n.price_min) await recordPrice(projectId, n.price_min);
+
+      } catch (err) {
+        stats.errors++;
+        log(`  Error on ${pfProject.title}: ${err.message}`);
+      }
+    }))
+  );
+
+  log(`Done — created=${stats.created} updated=${stats.updated} errors=${stats.errors}`);
+  if (runId) await finaliseRun(runId, stats);
 }
 
-main().catch(err => { console.error('Fatal:', err); process.exit(1); });
+main().catch(err => {
+  console.error('Fatal:', err.message);
+  process.exit(1);
+});
