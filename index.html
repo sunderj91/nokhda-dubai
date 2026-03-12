@@ -577,6 +577,62 @@ body.lp-collapsed #heat-legend { left: 12px; }
 
 /* Data source note - minimal */
 #rp-data-source { font-size:8px; color:var(--text3); padding:8px 14px 6px; line-height:1.5; border-top:1px solid var(--bord); opacity:0.7; }
+
+/* ── Map Legend ─────────────────── */
+#map-legend {
+  position:absolute;
+  bottom:40px;
+  left:16px;
+  background:rgba(10,15,26,0.85);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:8px;
+  padding:10px 12px;
+  min-width:160px;
+  backdrop-filter:blur(10px);
+  z-index:10;
+  pointer-events:none;
+}
+.legend-title {
+  font-family:'IBM Plex Mono',monospace;
+  font-size:9px;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,0.5);
+  margin-bottom:6px;
+}
+.legend-bar {
+  height:6px;
+  border-radius:3px;
+  margin-bottom:4px;
+}
+.legend-labels {
+  display:flex;
+  justify-content:space-between;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;
+  color:rgba(255,255,255,0.4);
+  margin-bottom:8px;
+}
+.legend-lines {
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  padding-top:8px;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.legend-line-item {
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-family:'IBM Plex Mono',monospace;
+  font-size:8px;
+  color:rgba(255,255,255,0.5);
+}
+.legend-dot {
+  width:8px;height:8px;border-radius:50%;
+  border:1.5px solid rgba(255,255,255,0.4);
+  flex-shrink:0;
+}
 </style>
 </head>
 <body>
@@ -1643,10 +1699,10 @@ function setCurrency(cur) {
 
 /* ── Heat colour scale ───────────────────────── */
 const HEAT_CONFIGS = {
-  psf:   { label: 'Price / sqft (AED)', stops: [[500,'#3B82F6'],[1500,'#06B6D4'],[2500,'#FBBF24'],[4200,'#F43F5E']] },
-  yoy:   { label: 'YoY Growth (%)',     stops: [[-5,'#3B82F6'],[5,'#06B6D4'],[15,'#FBBF24'],[25,'#F43F5E']] },
-  yield: { label: 'Rental Yield (%)',   stops: [[4,'#F43F5E'],[6,'#FBBF24'],[8,'#06B6D4'],[10,'#3B82F6']] },
-  vol:   { label: 'Transaction Volume', stops: [[2000,'#3B82F6'],[10000,'#06B6D4'],[20000,'#FBBF24'],[32000,'#F43F5E']] },
+  psf:   { label: 'Price / sqft (AED)', stops: [[400,'#4F46E5'],[1000,'#0891B2'],[2000,'#D97706'],[3500,'#E11D48']] },
+  yoy:   { label: 'YoY Growth (%)',     stops: [[4,'#2563EB'],[8,'#059669'],[14,'#D97706'],[22,'#DC2626']] },
+  yield: { label: 'Rental Yield (%)',   stops: [[3.5,'#DC2626'],[5,'#D97706'],[7,'#0891B2'],[9,'#059669']] },
+  vol:   { label: 'Transaction Volume', stops: [[100,'#1E3A5F'],[800,'#1D4ED8'],[3000,'#7C3AED'],[8000,'#DB2777']] },
 };
 
 function heatVal(a) {
@@ -1810,7 +1866,7 @@ function addAreaLayers() {
     source: 'areas',
     paint: {
       'fill-color': ['get', 'color'],
-      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.62, 10, 0.55, 12, 0.48, 14, 0.40],
+      'fill-opacity': ['interpolate', ['linear'], ['zoom'], 8, 0.45, 10, 0.40, 12, 0.35, 14, 0.28],
     }
   });
 
@@ -1822,8 +1878,8 @@ function addAreaLayers() {
     paint: {
       'line-color': ['get', 'color'],
       'line-width': ['interpolate', ['linear'], ['zoom'], 8, 6, 11, 10, 14, 14],
-      'line-opacity': 0.18,
-      'line-blur': 4,
+      'line-opacity': 0.10,
+      'line-blur': 5,
     }
   });
   map.addLayer({
@@ -1832,7 +1888,7 @@ function addAreaLayers() {
     source: 'areas',
     paint: {
       'line-color': ['get', 'color'],
-      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 1.5, 11, 2.5, 14, 3.5],
+      'line-width': ['interpolate', ['linear'], ['zoom'], 8, 0.8, 11, 1.5, 14, 2],
       'line-opacity': 1.0,
     }
   });
@@ -2015,9 +2071,9 @@ const METRO_LINES = {
   green: {
     color: '#00E676', glow: '#00E67666',
     coords: [
-      [55.35900,25.21800],[55.35200,25.22200],[55.34800,25.22100],[55.34000,25.22500],
-      [55.33500,25.22800],[55.32600,25.23200],[55.32100,25.23000],[55.31538,25.23190],
-      [55.30900,25.23500],[55.30489,25.22734],[55.30200,25.24000]
+      [55.35900,25.21800],[55.35300,25.22100],[55.34800,25.22400],[55.34200,25.22600],
+      [55.33500,25.22800],[55.32900,25.23100],[55.32100,25.23100],[55.31538,25.23190],
+      [55.31100,25.23600],[55.30600,25.24300],[55.30489,25.25200],[55.30489,25.26900]
     ]
   },
   greenEast: {
@@ -2202,104 +2258,144 @@ const ROADS = {
 };
 
 function addMetroLayer() {
-  const allLayerIds = [
-    'metro-red-glow','metro-red-core','metro-red-dash',
-    'metro-2020-glow','metro-2020-core',
+  const LAYER_IDS = [
+    'metro-red-core','metro-red-casing','metro-red-dash',
+    'metro-2020-core','metro-2020-casing',
     'metro-airport-core',
-    'metro-green-glow','metro-green-core','metro-green-dash',
-    'metro-greenE-glow','metro-greenE-core','metro-greenE-dash',
-    'metro-tram-glow','metro-tram-core',
-    'stations-red','stations-2020','stations-airport',
-    'stations-green','stations-tram','stations-label',
-    'road-e11-glow','road-e11-core','road-e311-glow','road-e311-core'
+    'metro-green-core','metro-green-casing','metro-green-dash',
+    'metro-greenE-core','metro-greenE-casing',
+    'metro-tram-core','metro-tram-casing',
+    'stations-red','stations-red-dot',
+    'stations-2020','stations-2020-dot',
+    'stations-airport','stations-airport-dot',
+    'stations-green','stations-green-dot',
+    'stations-tram','stations-tram-dot',
+    'stations-label',
+    'road-e11-glow','road-e11-core',
+    'road-e311-glow','road-e311-core'
   ];
-  const allSrcIds = [
+  const SRC_IDS = [
     'metro-src-red','metro-src-2020','metro-src-airport',
     'metro-src-green','metro-src-greenE','metro-src-tram',
     'stations-src-red','stations-src-2020','stations-src-airport',
-    'stations-src-green','stations-src-tram',
+    'stations-src-green','stations-src-tram','stations-label-src',
     'road-src-e11','road-src-e311'
   ];
+  LAYER_IDS.forEach(id => { try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {} });
+  SRC_IDS.forEach(id => { try { if (map.getSource(id)) map.removeSource(id); } catch(e) {} });
 
-  allLayerIds.forEach(id => { try { if (map.getLayer(id)) map.removeLayer(id); } catch(e) {} });
-  allSrcIds.forEach(id => { try { if (map.getSource(id)) map.removeSource(id); } catch(e) {} });
-
-  /* ── Road layers ── */
+  /* ── Road layers (below areas) ── */
   Object.entries(ROADS).forEach(([key, road]) => {
-    map.addSource(`road-src-${key}`, {
-      type: 'geojson',
-      data: { type: 'Feature', geometry: { type: 'LineString', coordinates: road.coords } }
-    });
-    map.addLayer({ id:`road-${key}-glow`, type:'line', source:`road-src-${key}`,
-      paint:{ 'line-color': road.glow, 'line-width': 6, 'line-opacity': 0.3, 'line-blur': 4 }
-    }, 'waterway-label');
-    map.addLayer({ id:`road-${key}-core`, type:'line', source:`road-src-${key}`,
-      paint:{ 'line-color': road.color, 'line-width': 1.5, 'line-opacity': 0.5, 'line-dasharray': [4,3] }
-    }, 'waterway-label');
+    map.addSource(`road-src-${key}`, {type:'geojson',
+      data:{type:'Feature',geometry:{type:'LineString',coordinates:road.coords}}});
+    map.addLayer({id:`road-${key}-glow`,type:'line',source:`road-src-${key}`,
+      paint:{'line-color':road.glow,'line-width':8,'line-opacity':0.15,'line-blur':6}
+    },'area-fill');
+    map.addLayer({id:`road-${key}-core`,type:'line',source:`road-src-${key}`,
+      paint:{'line-color':road.color,'line-width':1,'line-opacity':0.45,'line-dasharray':[6,3]}
+    },'area-line');
   });
 
-  /* ── Line helper ── */
-  function addLine(srcId, coords, color, glow, glowId, coreId, dashId, width, opacity) {
-    const geom = {type:'FeatureCollection', features:[{type:'Feature',geometry:{type:'LineString',coordinates:coords}}]};
-    map.addSource(srcId, {type:'geojson', data: geom});
-    if (glowId) map.addLayer({id:glowId, type:'line', source:srcId,
-      paint:{'line-color':glow,'line-width':width*3,'line-opacity':0.25,'line-blur':5}}, 'waterway-label');
-    map.addLayer({id:coreId, type:'line', source:srcId,
-      paint:{'line-color':color,'line-width':width,'line-opacity':opacity,'line-cap':'round','line-join':'round'}}, 'waterway-label');
-    if (dashId) map.addLayer({id:dashId, type:'line', source:srcId,
-      paint:{'line-color':'rgba(255,255,255,0.35)','line-width':width*0.5,'line-dasharray':[3,4]}}, 'waterway-label');
+  /* ── Metro line helper — renders ABOVE area-fill, below labels ── */
+  // Insert point: above area-extrude but below area-label
+  const insertBefore = map.getLayer('area-label') ? 'area-label' : undefined;
+
+  function addMetroLine(srcId, coords, color, casingId, coreId, dashId) {
+    const geom = {type:'FeatureCollection',features:[
+      {type:'Feature',geometry:{type:'LineString',coordinates:coords}}
+    ]};
+    map.addSource(srcId, {type:'geojson', data:geom});
+
+    // White casing for contrast (renders first = below)
+    map.addLayer({id:casingId, type:'line', source:srcId, layout:{'line-cap':'round','line-join':'round'},
+      paint:{
+        'line-color':'#FFFFFF',
+        'line-width':['interpolate',['linear'],['zoom'],9,2,11,4,13,6,15,8],
+        'line-opacity':['interpolate',['linear'],['zoom'],9,0.0,10,0.4,12,0.6]
+      }
+    }, insertBefore);
+
+    // Colored core
+    map.addLayer({id:coreId, type:'line', source:srcId, layout:{'line-cap':'round','line-join':'round'},
+      paint:{
+        'line-color':color,
+        'line-width':['interpolate',['linear'],['zoom'],9,1.5,11,3,13,5,15,6],
+        'line-opacity':['interpolate',['linear'],['zoom'],9,0.5,10,0.85,12,0.95]
+      }
+    }, insertBefore);
+
+    // Subtle white dash overlay (only at high zoom)
+    if (dashId) {
+      map.addLayer({id:dashId, type:'line', source:srcId,
+        paint:{
+          'line-color':'rgba(255,255,255,0.5)',
+          'line-width':['interpolate',['linear'],['zoom'],11,0.5,13,1],
+          'line-dasharray':[4,5],
+          'line-opacity':['interpolate',['linear'],['zoom'],11,0,12,0.5,14,0.7]
+        }
+      }, insertBefore);
+    }
   }
 
-  /* ── Metro lines ── */
-  addLine('metro-src-red',   METRO_LINES.red.coords,       '#FF3355','#FF335566','metro-red-glow','metro-red-core','metro-red-dash', 3.5, 0.95);
-  addLine('metro-src-2020',  METRO_LINES.route2020.coords,  '#FF3355','#FF335544', null,           'metro-2020-core', null,           2.5, 0.80);
-  addLine('metro-src-airport',METRO_LINES.airportBranch.coords,'#FF3355','#FF335533',null,         'metro-airport-core',null,         2,   0.65);
-  addLine('metro-src-green', METRO_LINES.green.coords,      '#00E676','#00E67666','metro-green-glow','metro-green-core','metro-green-dash',3.5,0.95);
-  addLine('metro-src-greenE',METRO_LINES.greenEast.coords,  '#00E676','#00E67655', null,           'metro-greenE-core','metro-greenE-dash',3.5,0.95);
-  addLine('metro-src-tram',  METRO_LINES.tram.coords,       '#F59E0B','#F59E0B55','metro-tram-glow','metro-tram-core', null,          2.5, 0.85);
+  addMetroLine('metro-src-red',   METRO_LINES.red.coords,          '#EF4444','metro-red-casing',    'metro-red-core',    'metro-red-dash');
+  addMetroLine('metro-src-2020',  METRO_LINES.route2020.coords,    '#EF4444','metro-2020-casing',   'metro-2020-core',   null);
+  addMetroLine('metro-src-airport',METRO_LINES.airportBranch.coords,'#EF4444','metro-airport-casing','metro-airport-core',null);
+  addMetroLine('metro-src-green', METRO_LINES.green.coords,        '#10B981','metro-green-casing',  'metro-green-core',  'metro-green-dash');
+  addMetroLine('metro-src-greenE',METRO_LINES.greenEast.coords,    '#10B981','metro-greenE-casing', 'metro-greenE-core', null);
+  addMetroLine('metro-src-tram',  METRO_LINES.tram.coords,         '#F59E0B','metro-tram-casing',   'metro-tram-core',   null);
 
   /* ── Station dots helper ── */
-  function addStations(srcId, layerId, stationsArr, color, radius) {
+  function addStationDots(srcId, ringId, dotId, stationsArr, color) {
     const fc = {type:'FeatureCollection', features: stationsArr};
-    map.addSource(srcId, {type:'geojson', data: fc});
-    map.addLayer({id:layerId, type:'circle', source:srcId,
+    map.addSource(srcId, {type:'geojson', data:fc});
+
+    // White ring (outer)
+    map.addLayer({id:ringId, type:'circle', source:srcId,
       paint:{
-        'circle-radius': radius,
-        'circle-color': '#0A0F1A',
-        'circle-stroke-width': 2.5,
-        'circle-stroke-color': color,
-        'circle-opacity': 1
+        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,3,12,5,13,7,15,9],
+        'circle-color':'#FFFFFF',
+        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,0.9,13,1]
       }
-    });
+    }, insertBefore);
+
+    // Colored dot (inner)
+    map.addLayer({id:dotId, type:'circle', source:srcId,
+      paint:{
+        'circle-radius':['interpolate',['linear'],['zoom'],10,0,11,2,12,3.5,13,5,15,6.5],
+        'circle-color':color,
+        'circle-opacity':['interpolate',['linear'],['zoom'],10,0,11,1,13,1]
+      }
+    }, insertBefore);
   }
 
-  addStations('stations-src-red',     'stations-red',     METRO_STATIONS.red,         '#FF3355', 4.5);
-  addStations('stations-src-2020',    'stations-2020',    METRO_STATIONS.red.slice(5,10), '#FF3355', 4);
-  addStations('stations-src-airport', 'stations-airport', METRO_STATIONS.redAirport,  '#FF3355', 4);
-  addStations('stations-src-green',   'stations-green',   METRO_STATIONS.green,       '#00E676', 4.5);
-  addStations('stations-src-tram',    'stations-tram',    METRO_STATIONS.tram,        '#F59E0B', 3.5);
+  addStationDots('stations-src-red',     'stations-red',     'stations-red-dot',     METRO_STATIONS.red,      '#EF4444');
+  addStationDots('stations-src-2020',    'stations-2020',    'stations-2020-dot',    METRO_STATIONS.red.slice(5,10), '#EF4444');
+  addStationDots('stations-src-airport', 'stations-airport', 'stations-airport-dot', METRO_STATIONS.redAirport,'#EF4444');
+  addStationDots('stations-src-green',   'stations-green',   'stations-green-dot',   METRO_STATIONS.green,    '#10B981');
+  addStationDots('stations-src-tram',    'stations-tram',    'stations-tram-dot',    METRO_STATIONS.tram,     '#F59E0B');
 
-  /* ── Station labels ── */
-  const allStationsFC = {type:'FeatureCollection', features:[
+  /* ── Station labels (only at zoom 13+) ── */
+  const allStFC = {type:'FeatureCollection', features:[
     ...METRO_STATIONS.red, ...METRO_STATIONS.redAirport, ...METRO_STATIONS.green
   ]};
-  map.addSource('stations-label-src', {type:'geojson', data: allStationsFC});
-  if (map.getLayer('stations-label')) map.removeLayer('stations-label');
+  map.addSource('stations-label-src', {type:'geojson', data:allStFC});
   map.addLayer({
     id:'stations-label', type:'symbol', source:'stations-label-src',
     layout:{
       'text-field':['get','name'],
-      'text-font':['DIN Pro Medium'],
-      'text-size':9,
-      'text-offset':[0,1.2],
+      'text-font':['DIN Pro Medium','Arial Unicode MS Regular'],
+      'text-size':['interpolate',['linear'],['zoom'],12,0,13,9,15,11],
+      'text-offset':[0,1.0],
       'text-anchor':'top',
-      'text-max-width':8,
+      'text-max-width':7,
+      'text-allow-overlap':false,
+      'text-optional':true,
     },
     paint:{
       'text-color':'#FFFFFF',
-      'text-opacity':0.7,
-      'text-halo-color':'#000000',
-      'text-halo-width':1
+      'text-opacity':['interpolate',['linear'],['zoom'],12,0,13,0.9],
+      'text-halo-color':'rgba(0,0,0,0.8)',
+      'text-halo-width':1.5
     }
   });
 
@@ -2307,16 +2403,13 @@ function addMetroLayer() {
   const roadPopup = new mapboxgl.Popup({closeButton:false,closeOnClick:false,offset:8});
   Object.keys(ROADS).forEach(key => {
     const road = ROADS[key];
-    map.on('mouseenter', `road-${key}-core`, (e) => {
-      map.getCanvas().style.cursor = 'pointer';
+    map.on('mouseenter',`road-${key}-core`,e=>{
+      map.getCanvas().style.cursor='pointer';
       roadPopup.setLngLat(e.lngLat)
-        .setHTML(`<div style="padding:2px 0;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text);letter-spacing:.04em">${road.label}</div>`)
+        .setHTML(`<div style="padding:2px 0;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em">${road.label}</div>`)
         .addTo(map);
     });
-    map.on('mouseleave', `road-${key}-core`, () => {
-      map.getCanvas().style.cursor = '';
-      roadPopup.remove();
-    });
+    map.on('mouseleave',`road-${key}-core`,()=>{ map.getCanvas().style.cursor=''; roadPopup.remove(); });
   });
 
   applyMetroVisibility();
@@ -2345,20 +2438,24 @@ function startMetroAnimation() {
 function applyMetroVisibility() {
   const vis = _layerState.metro ? 'visible' : 'none';
   [
-    'metro-red-glow','metro-red-core','metro-red-dash',
-    'metro-2020-core','metro-airport-core',
-    'metro-green-glow','metro-green-core','metro-green-dash',
-    'metro-greenE-core','metro-greenE-dash',
-    'metro-tram-glow','metro-tram-core',
-    'stations-red','stations-2020','stations-airport',
-    'stations-green','stations-tram','stations-label',
+    'metro-red-casing','metro-red-core','metro-red-dash',
+    'metro-2020-casing','metro-2020-core',
+    'metro-airport-casing','metro-airport-core',
+    'metro-green-casing','metro-green-core','metro-green-dash',
+    'metro-greenE-casing','metro-greenE-core',
+    'metro-tram-casing','metro-tram-core',
+    'stations-red','stations-red-dot',
+    'stations-2020','stations-2020-dot',
+    'stations-airport','stations-airport-dot',
+    'stations-green','stations-green-dot',
+    'stations-tram','stations-tram-dot',
+    'stations-label',
     'road-e11-glow','road-e11-core',
     'road-e311-glow','road-e311-core'
   ].forEach(id => {
     try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis); } catch(e) {}
   });
 }
-
 /* ══════════════════════════════════════════════
    HOVER / CLICK  (handled by markers directly)
 ══════════════════════════════════════════════ */
@@ -2970,7 +3067,7 @@ function setHeatMode(mode, btn) {
   document.querySelectorAll('#heat-mode-pills .tb-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   refreshAreaColors();
-  updateLegend();
+    updateLegend();  updateLegend();
   renderAreaList();
 }
 
@@ -3215,5 +3312,19 @@ window.addEventListener('load', () => {
   initMap();
 });
 </script>
+
+<!-- MAP LEGEND -->
+<div id="map-legend">
+  <div class="legend-title" id="legend-title">Price / sqft (AED)</div>
+  <div class="legend-bar" id="legend-bar"></div>
+  <div class="legend-labels">
+    <span id="legend-min"></span><span id="legend-mid"></span><span id="legend-max"></span>
+  </div>
+  <div class="legend-lines">
+    <div class="legend-line-item"><span class="legend-dot" style="background:#EF4444"></span>Red/2020 Line</div>
+    <div class="legend-line-item"><span class="legend-dot" style="background:#10B981"></span>Green Line</div>
+    <div class="legend-line-item"><span class="legend-dot" style="background:#F59E0B"></span>Dubai Tram</div>
+  </div>
+</div>
 </body>
 </html>
