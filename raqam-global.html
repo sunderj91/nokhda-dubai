@@ -54,15 +54,15 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
 .layer-div{height:1px;background:var(--border);margin:6px 16px}
 
 /* ── Right stats ── */
-#stats-panel{position:fixed;right:20px;top:50%;transform:translateY(-50%);width:200px;z-index:100;padding:11px 12px;display:flex;flex-direction:column;gap:8px}
-.st{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:2px}
-.sb{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-.02em}
-.ss{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--text2);margin-top:2px}
-.sr{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)}
+#stats-panel{position:fixed;right:20px;top:50%;transform:translateY(-50%);width:220px;z-index:100;padding:16px;display:flex;flex-direction:column;gap:14px}
+.st{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--text3);margin-bottom:3px}
+.sb{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-.02em}
+.ss{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text2);margin-top:3px}
+.sr{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
 .sr:last-child{border-bottom:none;padding-bottom:0}
-.srl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
-.srv{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--text)}
-.sd{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500}
+.srl{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
+.srv{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--text)}
+.sd{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500}
 .sd.up{color:var(--green)} .sd.dn{color:var(--red)}
 .mbar{height:3px;border-radius:2px;background:var(--border);margin-top:5px;overflow:hidden}
 .mbar-f{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--green));transition:width 1.5s cubic-bezier(.4,0,.2,1)}
@@ -190,34 +190,22 @@ body{font-family:'IBM Plex Sans',sans-serif;color:var(--text)}
     <div class="ss">Annual volume · 2025</div>
   </div>
   <div>
-    <div class="st">UAE Focus</div>
-    <div class="sr"><div><div class="srl">Dubai Volume</div><div class="srv">AED 761B</div></div><div class="sd up">▲ 28.4%</div></div>
-    <div class="sr"><div><div class="srl">Avg PSF</div><div class="srv">AED 1,758</div></div><div class="sd up">▲ 11.2%</div></div>
-    <div class="sr"><div><div class="srl">Avg Yield</div><div class="srv">7.4%</div></div><div class="sd up">▲ 0.6pp</div></div>
-    <div class="sr"><div><div class="srl">Listings</div><div class="srv">226,489</div></div><div class="sd dn">▼ 3.1%</div></div>
-    <div>
-      <div class="srl" style="margin-bottom:4px">UAE Health Score</div>
-      <div class="mbar"><div class="mbar-f" style="width:88%"></div></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px">
-        <span class="srl">Weak</span>
-        <span class="srl" style="color:var(--green)">88/100 · Strong</span>
-      </div>
-    </div>
+    <div class="st" id="top-movers-title">Top Movers · Global</div>
+    <div id="top-movers-list" style="margin-top:8px"></div>
   </div>
   <!-- Live counter -->
-  <div style="border-top:1px solid var(--border);padding-top:8px">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-      <div>
-        <div class="st" style="margin-bottom:1px">Transactions Today</div>
-        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--text);letter-spacing:-.02em" id="gc-num">18,247</div>
-        <div class="ss">across 89 markets</div>
-      </div>
+  <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;align-items:center;justify-content:space-between">
+    <div>
+      <div class="st">Transactions Today</div>
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.02em" id="gc-num">18,247</div>
+      <div class="ss">across 89 markets</div>
     </div>
-    <a href="index.html" target="_blank" style="display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:8px;background:var(--accent2);border:1px solid rgba(0,212,255,.22);text-decoration:none;transition:all .2s;width:100%;box-sizing:border-box" onmouseover="this.style.background='rgba(0,212,255,0.18)'" onmouseout="this.style.background='var(--accent2)'">
-      <span style="font-size:15px">🇦🇪</span>
+    <div style="width:1px;height:36px;background:var(--border)"></div>
+    <a href="https://sunderj91.github.io/nokhda-dubai/" target="_blank" style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:10px;background:var(--accent2);border:1px solid rgba(0,212,255,.22);text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,212,255,0.18)'" onmouseout="this.style.background='var(--accent2)'">
+      <span style="font-size:18px">🇦🇪</span>
       <div>
         <div style="font-family:'IBM Plex Mono',monospace;font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)">Deep Dive</div>
-        <div style="font-family:'Syne',sans-serif;font-size:11px;font-weight:700;color:var(--accent)">RAQAM Dubai →</div>
+        <div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--accent)">RAQAM Dubai →</div>
       </div>
     </a>
   </div>
@@ -254,47 +242,47 @@ const WORLD_GEO={"type":"FeatureCollection","features":[{"type":"Feature","prope
 ══════════════════════════════════════════════ */
 
 const MARKETS = [
-  {country:"United Arab Emirates",code:"AE",flag:"🇦🇪",lat:24.47,lng:54.37,score:88,yoy:28.4,psf:"AED 1,758",vol:"$207B",trend:"up",hist:[900,1050,1180,1320,1580,1758]},
-  {country:"Saudi Arabia",code:"SA",flag:"🇸🇦",lat:23.88,lng:45.08,score:74,yoy:14.2,psf:"SAR 3,200",vol:"$89B",trend:"up",hist:[2100,2300,2520,2750,2960,3200]},
-  {country:"United States of America",code:"US",flag:"🇺🇸",lat:37.09,lng:-95.71,score:65,yoy:4.1,psf:"$245",vol:"$1.8T",trend:"up",hist:[190,205,218,228,238,245]},
-  {country:"United Kingdom",code:"GB",flag:"🇬🇧",lat:55.38,lng:-3.44,score:54,yoy:-1.8,psf:"£485",vol:"$312B",trend:"dn",hist:[440,470,510,520,502,485]},
-  {country:"Germany",code:"DE",flag:"🇩🇪",lat:51.17,lng:10.45,score:48,yoy:-4.2,psf:"€4,100",vol:"$198B",trend:"dn",hist:[3800,4200,4620,4790,4450,4100]},
-  {country:"France",code:"FR",flag:"🇫🇷",lat:46.23,lng:2.21,score:51,yoy:-2.1,psf:"€5,800",vol:"$174B",trend:"dn",hist:[5200,5600,6100,6300,6050,5800]},
-  {country:"Japan",code:"JP",flag:"🇯🇵",lat:36.20,lng:138.25,score:72,yoy:9.8,psf:"¥1.2M",vol:"$156B",trend:"up",hist:[800000,860000,950000,1020000,1110000,1200000]},
-  {country:"Singapore",code:"SG",flag:"🇸🇬",lat:1.35,lng:103.82,score:81,yoy:16.4,psf:"S$2,100",vol:"$43B",trend:"up",hist:[1400,1560,1720,1840,1930,2100]},
-  {country:"Australia",code:"AU",flag:"🇦🇺",lat:-25.27,lng:133.78,score:69,yoy:8.2,psf:"A$8,900",vol:"$187B",trend:"up",hist:[7100,7600,8200,8500,8700,8900]},
-  {country:"Canada",code:"CA",flag:"🇨🇦",lat:56.13,lng:-106.35,score:58,yoy:1.4,psf:"C$690",vol:"$142B",trend:"up",hist:[590,640,720,740,700,690]},
-  {country:"India",code:"IN",flag:"🇮🇳",lat:20.59,lng:78.96,score:77,yoy:18.7,psf:"₹8,400",vol:"$98B",trend:"up",hist:[5200,5800,6400,6900,7400,8400]},
-  {country:"China",code:"CN",flag:"🇨🇳",lat:35.86,lng:104.19,score:34,yoy:-8.4,psf:"¥18,500",vol:"$1.1T",trend:"dn",hist:[22000,24000,26000,25000,22000,18500]},
-  {country:"Brazil",code:"BR",flag:"🇧🇷",lat:-14.24,lng:-51.93,score:61,yoy:6.8,psf:"R$8,200",vol:"$76B",trend:"up"},
-  {country:"South Korea",code:"KR",flag:"🇰🇷",lat:35.91,lng:127.77,score:58,yoy:3.2,psf:"₩8.4M",vol:"$112B",trend:"up"},
-  {country:"Netherlands",code:"NL",flag:"🇳🇱",lat:52.13,lng:5.29,score:63,yoy:5.4,psf:"€4,600",vol:"$67B",trend:"up"},
-  {country:"Portugal",code:"PT",flag:"🇵🇹",lat:39.40,lng:-8.22,score:75,yoy:14.8,psf:"€3,100",vol:"$28B",trend:"up",hist:[1800,2100,2500,2700,2850,3100]},
-  {country:"Qatar",code:"QA",flag:"🇶🇦",lat:25.35,lng:51.18,score:71,yoy:11.2,psf:"QAR 1,450",vol:"$18B",trend:"up"},
-  {country:"Kuwait",code:"KW",flag:"🇰🇼",lat:29.31,lng:47.48,score:58,yoy:4.8,psf:"KWD 380",vol:"$9B",trend:"up"},
-  {country:"Turkey",code:"TR",flag:"🇹🇷",lat:38.96,lng:35.24,score:42,yoy:68.4,psf:"₺48,000",vol:"$31B",trend:"up"},
-  {country:"South Africa",code:"ZA",flag:"🇿🇦",lat:-30.56,lng:22.94,score:44,yoy:2.1,psf:"R12,400",vol:"$14B",trend:"up"},
-  {country:"Kenya",code:"KE",flag:"🇰🇪",lat:0.02,lng:37.91,score:53,yoy:7.4,psf:"KES 9,800",vol:"$4B",trend:"up"},
-  {country:"Mexico",code:"MX",flag:"🇲🇽",lat:23.63,lng:-102.55,score:62,yoy:9.1,psf:"MXN 28,000",vol:"$38B",trend:"up"},
-  {country:"Nigeria",code:"NG",flag:"🇳🇬",lat:9.08,lng:8.68,score:46,yoy:31.2,psf:"₦480,000",vol:"$7B",trend:"up"},
-  {country:"Indonesia",code:"ID",flag:"🇮🇩",lat:-0.79,lng:113.92,score:66,yoy:8.9,psf:"Rp 28M",vol:"$24B",trend:"up"},
-  {country:"Thailand",code:"TH",flag:"🇹🇭",lat:15.87,lng:100.99,score:62,yoy:7.1,psf:"THB 95,000",vol:"$19B",trend:"up"},
-  {country:"Vietnam",code:"VN",flag:"🇻🇳",lat:14.06,lng:108.28,score:71,yoy:13.4,psf:"VND 48M",vol:"$11B",trend:"up"},
-  {country:"Poland",code:"PL",flag:"🇵🇱",lat:51.92,lng:19.15,score:67,yoy:11.8,psf:"PLN 12,400",vol:"$34B",trend:"up"},
-  {country:"Sweden",code:"SE",flag:"🇸🇪",lat:60.13,lng:18.64,score:47,yoy:-3.8,psf:"SEK 42,000",vol:"$41B",trend:"dn"},
-  {country:"Switzerland",code:"CH",flag:"🇨🇭",lat:46.82,lng:8.23,score:74,yoy:4.8,psf:"CHF 11,200",vol:"$78B",trend:"up"},
-  {country:"Spain",code:"ES",flag:"🇪🇸",lat:40.46,lng:-3.75,score:72,yoy:12.4,psf:"€2,800",vol:"$87B",trend:"up",hist:[1800,2000,2200,2450,2620,2800]},
-  {country:"Italy",code:"IT",flag:"🇮🇹",lat:41.87,lng:12.57,score:59,yoy:3.8,psf:"€3,400",vol:"$64B",trend:"up"},
-  {country:"Denmark",code:"DK",flag:"🇩🇰",lat:56.26,lng:9.50,score:55,yoy:2.4,psf:"DKK 28,000",vol:"$32B",trend:"up"},
-  {country:"Norway",code:"NO",flag:"🇳🇴",lat:60.47,lng:8.47,score:57,yoy:3.1,psf:"NOK 62,000",vol:"$41B",trend:"up"},
-  {country:"New Zealand",code:"NZ",flag:"🇳🇿",lat:-40.90,lng:174.89,score:61,yoy:4.2,psf:"NZ$8,400",vol:"$28B",trend:"up"},
-  {country:"Chile",code:"CL",flag:"🇨🇱",lat:-35.68,lng:-71.54,score:56,yoy:4.8,psf:"CLP 2.4M",vol:"$14B",trend:"up"},
-  {country:"Colombia",code:"CO",flag:"🇨🇴",lat:4.57,lng:-74.30,score:58,yoy:6.4,psf:"COP 7.8M",vol:"$12B",trend:"up"},
-  {country:"Pakistan",code:"PK",flag:"🇵🇰",lat:30.38,lng:69.35,score:41,yoy:18.4,psf:"PKR 48,000",vol:"$8B",trend:"up"},
-  {country:"Philippines",code:"PH",flag:"🇵🇭",lat:12.88,lng:121.77,score:63,yoy:8.4,psf:"PHP 124,000",vol:"$11B",trend:"up"},
-  {country:"Malaysia",code:"MY",flag:"🇲🇾",lat:4.21,lng:101.97,score:64,yoy:7.8,psf:"MYR 780",vol:"$16B",trend:"up"},
-  {country:"Israel",code:"IL",flag:"🇮🇱",lat:31.05,lng:34.85,score:52,yoy:-2.4,psf:"ILS 18,400",vol:"$24B",trend:"dn"},
-  {country:"Czech Republic",code:"CZ",flag:"🇨🇿",lat:49.82,lng:15.47,score:62,yoy:8.4,psf:"CZK 128,000",vol:"$18B",trend:"up"},
+  {country:"United Arab Emirates",code:"AE",flag:"🇦🇪",lat:24.47,lng:54.37,score:88,yoy:28.4,psf:"AED 1,758",vol:"$207B",trend:"up",region:"mena"},
+  {country:"Saudi Arabia",code:"SA",flag:"🇸🇦",lat:23.88,lng:45.08,score:74,yoy:14.2,psf:"SAR 3,200",vol:"$89B",trend:"up",region:"mena"},
+  {country:"United States of America",code:"US",flag:"🇺🇸",lat:37.09,lng:-95.71,score:65,yoy:4.1,psf:"$245",vol:"$1.8T",trend:"up",region:"americas"},
+  {country:"United Kingdom",code:"GB",flag:"🇬🇧",lat:55.38,lng:-3.44,score:54,yoy:-1.8,psf:"£485",vol:"$312B",trend:"dn",region:"europe"},
+  {country:"Germany",code:"DE",flag:"🇩🇪",lat:51.17,lng:10.45,score:48,yoy:-4.2,psf:"€4,100",vol:"$198B",trend:"dn",region:"europe"},
+  {country:"France",code:"FR",flag:"🇫🇷",lat:46.23,lng:2.21,score:51,yoy:-2.1,psf:"€5,800",vol:"$174B",trend:"dn",region:"europe"},
+  {country:"Japan",code:"JP",flag:"🇯🇵",lat:36.20,lng:138.25,score:72,yoy:9.8,psf:"¥1.2M",vol:"$156B",trend:"up",region:"asia"},
+  {country:"Singapore",code:"SG",flag:"🇸🇬",lat:1.35,lng:103.82,score:81,yoy:16.4,psf:"S$2,100",vol:"$43B",trend:"up",region:"asia"},
+  {country:"Australia",code:"AU",flag:"🇦🇺",lat:-25.27,lng:133.78,score:69,yoy:8.2,psf:"A$8,900",vol:"$187B",trend:"up",region:"asia"},
+  {country:"Canada",code:"CA",flag:"🇨🇦",lat:56.13,lng:-106.35,score:58,yoy:1.4,psf:"C$690",vol:"$142B",trend:"up",region:"americas"},
+  {country:"India",code:"IN",flag:"🇮🇳",lat:20.59,lng:78.96,score:77,yoy:18.7,psf:"₹8,400",vol:"$98B",trend:"up",region:"asia"},
+  {country:"China",code:"CN",flag:"🇨🇳",lat:35.86,lng:104.19,score:34,yoy:-8.4,psf:"¥18,500",vol:"$1.1T",trend:"dn",region:"asia"},
+  {country:"Brazil",code:"BR",flag:"🇧🇷",lat:-14.24,lng:-51.93,score:61,yoy:6.8,psf:"R$8,200",vol:"$76B",trend:"up",region:"americas"},
+  {country:"South Korea",code:"KR",flag:"🇰🇷",lat:35.91,lng:127.77,score:58,yoy:3.2,psf:"₩8.4M",vol:"$112B",trend:"up",region:"asia"},
+  {country:"Netherlands",code:"NL",flag:"🇳🇱",lat:52.13,lng:5.29,score:63,yoy:5.4,psf:"€4,600",vol:"$67B",trend:"up",region:"europe"},
+  {country:"Portugal",code:"PT",flag:"🇵🇹",lat:39.40,lng:-8.22,score:75,yoy:14.8,psf:"€3,100",vol:"$28B",trend:"up",region:"europe"},
+  {country:"Qatar",code:"QA",flag:"🇶🇦",lat:25.35,lng:51.18,score:71,yoy:11.2,psf:"QAR 1,450",vol:"$18B",trend:"up",region:"mena"},
+  {country:"Kuwait",code:"KW",flag:"🇰🇼",lat:29.31,lng:47.48,score:58,yoy:4.8,psf:"KWD 380",vol:"$9B",trend:"up",region:"mena"},
+  {country:"Turkey",code:"TR",flag:"🇹🇷",lat:38.96,lng:35.24,score:42,yoy:68.4,psf:"₺48,000",vol:"$31B",trend:"up",region:"europe"},
+  {country:"South Africa",code:"ZA",flag:"🇿🇦",lat:-30.56,lng:22.94,score:44,yoy:2.1,psf:"R12,400",vol:"$14B",trend:"up",region:"africa"},
+  {country:"Kenya",code:"KE",flag:"🇰🇪",lat:0.02,lng:37.91,score:53,yoy:7.4,psf:"KES 9,800",vol:"$4B",trend:"up",region:"africa"},
+  {country:"Mexico",code:"MX",flag:"🇲🇽",lat:23.63,lng:-102.55,score:62,yoy:9.1,psf:"MXN 28,000",vol:"$38B",trend:"up",region:"americas"},
+  {country:"Nigeria",code:"NG",flag:"🇳🇬",lat:9.08,lng:8.68,score:46,yoy:31.2,psf:"₦480,000",vol:"$7B",trend:"up",region:"africa"},
+  {country:"Indonesia",code:"ID",flag:"🇮🇩",lat:-0.79,lng:113.92,score:66,yoy:8.9,psf:"Rp 28M",vol:"$24B",trend:"up",region:"asia"},
+  {country:"Thailand",code:"TH",flag:"🇹🇭",lat:15.87,lng:100.99,score:62,yoy:7.1,psf:"THB 95,000",vol:"$19B",trend:"up",region:"asia"},
+  {country:"Vietnam",code:"VN",flag:"🇻🇳",lat:14.06,lng:108.28,score:71,yoy:13.4,psf:"VND 48M",vol:"$11B",trend:"up",region:"asia"},
+  {country:"Poland",code:"PL",flag:"🇵🇱",lat:51.92,lng:19.15,score:67,yoy:11.8,psf:"PLN 12,400",vol:"$34B",trend:"up",region:"europe"},
+  {country:"Sweden",code:"SE",flag:"🇸🇪",lat:60.13,lng:18.64,score:47,yoy:-3.8,psf:"SEK 42,000",vol:"$41B",trend:"dn",region:"europe"},
+  {country:"Switzerland",code:"CH",flag:"🇨🇭",lat:46.82,lng:8.23,score:74,yoy:4.8,psf:"CHF 11,200",vol:"$78B",trend:"up",region:"europe"},
+  {country:"Spain",code:"ES",flag:"🇪🇸",lat:40.46,lng:-3.75,score:72,yoy:12.4,psf:"€2,800",vol:"$87B",trend:"up",region:"europe"},
+  {country:"Italy",code:"IT",flag:"🇮🇹",lat:41.87,lng:12.57,score:59,yoy:3.8,psf:"€3,400",vol:"$64B",trend:"up",region:"europe"},
+  {country:"Denmark",code:"DK",flag:"🇩🇰",lat:56.26,lng:9.50,score:55,yoy:2.4,psf:"DKK 28,000",vol:"$32B",trend:"up",region:"europe"},
+  {country:"Norway",code:"NO",flag:"🇳🇴",lat:60.47,lng:8.47,score:57,yoy:3.1,psf:"NOK 62,000",vol:"$41B",trend:"up",region:"europe"},
+  {country:"New Zealand",code:"NZ",flag:"🇳🇿",lat:-40.90,lng:174.89,score:61,yoy:4.2,psf:"NZ$8,400",vol:"$28B",trend:"up",region:"global"},
+  {country:"Chile",code:"CL",flag:"🇨🇱",lat:-35.68,lng:-71.54,score:56,yoy:4.8,psf:"CLP 2.4M",vol:"$14B",trend:"up",region:"global"},
+  {country:"Colombia",code:"CO",flag:"🇨🇴",lat:4.57,lng:-74.30,score:58,yoy:6.4,psf:"COP 7.8M",vol:"$12B",trend:"up",region:"americas"},
+  {country:"Pakistan",code:"PK",flag:"🇵🇰",lat:30.38,lng:69.35,score:41,yoy:18.4,psf:"PKR 48,000",vol:"$8B",trend:"up",region:"asia"},
+  {country:"Philippines",code:"PH",flag:"🇵🇭",lat:12.88,lng:121.77,score:63,yoy:8.4,psf:"PHP 124,000",vol:"$11B",trend:"up",region:"asia"},
+  {country:"Malaysia",code:"MY",flag:"🇲🇾",lat:4.21,lng:101.97,score:64,yoy:7.8,psf:"MYR 780",vol:"$16B",trend:"up",region:"asia"},
+  {country:"Israel",code:"IL",flag:"🇮🇱",lat:31.05,lng:34.85,score:52,yoy:-2.4,psf:"ILS 18,400",vol:"$24B",trend:"dn",region:"mena"},
+  {country:"Czech Republic",code:"CZ",flag:"🇨🇿",lat:49.82,lng:15.47,score:62,yoy:8.4,psf:"CZK 128,000",vol:"$18B",trend:"up",region:"europe"},
 ];
 
 const MARKET_MAP = {};
@@ -370,12 +358,58 @@ function scoreSideColor(score, alpha) {
    GLOBE STATE
 ══════════════════════════════════════════════ */
 let globe, hoveredCountry = null, selectedCountry = null;
+let _activeRegion = 'global';
 let layerState = {polygons:true,hotspots:true,rings:true,arcs:false,labels:true};
 let worldGeoLoaded = false;
 
 /* ══════════════════════════════════════════════
    INIT GLOBE
 ══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════════
+   FLOW ARCS — Cross-market capital flows
+══════════════════════════════════════════════ */
+const FLOW_ARCS = [
+  // GCC → Global
+  {src:'AE', dst:'GB', lat1:24.47, lng1:54.37, lat2:51.51, lng2:-0.13, vol:48.2, label:'UAE → UK'},
+  {src:'AE', dst:'US', lat1:24.47, lng1:54.37, lat2:40.71, lng2:-74.01, vol:32.1, label:'UAE → USA'},
+  {src:'AE', dst:'FR', lat1:24.47, lng1:54.37, lat2:48.86, lng2:2.35,   vol:18.4, label:'UAE → France'},
+  {src:'AE', dst:'SG', lat1:24.47, lng1:54.37, lat2:1.35,  lng2:103.82, vol:14.2, label:'UAE → Singapore'},
+  {src:'SA', dst:'AE', lat1:23.88, lng1:45.08, lat2:24.47, lng2:54.37,  vol:22.1, label:'KSA → UAE'},
+  // Asia → Gulf
+  {src:'CN', dst:'AE', lat1:35.86, lng1:104.19, lat2:24.47, lng2:54.37, vol:28.4, label:'China → UAE'},
+  {src:'IN', dst:'AE', lat1:20.59, lng1:78.96,  lat2:24.47, lng2:54.37, vol:19.8, label:'India → UAE'},
+  // Europe
+  {src:'GB', dst:'AE', lat1:51.51, lng1:-0.13,  lat2:24.47, lng2:54.37, vol:15.3, label:'UK → UAE'},
+  {src:'RU', dst:'AE', lat1:61.52, lng1:105.32, lat2:24.47, lng2:54.37, vol:12.1, label:'Russia → UAE'},
+  // Americas
+  {src:'US', dst:'AE', lat1:37.09, lng1:-95.71, lat2:24.47, lng2:54.37, vol:8.4,  label:'USA → UAE'},
+  {src:'CA', dst:'GB', lat1:56.13, lng1:-106.35, lat2:51.51, lng2:-0.13, vol:6.2, label:'Canada → UK'},
+];
+
+function applyArcs() {
+  if (!globe) return;
+  if (!layerState.arcs) {
+    globe.arcsData([]);
+    return;
+  }
+  const maxVol = Math.max(...FLOW_ARCS.map(a => a.vol));
+  globe
+    .arcsData(FLOW_ARCS)
+    .arcStartLat(d => d.lat1).arcStartLng(d => d.lng1)
+    .arcEndLat(d => d.lat2).arcEndLng(d => d.lng2)
+    .arcColor(d => {
+      const t = d.vol / maxVol;
+      return [`rgba(0,212,255,${0.1 + t*0.3})`, `rgba(0,212,255,${0.7 + t*0.3})`];
+    })
+    .arcAltitudeAutoScale(0.35)
+    .arcStroke(d => 0.3 + (d.vol / maxVol) * 1.2)
+    .arcDashLength(0.4)
+    .arcDashGap(0.2)
+    .arcDashAnimateTime(2200)
+    .arcsTransitionDuration(600);
+}
+
+
 function initGlobe() {
   if (typeof Globe === 'undefined') {
     throw new Error('Globe.gl library not loaded — check CDN');
@@ -401,9 +435,6 @@ function initGlobe() {
 
   // Hide loading when globe is actually ready
   globe.onGlobeReady(() => {
-    clearInterval(window._statusTimer);
-    const statusEl = document.getElementById('load-status');
-    if (statusEl) statusEl.style.display = 'none';
     const l = document.getElementById('loading');
     if (l) { l.classList.add('fade'); setTimeout(() => { l.style.display = 'none'; }, 700); }
   });
@@ -459,12 +490,17 @@ function applyPolygons() {
       const m = f._market;
       if (!m) return 'rgba(255,255,255,0.04)';
       const isSel = selectedCountry && selectedCountry.code === m.code;
+      const _rgn = typeof _activeRegion !== 'undefined' ? _activeRegion : 'global';
+      const inRegion = _rgn === 'global' || m.region === _rgn || (_rgn === 'uae' && m.code === 'AE');
+      if (!inRegion) return 'rgba(255,255,255,0.06)';
       return scoreToColor(m.score, isSel ? 0.92 : 0.65);
     })
     .polygonSideColor(f => {
       const m = f._market;
       if (!m) return 'rgba(255,255,255,0.02)';
-      return scoreSideColor(m.score, 0.4);
+      const _rgn2 = typeof _activeRegion !== 'undefined' ? _activeRegion : 'global';
+      const inRegion = _rgn2 === 'global' || m.region === _rgn2 || (_rgn2 === 'uae' && m.code === 'AE');
+      return inRegion ? scoreSideColor(m.score, 0.4) : 'rgba(255,255,255,0.01)';
     })
     .polygonStrokeColor(f => {
       const m = f._market;
@@ -500,10 +536,7 @@ function applyPolygons() {
       if (f && f._market) {
         selectedCountry = f._market;
         showCountryCard(f._market);
-        // UAE: zoom in closer to show Dubai detail
-        const alt = f._market.code === 'AE' ? 0.4 : 0.8;
-        globe.pointOfView({lat: f._market.lat, lng: f._market.lng, alt}, 1400);
-        globe.controls().autoRotate = false;
+        globe.pointOfView({lat: f._market.lat, lng: f._market.lng, alt: 0.8}, 1200);
       }
     });
 }
@@ -527,61 +560,21 @@ function applyRings() {
 ══════════════════════════════════════════════ */
 function applyLabels() {
   if (!globe) return;
+  const isDark = document.documentElement.dataset.theme !== 'light';
   const labels = layerState.labels ? MARKETS.filter(m => m.score >= 68) : [];
-
-  // Use native labelsData — WebGL rendered, tracks globe perfectly during rotation/drag
-  // htmlElementsData causes labels to lag/detach and shows ?? for emoji on many systems
   globe.labelsData(labels)
-    .labelLat('lat')
-    .labelLng('lng')
-    .labelAltitude(0.04)
-    .labelText(d => {
-      const SHORT = {
-        'United Arab Emirates': 'UAE',
-        'United States of America': 'USA',
-        'United Kingdom': 'UK',
-        'Saudi Arabia': 'Saudi Arabia',
-        'South Korea': 'Korea',
-        'New Zealand': 'N. Zealand',
-        'South Africa': 'S. Africa',
-      };
-      return SHORT[d.country] || d.country;
-    })
-    .labelSize(d => d.score >= 85 ? 0.72 : d.score >= 75 ? 0.60 : 0.50)
-    .labelDotRadius(d => d.score >= 80 ? 0.45 : 0.32)
-    .labelDotOrientation(() => 'bottom')
-    .labelColor(d => {
-      if (d.score >= 80) return '#30FFB4';
-      if (d.score >= 72) return '#F7C948';
-      return '#8FB4D8';
-    })
+    .labelLat('lat').labelLng('lng')
+    .labelText(d => `${d.flag} ${d.country}`)
+    .labelSize(d => d.score >= 80 ? 1.1 : 0.82)
+    .labelDotRadius(0)
+    .labelColor(() => isDark ? 'rgba(232,237,245,0.72)' : 'rgba(10,15,30,0.72)')
+    .labelAltitude(0.022)
     .labelResolution(3);
-
-  // Clear any old htmlElements overlays
-  globe.htmlElementsData([]);
 }
 
 /* ══════════════════════════════════════════════
    COUNTRY CARD
 ══════════════════════════════════════════════ */
-function buildMiniSparkline(hist, color) {
-  if (!hist || hist.length < 2) return '';
-  const W = 80, H = 28, P = 2;
-  const min = Math.min(...hist), max = Math.max(...hist), range = max - min || 1;
-  const pts = hist.map((v, i) => {
-    const x = P + (i / (hist.length - 1)) * (W - P * 2);
-    const y = H - P - ((v - min) / range) * (H - P * 2);
-    return `${x},${y}`;
-  }).join(' ');
-  const last = pts.split(' ').pop().split(',');
-  const first = pts.split(' ')[0].split(',');
-  const areaPath = `M${first[0]},${first[1]} L${pts.split(' ').slice(1).join(' L')} L${last[0]},${H} L${first[0]},${H} Z`;
-  return `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0">
-    <path d="${areaPath}" fill="${color}" opacity="0.15"/>
-    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-  </svg>`;
-}
-
 function showCountryCard(m) {
   const card = document.getElementById('country-card');
   const trend = m.trend === 'up';
@@ -589,76 +582,82 @@ function showCountryCard(m) {
   const mono = "font-family:'IBM Plex Mono','Noto Sans Mono',monospace;";
   const syne = "font-family:'Syne',sans-serif;";
   const label = m.score>=80?'Strong':m.score>=68?'Growing':m.score>=55?'Stable':m.score>=42?'Slowing':'Contracting';
-  const spark = buildMiniSparkline(m.hist, col);
+  const signal = m.score>=75?'BUY':m.score>=60?'HOLD':'WATCH';
+  const signalCol = m.score>=75?'#10B981':m.score>=60?'#F59E0B':'#EF4444';
 
-  const uaeCities = m.code === 'AE' ? `
-    <div style="width:1px;height:40px;background:var(--border2);flex-shrink:0"></div>
-    <div style="display:flex;gap:8px;flex-shrink:0">
-      ${[
-        {city:'Dubai',psf:'AED 1,758',yoy:'+11.2%'},
-        {city:'Abu Dhabi',psf:'AED 1,240',yoy:'+8.4%'},
-        {city:'Sharjah',psf:'AED 680',yoy:'+6.1%'},
-      ].map(c => `
-        <div style="padding:7px 10px;border-radius:8px;background:var(--accent2);border:1px solid var(--border2);text-align:center;cursor:pointer" onclick="${c.city==='Dubai'?"window.open('index.html','_blank')":"void(0)"}">
-          <div style="${mono}font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--text3)">${c.city}</div>
-          <div style="${mono}font-size:11px;font-weight:600;color:var(--text);margin:2px 0">${c.psf}</div>
-          <div style="${mono}font-size:9px;color:var(--green)">${c.yoy}</div>
-        </div>`).join('')}
-    </div>` : '';
+  // Capital flow info
+  const inflows = FLOW_ARCS.filter(a => a.dst === m.code);
+  const outflows = FLOW_ARCS.filter(a => a.src === m.code);
+  const totalIn = inflows.reduce((s,a) => s+a.vol, 0);
+  const totalOut = outflows.reduce((s,a) => s+a.vol, 0);
 
   card.innerHTML = `
-    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:11px;flex-shrink:0">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <!-- Flag + name -->
+      <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
         <div style="font-size:28px;line-height:1">${m.flag}</div>
         <div>
-          <div style="${syne}font-size:16px;font-weight:700;color:var(--text);white-space:nowrap">${m.country}</div>
+          <div style="${syne}font-size:16px;font-weight:700;color:var(--text)">${m.country}</div>
           <div style="display:flex;align-items:center;gap:5px;margin-top:2px">
-            <div style="width:5px;height:5px;border-radius:50%;background:${col}"></div>
-            <div style="${mono}font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:${col}">${m.score}/100 · ${label}</div>
+            <div style="width:6px;height:6px;border-radius:50%;background:${col}"></div>
+            <div style="${mono}font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:${col}">${m.score}/100 &middot; ${label}</div>
           </div>
         </div>
       </div>
-      <div style="flex:1;min-width:70px;display:flex;align-items:center;gap:8px">
-        <div style="flex:1;height:2px;border-radius:2px;background:var(--border);overflow:hidden">
-          <div style="height:100%;width:${m.score}%;background:${col};border-radius:2px"></div>
+
+      <!-- Health bar -->
+      <div style="flex:1;min-width:80px">
+        <div style="height:3px;border-radius:2px;background:rgba(255,255,255,0.08);overflow:hidden">
+          <div style="height:100%;width:${m.score}%;background:linear-gradient(90deg,${col}88,${col});border-radius:2px;transition:width .6s ease"></div>
         </div>
-        ${spark}
       </div>
+
+      <!-- KPIs -->
       <div style="display:flex;gap:12px;flex-shrink:0;align-items:center">
         <div style="text-align:center">
-          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">YoY</div>
-          <div style="${mono}font-size:15px;font-weight:700;color:${trend?'var(--green)':'var(--red)'}">${trend?'+':''}${m.yoy}%</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">YoY Growth</div>
+          <div style="${mono}font-size:15px;font-weight:700;color:${trend?'#10B981':'#EF4444'}">${trend?'+':''}${m.yoy}%</div>
         </div>
-        <div style="width:1px;height:28px;background:var(--border2)"></div>
+        <div style="width:1px;height:28px;background:var(--border)"></div>
         <div style="text-align:center">
           <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Volume</div>
           <div style="${mono}font-size:13px;font-weight:600;color:var(--text)">${m.vol}</div>
         </div>
-        <div style="width:1px;height:28px;background:var(--border2)"></div>
+        <div style="width:1px;height:28px;background:var(--border)"></div>
         <div style="text-align:center">
           <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Avg PSF</div>
           <div style="${mono}font-size:12px;font-weight:600;color:var(--text)">${m.psf}</div>
         </div>
-        <div style="width:1px;height:28px;background:var(--border2)"></div>
+        ${totalIn > 0 ? `
+        <div style="width:1px;height:28px;background:var(--border)"></div>
         <div style="text-align:center">
-          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Trend</div>
-          <div style="${mono}font-size:12px;font-weight:700;color:${trend?'var(--green)':'var(--red)'}">${trend?'▲ Up':'▼ Down'}</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:2px">Capital In</div>
+          <div style="${mono}font-size:12px;font-weight:600;color:#00D4FF">$${totalIn.toFixed(0)}B</div>
+        </div>` : ''}
+        <div style="width:1px;height:28px;background:var(--border)"></div>
+        <!-- Signal badge -->
+        <div style="text-align:center">
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin-bottom:4px">Signal</div>
+          <div style="padding:3px 10px;border-radius:4px;border:1px solid ${signalCol}40;background:${signalCol}18;${mono}font-size:10px;font-weight:700;color:${signalCol};letter-spacing:.08em">${signal}</div>
         </div>
       </div>
-      ${uaeCities}
+
       ${m.code==='AE'?`
-      <a href="index.html" target="_blank" style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:var(--accent);text-decoration:none">
-        <span style="font-size:14px">🗺️</span>
+      <div style="width:1px;height:40px;background:var(--border);flex-shrink:0"></div>
+      <a href="https://sunderj91.github.io/nokhda-dubai/" target="_blank" style="flex-shrink:0;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:var(--accent);text-decoration:none;transition:opacity .2s" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        <span style="font-size:14px">🇦🇪</span>
         <div>
-          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)">Open Dashboard</div>
+          <div style="${mono}font-size:7px;letter-spacing:.1em;text-transform:uppercase;color:rgba(0,0,0,0.55)">137 Zones</div>
           <div style="${syne}font-size:11px;font-weight:700;color:#000">RAQAM Dubai →</div>
         </div>
       </a>`:''}
-      <button onclick="closeCard()" style="flex-shrink:0;width:26px;height:26px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;">✕</button>
+
+      <button onclick="closeCard()" style="flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">&#10005;</button>
     </div>
   `;
   card.classList.add('visible');
 }
+
 
 function closeCard() {
   document.getElementById('country-card').classList.remove('visible');
@@ -672,10 +671,46 @@ function closeCard() {
 function setView(key, btn) {
   document.querySelectorAll('.top-pill').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  _activeRegion = key;
   if (globe && VIEW_PRESETS[key]) {
     globe.pointOfView(VIEW_PRESETS[key], 1400);
     globe.controls().autoRotate = (key === 'global');
   }
+  // Re-render polygons with region highlight
+  applyPolygons();
+  // Update right panel with region stats
+  updateStatsPanel(key);
+  const title = document.getElementById('top-movers-title');
+  if (title) title.textContent = 'Top Movers · ' + key.charAt(0).toUpperCase()+key.slice(1);
+}
+
+function updateStatsPanel(region) {
+  const el = document.getElementById('top-movers-list');
+  if (!el) return;
+  const filtered = region === 'global'
+    ? [...MARKETS].sort((a,b) => b.yoy - a.yoy).slice(0,5)
+    : MARKETS.filter(m => m.region === region || (region === 'uae' && m.code === 'AE'))
+              .sort((a,b) => b.yoy - a.yoy).slice(0,5);
+
+  const maxYoy = Math.max(...filtered.map(m => Math.abs(m.yoy)));
+  el.innerHTML = filtered.map(m => {
+    const up = m.trend === 'up';
+    const col = up ? 'var(--green)' : 'var(--red)';
+    const barW = Math.round(Math.abs(m.yoy) / maxYoy * 100);
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;cursor:pointer"
+              onclick="if(globe)globe.pointOfView({lat:${m.lat},lng:${m.lng},alt:0.8},1200)">
+      <div style="font-size:14px;flex-shrink:0">${m.flag}</div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${m.country.length > 12 ? m.country.slice(0,12)+'…' : m.country}</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:${col};flex-shrink:0;margin-left:4px">${up?'+':''}${m.yoy}%</div>
+        </div>
+        <div style="height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden">
+          <div style="height:100%;width:${barW}%;background:${col};border-radius:1px;opacity:0.7"></div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 /* ══════════════════════════════════════════════
@@ -687,6 +722,7 @@ function toggleLayer(id, el) {
   if (id === 'polygons') applyPolygons();
   else if (id === 'rings') applyRings();
   else if (id === 'labels') applyLabels();
+  else if (id === 'arcs') applyArcs();
 }
 
 /* ══════════════════════════════════════════════
@@ -783,27 +819,27 @@ function buildLegend() {
    BOOT
 ══════════════════════════════════════════════ */
 window.addEventListener('load', () => {
-  const statuses = ['Initialising globe engine...','Loading earth textures...','Parsing 177 country boundaries...','Computing RE health scores...','Connecting market feeds...'];
+  const statuses = ['Initialising globe engine...','Loading earth textures...','Parsing 177 country boundaries...','Computing RE health scores...','Connecting market feeds...','Ready.'];
   let si = 0;
   const statusEl = document.getElementById('load-status');
-  window._statusTimer = setInterval(() => {
+  const t = setInterval(() => {
     si++;
-    if (si < statuses.length && statusEl) statusEl.textContent = statuses[si];
-    else clearInterval(window._statusTimer);
+    if (si < statuses.length) statusEl.textContent = statuses[si];
+    else clearInterval(t);
   }, 380);
 
   buildTicker();
   buildLegend();
   animateCounter();
+  setTimeout(() => updateStatsPanel('global'), 100);
 
   setTimeout(() => {
     try {
       initGlobe();
       // Loading screen hidden via globe.onGlobeReady() callback
     } catch(err) {
-      // Silently recover — hide loading screen on error too
-      const lErr = document.getElementById('loading');
-      if (lErr) { lErr.classList.add('fade'); setTimeout(() => { lErr.style.display = 'none'; }, 700); }
+      document.getElementById('load-status').textContent = 'Error: ' + err.message;
+      document.getElementById('load-status').style.color = '#FF4455';
       console.error('Globe init failed:', err);
     }
   }, 400);
