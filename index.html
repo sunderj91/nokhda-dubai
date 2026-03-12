@@ -2638,36 +2638,48 @@ function switchTab(name, btn) {
    SVG LINE CHART
 ══════════════════════════════════════════════ */
 function buildSVGChart(hist, color) {
-  const W = 240, H = 80, PAD = 8;
-  const minV = Math.min(...hist), maxV = Math.max(...hist);
-  const range = maxV - minV || 1;
-  const years = ['2020','2021','2022','2023','2024','2025'];
+  // hist is [{y:2017,v:900}, {y:2018,v:720}, ...]
+  // Normalize: accept both plain numbers and {y,v} objects
+  const entries = hist.map(h => typeof h === 'object' ? h : {y: null, v: h});
+  const vals = entries.map(e => e.v);
+  const defaultYears6 = ['2020','2021','2022','2023','2024','2025'];
+  const defaultYears8 = ['2017','2018','2019','2020','2021','2022','2023','2024'];
+  const defaultYears = entries.length === 8 ? defaultYears8 : defaultYears6;
+  const labels = entries.map((e, i) => e.y ? String(e.y) : (defaultYears[i] || ''));
 
-  const pts = hist.map((v, i) => {
-    const x = PAD + (i / (hist.length - 1)) * (W - PAD * 2);
+  const W = 260, H = 80, PAD = 10;
+  const minV = Math.min(...vals), maxV = Math.max(...vals);
+  const range = maxV - minV || 1;
+
+  const pts = vals.map((v, i) => {
+    const x = PAD + (i / (vals.length - 1)) * (W - PAD * 2);
     const y = H - PAD - ((v - minV) / range) * (H - PAD * 2);
     return [x, y];
   });
 
-  const pathD = pts.map((p, i) => (i === 0 ? `M${p[0]},${p[1]}` : `L${p[0]},${p[1]}`)).join(' ');
-  const areaD = `${pathD} L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+  const pathD = pts.map((p, i) => (i === 0 ? `M${p[0].toFixed(1)},${p[1].toFixed(1)}` : `L${p[0].toFixed(1)},${p[1].toFixed(1)}`)).join(' ');
+  const areaD = `${pathD} L${pts[pts.length-1][0].toFixed(1)},${H} L${pts[0][0].toFixed(1)},${H} Z`;
 
   const gradId = 'grad_' + Math.random().toString(36).slice(2,7);
-  const cagr = (((hist[hist.length-1]/hist[0]) ** (1/(hist.length-1))) - 1) * 100;
-  document.getElementById('rp-chart-cagr').textContent = `CAGR +${cagr.toFixed(1)}%/yr`;
+  const cagr = (((vals[vals.length-1]/vals[0]) ** (1/(vals.length-1))) - 1) * 100;
+  const cagrEl = document.getElementById('rp-chart-cagr');
+  if (cagrEl) cagrEl.textContent = `CAGR +${isNaN(cagr) ? '0.0' : cagr.toFixed(1)}%/yr`;
+
+  // Show only first, middle, last year labels to avoid crowding
+  const showLabel = (i) => i === 0 || i === Math.floor(vals.length/2) || i === vals.length-1;
 
   return `<defs>
     <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+      <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
       <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
     </linearGradient>
   </defs>
   <path d="${areaD}" fill="url(#${gradId})"/>
-  <path d="${pathD}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="${pathD}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   ${pts.map((p, i) => `
-    <circle cx="${p[0]}" cy="${p[1]}" r="3" fill="${color}" opacity="0.9"/>
-    <text x="${p[0]}" y="${H + 4}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6" fill="rgba(200,210,230,0.4)">${years[i]}</text>
-    <text x="${p[0]}" y="${p[1] - 5}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="6" fill="rgba(200,210,230,0.55)">${(v => v >= 1000 ? (v/1000).toFixed(1)+'K' : v)(hist[i])}</text>
+    <circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${showLabel(i) ? 3 : 2}" fill="${color}" opacity="${showLabel(i) ? 1 : 0.5}"/>
+    ${showLabel(i) ? `<text x="${p[0].toFixed(1)}" y="${H + 8}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="7" fill="rgba(200,210,230,0.45)">${labels[i]}</text>` : ''}
+    ${showLabel(i) ? `<text x="${p[0].toFixed(1)}" y="${(p[1]-6).toFixed(1)}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="7" fill="rgba(200,210,230,0.65)">${vals[i] >= 1000 ? (vals[i]/1000).toFixed(1)+'k' : vals[i]}</text>` : ''}
   `).join('')}`;
 }
 
@@ -2847,8 +2859,9 @@ function getInsights(a) {
   if (a.tier === 'prime' && a.yld > 5.5)
     insights.push({ icon: '⚡', text: `<strong>Rare combination:</strong> Prime-tier status with <strong>${a.yld}%</strong> yield is unusual — typically luxury markets sacrifice yield for capital appreciation.` });
 
-  const histGain = ((a.hist[a.hist.length-1] / a.hist[0]) - 1) * 100;
-  insights.push({ icon: '📈', text: `<strong>5-year appreciation:</strong> PSF grew from AED ${a.hist[0].toLocaleString()} to <strong>AED ${a.hist[a.hist.length-1].toLocaleString()}</strong> — a <strong>+${histGain.toFixed(0)}% total return</strong> since 2020.` });
+  const _hv = a.hist.map(h => typeof h === 'object' ? h.v : h);
+  const histGain = ((_hv[_hv.length-1] / _hv[0]) - 1) * 100;
+  insights.push({ icon: '📈', text: `<strong>5-year appreciation:</strong> PSF grew from AED ${_hv[0].toLocaleString()} to <strong>AED ${_hv[_hv.length-1].toLocaleString()}</strong> — a <strong>+${histGain.toFixed(0)}% total return</strong> since 2020.` });
 
   return insights.slice(0, 4);
 }
