@@ -1,0 +1,19 @@
+{
+  "name": "raqam-scraper",
+  "version": "1.0.0",
+  "description": "Dubai real estate scraper for RAQAM platform",
+  "type": "module",
+  "scripts": {
+    "scrape": "node scraper.js",
+    "scrape:dry": "node scraper.js --dry-run",
+    "test": "node scraper.js --dry-run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.0",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.3.0",
+    "node-cron": "^3.0.3",
+    "p-limit": "^5.0.0"
+  }
+}
