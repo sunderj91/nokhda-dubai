@@ -527,7 +527,6 @@ function applyPolygons() {
           </div>
         </div>`;
     })
-    .polygonTransitionDuration(0)
     .onPolygonHover(f => {
       hoveredCountry = f && f._market ? f._market : null;
       document.body.style.cursor = hoveredCountry ? 'pointer' : '';

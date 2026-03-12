@@ -3391,16 +3391,11 @@ function toggleTheme() {
   document.documentElement.dataset.theme = isDark ? 'light' : 'dark';
   document.getElementById('theme-btn').textContent = isDark ? '☽' : '☀';
   if (!_satMode) {
-    // Mapbox Standard: switch light preset instantly — no style reload needed
-    try {
-      // lightPreset not used with dark-v11/light-v11
-    } catch(e) {
-      // Fallback: full style swap if config not available (e.g. satellite mode)
-      map.setStyle(isDark ? getStyle('light') : getStyle('dark'));
-      map.once('styledata', () => {
-        setTimeout(() => { addAreaLayers(); addMetroLayer(); applyLayerVisibility(); }, 200);
-      });
-    }
+    const newStyle = isDark ? getStyle('light') : getStyle('dark');
+    map.setStyle(newStyle);
+    map.once('styledata', () => {
+      setTimeout(() => { addAreaLayers(); addMetroLayer(); applyLayerVisibility(); updateLegend(); }, 300);
+    });
   }
 }
 
