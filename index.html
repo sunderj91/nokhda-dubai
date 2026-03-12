@@ -2874,6 +2874,82 @@ const PROJECTS = [
 ];
 
 /* ══════════════════════════════════════════════
+   SUPABASE LIVE DATA
+══════════════════════════════════════════════ */
+const _SB_URL  = 'https://vmzcwnzsyaeqvvwqhjjr.supabase.co';
+const _SB_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZtemN3bnpzeWFlcXZ2d3FoampyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTcyNjYsImV4cCI6MjA4ODg5MzI2Nn0.UD1FLFJ6xtn_D060zfEye1ekxMLGEyJFqTar04eFldY';
+
+async function _sbFetch(table, params = {}) {
+  const url = new URL(`${_SB_URL}/rest/v1/${table}`);
+  if (params.select)  url.searchParams.set('select', params.select);
+  if (params.order)   url.searchParams.set('order', params.order);
+  if (params.limit)   url.searchParams.set('limit', params.limit);
+  if (params.filters) params.filters.forEach(([col, op, val]) => url.searchParams.set(col, `${op}.${val}`));
+  const res = await fetch(url.toString(), {
+    headers: { 'apikey': _SB_KEY, 'Authorization': `Bearer ${_SB_KEY}` }
+  });
+  if (!res.ok) throw new Error(`Supabase ${res.status}`);
+  return res.json();
+}
+
+function _sbToProject(p) {
+  return {
+    id: p.id,
+    name: p.name,
+    developer: p.developer_name || '',
+    area: p.area,
+    coords: (p.lng && p.lat) ? [p.lng, p.lat] : null,
+    type: p.type || 'apartment',
+    status: p.status || 'off-plan',
+    completionDate: p.completion_quarter || (p.completion_date ? p.completion_date.substring(0,7) : null),
+    priceMin: p.price_min,
+    priceMax: p.price_max,
+    priceAvg: p.price_avg || p.price_min,
+    psfMin: p.psf_min,
+    psfMax: p.psf_max,
+    psfAvg: p.psf_avg,
+    units: p.units_total,
+    floors: p.floors,
+    bedrooms: p.bedrooms_available || [],
+    paymentPlan: p.payment_years ? `${p.payment_years}yr` : null,
+    downPayment: p.down_payment,
+    onCompletion: p.on_completion,
+    duringConstruction: p.during_construction,
+    amenities: p.amenities || [],
+    description: p.description || '',
+    featured: p.featured || false,
+    coverImage: p.cover_image || null,
+    raqamSignal: p.raqam_signal || null,
+    raqamScore: p.raqam_score || null,
+    areaAvgPsf: p.area_avg_psf,
+    areaYield: p.area_rental_yield,
+    psfTrend: (p.initial_psf && p.latest_psf)
+      ? +((p.latest_psf - p.initial_psf) / p.initial_psf * 100).toFixed(1) : null,
+    _fromDB: true,
+  };
+}
+
+async function loadProjectsFromDB() {
+  try {
+    const raw = await _sbFetch('projects_full', {
+      select: 'id,name,developer_name,area,lat,lng,type,status,price_min,price_max,price_avg,psf_min,psf_max,psf_avg,units_total,floors,bedrooms_available,completion_quarter,completion_date,down_payment,during_construction,on_completion,payment_years,amenities,description,cover_image,featured,featured_rank,raqam_signal,raqam_score,area_avg_psf,area_rental_yield,latest_psf,initial_psf',
+      order: 'featured.desc.nullslast,raqam_score.desc.nullslast',
+      limit: '500',
+    });
+    if (raw && raw.length > 0) {
+      // Replace static PROJECTS array with live data
+      PROJECTS.length = 0;
+      raw.forEach(p => PROJECTS.push(_sbToProject(p)));
+      console.log(`✅ RAQAM DB: ${PROJECTS.length} live projects loaded`);
+      return true;
+    }
+  } catch(err) {
+    console.warn('DB load failed, using seed data:', err.message);
+  }
+  return false;
+}
+
+/* ══════════════════════════════════════════════
    PROJECT STATE
 ══════════════════════════════════════════════ */
 let _mainTab = 'areas'; // 'areas' | 'projects'
@@ -2952,9 +3028,12 @@ function enableProjectsMap() {
     try { if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', 'none'); } catch(e) {}
   });
 
-  addProjectDots();
-  renderProjectList();
-  updatePriceLegend();
+  // Load live data from Supabase then render
+  loadProjectsFromDB().then(() => {
+    addProjectDots();
+    renderProjectList();
+    updatePriceLegend();
+  });
 }
 
 function disableProjectsMap() {
