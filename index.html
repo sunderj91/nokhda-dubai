@@ -2198,6 +2198,27 @@ function addAreaLayers() {
   }
 
   renderMarkers();
+
+  // Re-raise metro/station layers above area layers (they may have been displaced)
+  const metroLayerOrder = [
+    'metro-red-casing','metro-red-core',
+    'metro-2020-casing','metro-2020-core',
+    'metro-airport-casing','metro-airport-core',
+    'metro-green-casing','metro-green-core',
+    'metro-greenE-casing','metro-greenE-core',
+    'metro-tram-casing','metro-tram-core',
+    'stations-red_shadow','stations-red','stations-red-dot',
+    'stations-2020_shadow','stations-2020','stations-2020-dot',
+    'stations-airport_shadow','stations-airport','stations-airport-dot',
+    'stations-green_shadow','stations-green','stations-green-dot',
+    'stations-tram_shadow','stations-tram','stations-tram-dot',
+    'stations-label',
+    'road-e11-glow','road-e11-core',
+    'road-e311-glow','road-e311-core'
+  ];
+  metroLayerOrder.forEach(id => {
+    try { if (map.getLayer(id)) map.moveLayer(id); } catch(e) {}
+  });
 }
 
 function renderMarkers() {
