@@ -789,6 +789,7 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .proj-row { padding:10px 14px; border-bottom:1px solid var(--bord); cursor:pointer; transition:background .15s; display:flex; gap:10px; align-items:flex-start; }
 .proj-row:hover { background:rgba(255,255,255,0.04); }
 .proj-row.active { background:rgba(0,194,203,0.08); border-left:3px solid var(--accent); padding-left:11px; }
+.proj-row-thumb { width:52px; height:40px; border-radius:4px; object-fit:cover; flex-shrink:0; background:var(--surf); border:1px solid var(--bord); }
 .proj-dot-mini { width:10px; height:10px; border-radius:50%; margin-top:4px; flex-shrink:0; }
 .proj-row-body { flex:1; min-width:0; }
 .proj-row-name { font-size:12px; font-weight:600; color:var(--text1); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:2px; }
@@ -815,21 +816,31 @@ body.lp-collapsed #heat-legend { left: 12px; }
 /* ══ PROJECT DETAIL RIGHT PANEL ══ */
 #proj-right-panel { position:absolute; right:0; top:52px; bottom:0; width:380px; background:var(--bg2); border-left:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
 #proj-right-panel.open { display:flex; }
-.prp-header { padding:14px 16px 12px; border-bottom:1px solid var(--bord); }
-.prp-header-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
-.prp-name { font-size:15px; font-weight:700; color:var(--text1); line-height:1.3; }
-.prp-dev { font-size:11px; color:var(--text3); margin-top:2px; }
-.prp-close { background:none; border:none; color:var(--text3); font-size:18px; cursor:pointer; padding:0 4px; line-height:1; }
-.prp-close:hover { color:var(--text1); }
-.prp-badges { display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap; }
+/* HERO IMAGE */
+.prp-hero { position:relative; width:100%; height:200px; background:var(--bg3) url('') center/cover no-repeat; flex-shrink:0; }
+.prp-hero-gradient { position:absolute; inset:0; background:linear-gradient(to bottom, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.75) 100%); }
+.prp-close-hero { position:absolute; top:10px; right:12px; background:rgba(0,0,0,0.55); border:1px solid rgba(255,255,255,0.18); color:#fff; font-size:14px; width:28px; height:28px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(4px); transition:background .15s; z-index:2; }
+.prp-close-hero:hover { background:rgba(0,0,0,0.8); }
+.prp-hero-info { position:absolute; bottom:12px; left:14px; right:14px; z-index:2; }
+.prp-name { font-size:15px; font-weight:700; color:#fff; line-height:1.3; text-shadow:0 1px 4px rgba(0,0,0,0.6); }
+.prp-dev { font-size:10px; color:rgba(255,255,255,0.65); margin-top:2px; }
+.prp-badges { display:flex; gap:5px; margin-bottom:6px; flex-wrap:wrap; }
 .prp-badge { font-size:9px; font-family:'IBM Plex Mono',monospace; padding:3px 8px; border-radius:4px; letter-spacing:.05em; font-weight:700; text-transform:uppercase; }
-.prp-badge.off-plan { background:rgba(245,158,11,0.2); color:#F59E0B; border:1px solid rgba(245,158,11,0.3); }
-.prp-badge.ready { background:rgba(34,197,94,0.2); color:#22C55E; border:1px solid rgba(34,197,94,0.3); }
-.prp-badge.construction { background:rgba(99,102,241,0.2); color:#818CF8; border:1px solid rgba(99,102,241,0.3); }
-.prp-badge.type-b { background:rgba(255,255,255,0.08); color:var(--text2); border:1px solid var(--bord); }
-.prp-badge.featured { background:rgba(201,168,76,0.2); color:#C9A84C; border:1px solid rgba(201,168,76,0.4); }
-.prp-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--bord); border:1px solid var(--bord); border-radius:6px; overflow:hidden; }
-.prp-kpi { background:var(--surf); padding:8px 4px; text-align:center; }
+.prp-badge.off-plan { background:rgba(245,158,11,0.25); color:#F59E0B; border:1px solid rgba(245,158,11,0.4); }
+.prp-badge.ready { background:rgba(34,197,94,0.25); color:#22C55E; border:1px solid rgba(34,197,94,0.4); }
+.prp-badge.construction,.prp-badge.under-construction { background:rgba(99,102,241,0.25); color:#818CF8; border:1px solid rgba(99,102,241,0.4); }
+.prp-badge.type-b { background:rgba(0,0,0,0.35); color:rgba(255,255,255,0.7); border:1px solid rgba(255,255,255,0.18); backdrop-filter:blur(4px); }
+.prp-badge.featured { background:rgba(201,168,76,0.25); color:#C9A84C; border:1px solid rgba(201,168,76,0.5); }
+/* IMAGE STRIP */
+.prp-img-strip { display:flex; gap:4px; padding:6px 8px; overflow-x:auto; flex-shrink:0; background:var(--bg3); border-bottom:1px solid var(--bord); scrollbar-width:none; }
+.prp-img-strip::-webkit-scrollbar { display:none; }
+.prp-img-strip:empty { display:none; }
+.prp-thumb { width:72px; height:52px; border-radius:4px; object-fit:cover; cursor:pointer; opacity:.85; transition:opacity .15s,transform .15s; flex-shrink:0; border:2px solid transparent; }
+.prp-thumb:hover { opacity:1; transform:scale(1.04); }
+.prp-thumb.active { border-color:var(--accent); opacity:1; }
+/* KPIs */
+.prp-kpis { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--bord); border-bottom:1px solid var(--bord); flex-shrink:0; }
+.prp-kpi { background:var(--bg2); padding:10px 4px; text-align:center; }
 .prp-kpi-l { font-size:8px; color:var(--text3); text-transform:uppercase; letter-spacing:.05em; margin-bottom:3px; }
 .prp-kpi-v { font-size:12px; font-weight:700; color:var(--text1); font-family:'IBM Plex Mono',monospace; }
 .prp-kpi-v.gold { color:#C9A84C; }
@@ -874,6 +885,17 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .prp-signal.caution { background:rgba(239,68,68,0.2); color:#EF4444; border:1px solid rgba(239,68,68,0.4); }
 .prp-ai-text { font-size:12px; color:var(--text2); line-height:1.65; }
 .prp-ai-stitle { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--accent); margin:10px 0 5px; font-family:'IBM Plex Mono',monospace; }
+/* ══ LIGHTBOX ══ */
+#prp-lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.92); z-index:9999; align-items:center; justify-content:center; cursor:zoom-out; }
+#prp-lightbox.open { display:flex; }
+#lb-img { max-width:90vw; max-height:85vh; border-radius:6px; object-fit:contain; box-shadow:0 8px 48px rgba(0,0,0,0.6); cursor:default; }
+.lb-close { position:fixed; top:18px; right:22px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.2); color:#fff; font-size:18px; width:36px; height:36px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10000; transition:background .15s; }
+.lb-close:hover { background:rgba(255,255,255,0.25); }
+.lb-prev,.lb-next { position:fixed; top:50%; transform:translateY(-50%); background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.2); color:#fff; font-size:28px; width:44px; height:44px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10000; transition:background .15s; }
+.lb-prev { left:20px; }
+.lb-next { right:20px; }
+.lb-prev:hover,.lb-next:hover { background:rgba(255,255,255,0.25); }
+.lb-counter { position:fixed; bottom:22px; left:50%; transform:translateX(-50%); font-size:11px; color:rgba(255,255,255,0.5); font-family:'IBM Plex Mono',monospace; letter-spacing:.06em; }
 
 /* Projects mode body class toggles */
 body.projects-mode #heat-mode-pills,
@@ -1044,14 +1066,20 @@ body.areas-mode #price-legend { display:none !important; }
 
 <!-- PROJECT DETAIL PANEL -->
 <div id="proj-right-panel">
-  <div class="prp-header">
-    <div class="prp-header-top">
-      <div style="flex:1;min-width:0"><div class="prp-name" id="prp-name">--</div><div class="prp-dev" id="prp-dev">--</div></div>
-      <button class="prp-close" onclick="closeProjectDetail()">x</button>
+  <!-- HERO IMAGE -->
+  <div class="prp-hero" id="prp-hero-img">
+    <div class="prp-hero-gradient"></div>
+    <button class="prp-close-hero" onclick="closeProjectDetail()">✕</button>
+    <div class="prp-hero-info">
+      <div class="prp-badges" id="prp-badges"></div>
+      <div class="prp-name" id="prp-name">--</div>
+      <div class="prp-dev" id="prp-dev">--</div>
     </div>
-    <div class="prp-badges" id="prp-badges"></div>
-    <div class="prp-kpis" id="prp-kpis"></div>
   </div>
+  <!-- IMAGE STRIP -->
+  <div class="prp-img-strip" id="prp-img-strip"></div>
+  <!-- KPIs -->
+  <div class="prp-kpis" id="prp-kpis"></div>
   <div class="prp-tabs">
     <button class="prp-tab active" onclick="switchProjTab('overview',this)">Overview</button>
     <button class="prp-tab" onclick="switchProjTab('units',this)">Units</button>
@@ -1060,6 +1088,15 @@ body.areas-mode #price-legend { display:none !important; }
     <button class="prp-tab" onclick="switchProjTab('ai',this)">AI Brief</button>
   </div>
   <div class="prp-body" id="prp-body"></div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="prp-lightbox" onclick="closeLightbox()">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <button class="lb-prev" onclick="event.stopPropagation();lbNav(-1)">‹</button>
+  <img id="lb-img" src="" alt="">
+  <button class="lb-next" onclick="event.stopPropagation();lbNav(1)">›</button>
+  <div class="lb-counter" id="lb-counter"></div>
 </div>
 
 
@@ -2925,6 +2962,7 @@ function _sbToProject(p) {
     areaYield: p.area_rental_yield,
     psfTrend: (p.initial_psf && p.latest_psf)
       ? +((p.latest_psf - p.initial_psf) / p.initial_psf * 100).toFixed(1) : null,
+    sourceUrl: p.source_url || null,
     _fromDB: true,
   };
 }
@@ -2932,7 +2970,7 @@ function _sbToProject(p) {
 async function loadProjectsFromDB() {
   try {
     const raw = await _sbFetch('projects_full', {
-      select: 'id,name,developer_name,area,lat,lng,type,status,price_min,price_max,price_avg,psf_min,psf_max,psf_avg,units_total,floors,bedrooms_available,completion_quarter,completion_date,down_payment,during_construction,on_completion,payment_years,amenities,description,cover_image,featured,featured_rank,raqam_signal,raqam_score,area_avg_psf,area_rental_yield,latest_psf,initial_psf',
+      select: 'id,name,developer_name,area,lat,lng,type,status,price_min,price_max,price_avg,psf_min,psf_max,psf_avg,units_total,floors,bedrooms_available,completion_quarter,completion_date,down_payment,during_construction,on_completion,payment_years,amenities,description,cover_image,featured,featured_rank,raqam_signal,raqam_score,area_avg_psf,area_rental_yield,latest_psf,initial_psf,source_url',
       order: 'featured.desc.nullslast,raqam_score.desc.nullslast',
       limit: '500',
     });
@@ -3224,11 +3262,14 @@ function renderProjectList() {
 
   list.innerHTML = sorted.map(p => {
     const col = projPriceColor(p.priceMin, filtered);
-    const statusClass = p.status.replace(' ','-');
+    const statusClass = p.status.replace(/\s+/g,'-');
     const statusLabel = p.status === 'off-plan' ? 'Off-Plan' : p.status === 'ready' ? 'Ready' : 'U/C';
     const active = _selProjId === p.id ? ' active' : '';
+    const thumb = p.coverImage
+      ? `<img class="proj-row-thumb" src="${p.coverImage}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">`
+      : `<div class="proj-dot-mini" style="background:${col};margin-top:12px"></div>`;
     return `<div class="proj-row${active}" onclick="openProjectDetail(PROJECTS.find(x=>x.id==='${p.id}'))" data-id="${p.id}">
-      <div class="proj-dot-mini" style="background:${col}"></div>
+      ${thumb}
       <div class="proj-row-body">
         <div class="proj-row-name">${p.featured ? '★ ' : ''}${p.name}</div>
         <div class="proj-row-dev">${p.developer}</div>
@@ -3286,25 +3327,35 @@ function openProjectDetail(proj) {
   // Highlight in list
   document.querySelectorAll('.proj-row').forEach(r => r.classList.toggle('active', r.dataset.id === proj.id));
 
-  // Fill header
+  // Hero image
+  const hero = document.getElementById('prp-hero-img');
+  if (proj.coverImage) {
+    hero.style.backgroundImage = `url('${proj.coverImage}')`;
+    hero.style.display = 'block';
+  } else {
+    hero.style.backgroundImage = 'none';
+    hero.style.background = 'var(--bg3)';
+  }
+
+  // Fill header info (inside hero overlay)
   document.getElementById('prp-name').textContent = proj.name;
   document.getElementById('prp-dev').textContent = proj.developer + ' · ' + proj.area.replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase());
 
-  // Badges
-  const statusClass = proj.status.replace(' ','-');
+  // Badges (inside hero)
+  const statusClass = proj.status.replace(/\s+/g,'-');
   const statusLabel = proj.status === 'off-plan' ? 'Off-Plan' : proj.status === 'ready' ? 'Ready' : 'Under Construction';
   document.getElementById('prp-badges').innerHTML =
     `<span class="prp-badge ${statusClass}">${statusLabel}</span>
      <span class="prp-badge type-b">${proj.type}</span>
      ${proj.featured ? '<span class="prp-badge featured">★ Featured</span>' : ''}
-     <span class="prp-badge type-b">${proj.completionDate}</span>`;
+     ${proj.completionDate ? `<span class="prp-badge type-b">${proj.completionDate}</span>` : ''}`;
 
   // KPIs
   document.getElementById('prp-kpis').innerHTML =
     `<div class="prp-kpi"><div class="prp-kpi-l">From</div><div class="prp-kpi-v gold">AED ${(proj.priceMin/1e6).toFixed(1)}M</div></div>
-     <div class="prp-kpi"><div class="prp-kpi-l">PSF</div><div class="prp-kpi-v cyan">${proj.psfMin.toLocaleString()}</div></div>
-     <div class="prp-kpi"><div class="prp-kpi-l">Units</div><div class="prp-kpi-v">${proj.units}</div></div>
-     <div class="prp-kpi"><div class="prp-kpi-l">Floors</div><div class="prp-kpi-v">${proj.floors}</div></div>`;
+     <div class="prp-kpi"><div class="prp-kpi-l">PSF</div><div class="prp-kpi-v cyan">${proj.psfMin ? proj.psfMin.toLocaleString() : '—'}</div></div>
+     <div class="prp-kpi"><div class="prp-kpi-l">Units</div><div class="prp-kpi-v">${proj.units || '—'}</div></div>
+     <div class="prp-kpi"><div class="prp-kpi-l">Floors</div><div class="prp-kpi-v">${proj.floors || '—'}</div></div>`;
 
   // Reset tabs
   document.querySelectorAll('.prp-tab').forEach(t => t.classList.remove('active'));
@@ -3313,6 +3364,9 @@ function openProjectDetail(proj) {
   // Open panel
   const panel = document.getElementById('proj-right-panel');
   panel.classList.add('open');
+
+  // Load gallery images
+  loadProjectImages(proj);
 
   renderProjTab('overview', proj);
 }
@@ -3323,6 +3377,70 @@ function closeProjectDetail() {
   if (panel) panel.classList.remove('open');
   document.querySelectorAll('.proj-row').forEach(r => r.classList.remove('active'));
 }
+
+/* ── Image Gallery ── */
+let _lbImages = [];
+let _lbIndex = 0;
+
+async function loadProjectImages(proj) {
+  const strip = document.getElementById('prp-img-strip');
+  strip.innerHTML = '';
+  if (!proj.id || !proj._fromDB) return;
+  try {
+    const SUPABASE_URL = 'https://vmzcwnzsyaeqvvwqhjjr.supabase.co';
+    const ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZtemN3bnpzeWFlcXZ2d3FoampyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTcyNjYsImV4cCI6MjA4ODg5MzI2Nn0.UD1FLFJ6xtn_D060zfEye1ekxMLGEyJFqTar04eFldY';
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/project_images?project_id=eq.${proj.id}&order=sort_order.asc&select=url,caption`, {
+      headers: { apikey: ANON_KEY, Authorization: `Bearer ${ANON_KEY}` }
+    });
+    const imgs = await res.json();
+    if (!imgs || !imgs.length) return;
+    _lbImages = imgs.map(i => i.url);
+    imgs.forEach((img, idx) => {
+      const el = document.createElement('img');
+      el.className = 'prp-thumb' + (idx === 0 ? ' active' : '');
+      el.src = img.url;
+      el.alt = img.caption || proj.name;
+      el.loading = 'lazy';
+      el.onclick = () => openLightbox(idx);
+      strip.appendChild(el);
+    });
+  } catch(e) { /* silent */ }
+}
+
+function openLightbox(idx) {
+  if (!_lbImages.length) return;
+  _lbIndex = idx;
+  document.getElementById('lb-img').src = _lbImages[idx];
+  document.getElementById('lb-counter').textContent = `${idx+1} / ${_lbImages.length}`;
+  document.getElementById('prp-lightbox').classList.add('open');
+  // highlight strip thumb
+  document.querySelectorAll('.prp-thumb').forEach((t,i) => t.classList.toggle('active', i === idx));
+}
+
+function closeLightbox() {
+  document.getElementById('prp-lightbox').classList.remove('open');
+}
+
+function lbNav(dir) {
+  if (!_lbImages.length) return;
+  _lbIndex = (_lbIndex + dir + _lbImages.length) % _lbImages.length;
+  document.getElementById('lb-img').src = _lbImages[_lbIndex];
+  document.getElementById('lb-counter').textContent = `${_lbIndex+1} / ${_lbImages.length}`;
+  document.querySelectorAll('.prp-thumb').forEach((t,i) => t.classList.toggle('active', i === _lbIndex));
+  // scroll strip to active
+  const strip = document.getElementById('prp-img-strip');
+  const active = strip.querySelectorAll('.prp-thumb')[_lbIndex];
+  if (active) active.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+}
+
+// Keyboard navigation for lightbox
+document.addEventListener('keydown', e => {
+  const lb = document.getElementById('prp-lightbox');
+  if (!lb.classList.contains('open')) return;
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+  if (e.key === 'Escape') closeLightbox();
+});
 
 function switchProjTab(tab, btn) {
   _projTab = tab;
@@ -3338,41 +3456,53 @@ function renderProjTab(tab, proj) {
 
   if (tab === 'overview') {
     const areaData = AREAS.find(a => a.id === proj.area) || AREAS.find(a => proj.area.includes(a.id.split('-')[0]));
+    const signalMap = {'strong-buy':'🟢 Strong Buy','buy':'🔵 Buy','hold':'🟡 Hold','watch':'🟠 Watch','avoid':'🔴 Avoid'};
+    const trendHtml = proj.psfTrend !== null
+      ? `<span style="color:${proj.psfTrend>=0?'#22C55E':'#EF4444'};font-size:10px;font-family:'IBM Plex Mono',monospace;margin-left:6px">${proj.psfTrend>=0?'↑':'↓'} ${Math.abs(proj.psfTrend)}%</span>`
+      : '';
     body.innerHTML = `
+      ${proj.raqamSignal ? `<div style="margin-bottom:14px"><span class="prp-signal ${proj.raqamSignal}">${signalMap[proj.raqamSignal]||proj.raqamSignal}</span>${proj.raqamScore?`<span style="font-size:10px;color:var(--text3);margin-left:8px">Score: ${proj.raqamScore}/100</span>`:''}</div>` : ''}
       <div class="prp-section">
         <div class="prp-section-title">About</div>
-        <div class="prp-desc">${proj.description}</div>
+        <div class="prp-desc">${proj.description || 'No description available.'}</div>
       </div>
+      ${proj.bedrooms && proj.bedrooms.length ? `
       <div class="prp-section">
         <div class="prp-section-title">Bedrooms</div>
         <div class="prp-beds">${proj.bedrooms.map(b=>`<div class="prp-bed-tag">${b}</div>`).join('')}</div>
-      </div>
+      </div>` : ''}
+      ${proj.amenities && proj.amenities.length ? `
       <div class="prp-section">
         <div class="prp-section-title">Amenities</div>
         <div class="prp-amenities">${proj.amenities.map(a=>`<div class="prp-amenity">${a}</div>`).join('')}</div>
-      </div>
+      </div>` : ''}
       ${areaData ? `
       <div class="prp-section">
-        <div class="prp-section-title">Area Context vs Project</div>
+        <div class="prp-section-title" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Market Context</span>
+          ${trendHtml}
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:6px;background:var(--bg3)">
             <div class="prp-kpi-l">Area Avg PSF</div>
             <div class="prp-kpi-v">AED ${areaData.psf.toLocaleString()}</div>
           </div>
-          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+          <div class="prp-kpi" style="border:1px solid rgba(0,194,203,0.25);border-radius:6px;background:rgba(0,194,203,0.05)">
             <div class="prp-kpi-l">Project PSF</div>
-            <div class="prp-kpi-v cyan">AED ${proj.psfMin.toLocaleString()}</div>
+            <div class="prp-kpi-v cyan">AED ${proj.psfMin ? proj.psfMin.toLocaleString() : '—'}</div>
           </div>
-          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:6px;background:var(--bg3)">
             <div class="prp-kpi-l">Area YoY</div>
-            <div class="prp-kpi-v">${areaData.yoy}%</div>
+            <div class="prp-kpi-v" style="color:#22C55E">+${areaData.yoy}%</div>
           </div>
-          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:4px">
-            <div class="prp-kpi-l">Area Yield</div>
+          <div class="prp-kpi" style="border:1px solid var(--bord);border-radius:6px;background:var(--bg3)">
+            <div class="prp-kpi-l">Rental Yield</div>
             <div class="prp-kpi-v gold">${areaData.yld}%</div>
           </div>
         </div>
-      </div>` : ''}`;
+      </div>` : ''}
+      ${proj.sourceUrl ? `<div style="margin-top:8px"><a href="${proj.sourceUrl}" target="_blank" style="font-size:10px;color:var(--text3);text-decoration:none;display:flex;align-items:center;gap:4px"><span>↗</span> View on Property Finder</a></div>` : ''}
+    `;
 
   } else if (tab === 'units') {
     const unitTypes = proj.bedrooms.map(br => {
