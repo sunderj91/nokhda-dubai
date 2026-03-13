@@ -6,16 +6,18 @@ on:
     - cron: '0 5 * * *'    # 9:00 AM Dubai time — price refresh
   workflow_dispatch:        # Manual trigger from GitHub UI anytime
     inputs:
+      mode:
+        description: 'Scraper mode'
+        required: false
+        default: 'full'
+        type: choice
+        options: ['full', 'enrich', 'price-refresh']
       dry_run:
         description: 'Dry run — no DB writes, just test'
         required: false
-        default: 'true'
+        default: 'false'
         type: choice
         options: ['true', 'false']
-      area:
-        description: 'Specific area only (blank = all 30 areas)'
-        required: false
-        default: ''
 
 jobs:
   scrape:
@@ -37,7 +39,7 @@ jobs:
 
       - name: Run full scraper (3am scheduled)
         if: github.event.schedule == '0 23 * * *'
-        run: cd raqam-scraper && node scraper.js
+        run: cd raqam-scraper && node scraper.js --mode=full
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
@@ -45,33 +47,18 @@ jobs:
 
       - name: Run price refresh (9am scheduled)
         if: github.event.schedule == '0 5 * * *'
-        run: cd raqam-scraper && node scraper.js --source=bayut
+        run: cd raqam-scraper && node scraper.js --mode=price-refresh
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
 
-      - name: Manual trigger — dry run
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'true'
+      - name: Manual trigger
+        if: github.event_name == 'workflow_dispatch'
         run: |
-          AREA_FLAG=""
-          if [ -n "${{ github.event.inputs.area }}" ]; then
-            AREA_FLAG="--area=${{ github.event.inputs.area }}"
-          fi
-          cd raqam-scraper && node scraper.js --dry-run $AREA_FLAG
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
-          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
-
-      - name: Manual trigger — live run
-        if: github.event_name == 'workflow_dispatch' && github.event.inputs.dry_run == 'false'
-        run: |
-          AREA_FLAG=""
-          if [ -n "${{ github.event.inputs.area }}" ]; then
-            AREA_FLAG="--area=${{ github.event.inputs.area }}"
-          fi
-          cd raqam-scraper && node scraper.js $AREA_FLAG
+          DRY=""
+          if [ "${{ github.event.inputs.dry_run }}" == "true" ]; then DRY="--dry-run"; fi
+          cd raqam-scraper && node scraper.js --mode=${{ github.event.inputs.mode }} $DRY
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
