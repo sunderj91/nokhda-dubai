@@ -769,7 +769,7 @@ body.lp-collapsed #heat-legend { left: 12px; }
 /* ══════════════════════════════════════════════
    PROJECTS LEFT PANEL
 ══════════════════════════════════════════════ */
-#projects-panel { position:absolute; left:0; top:52px; bottom:0; width:320px; background:var(--bg2); border-right:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
+#projects-panel { position:absolute; left:0; top:var(--th); bottom:0; width:320px; background:var(--bg2); border-right:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
 #projects-panel.visible { display:flex; }
 .pp-filters { padding:10px 12px 6px; border-bottom:1px solid var(--bord); display:flex; flex-direction:column; gap:8px; }
 .pp-search { width:100%; background:var(--surf); border:1px solid var(--bord); border-radius:6px; padding:7px 10px; color:var(--text1); font-size:12px; font-family:inherit; outline:none; box-sizing:border-box; }
@@ -801,8 +801,14 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .proj-badge.construction { background:rgba(99,102,241,0.18); color:#818CF8; }
 .proj-row-price { font-size:11px; font-family:'IBM Plex Mono',monospace; color:var(--accent); font-weight:600; margin-left:auto; white-space:nowrap; }
 
-/* ══ PRICE LEGEND ══ */
-#price-legend { position:absolute; top:64px; left:330px; background:rgba(10,14,30,0.92); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:10px 14px; display:none; z-index:9; min-width:210px; backdrop-filter:blur(8px); }
+/* ══ PROJECTS MINI TOOLBAR ══ */
+.pp-toolbar { display:flex; align-items:center; gap:6px; padding:6px 10px; border-bottom:1px solid var(--bord); background:var(--bg3); flex-shrink:0; }
+.pp-tool-pill { display:flex; align-items:center; gap:5px; padding:3px 9px; border-radius:10px; border:1px solid var(--bord); background:transparent; color:var(--text3); font-size:8.5px; font-family:'IBM Plex Mono',monospace; letter-spacing:.04em; text-transform:uppercase; cursor:pointer; transition:all .15s; }
+.pp-tool-pill.active { color:var(--accent); background:var(--accent2); border-color:rgba(0,212,255,.18); }
+.pp-tool-pill:hover:not(.active) { color:var(--text1); border-color:var(--bord2); }
+.pp-tool-count { font-size:9px; color:var(--text3); font-family:'IBM Plex Mono',monospace; }
+/* ══ PRICE LEGEND — projects mode ══ */
+#price-legend { position:fixed; top:calc(var(--th) + 12px); left:332px; background:rgba(10,14,30,0.92); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:10px 14px; display:none; z-index:9; min-width:210px; backdrop-filter:blur(8px); }
 #price-legend.visible { display:block; }
 .pl-bar { height:8px; border-radius:4px; background:linear-gradient(to right,#00C2CB,#22C55E,#F59E0B,#EF4444); margin-bottom:6px; }
 .pl-labels { display:flex; justify-content:space-between; margin-bottom:8px; }
@@ -814,7 +820,7 @@ body.lp-collapsed #heat-legend { left: 12px; }
 .pl-stat-v { font-size:11px; color:var(--text1); font-family:'IBM Plex Mono',monospace; font-weight:600; margin-left:auto; }
 
 /* ══ PROJECT DETAIL RIGHT PANEL ══ */
-#proj-right-panel { position:absolute; right:0; top:52px; bottom:0; width:380px; background:var(--bg2); border-left:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
+#proj-right-panel { position:absolute; right:0; top:var(--th); bottom:0; width:380px; background:var(--bg2); border-left:1px solid var(--bord); display:none; flex-direction:column; z-index:10; overflow:hidden; }
 #proj-right-panel.open { display:flex; }
 /* HERO IMAGE */
 .prp-hero { position:relative; width:100%; height:200px; background:var(--bg3) url('') center/cover no-repeat; flex-shrink:0; }
@@ -905,7 +911,10 @@ body.projects-mode #left-panel,
 body.projects-mode #right-panel,
 body.projects-mode #lp-toggle,
 body.projects-mode .map-legend,
-body.projects-mode #tier-filter { display:none !important; }
+body.projects-mode #tier-filter,
+body.projects-mode #heat-legend,
+body.projects-mode #layerbar { display:none !important; }
+body.projects-mode #zoom-ctrl { left: calc(320px + 12px); }
 body.areas-mode #projects-panel,
 body.areas-mode #proj-right-panel,
 body.areas-mode #price-legend { display:none !important; }
@@ -1030,6 +1039,17 @@ body.areas-mode #price-legend { display:none !important; }
 </div>
 <!-- PROJECTS LEFT PANEL -->
 <div id="projects-panel">
+  <!-- Mini toolbar for projects mode -->
+  <div class="pp-toolbar">
+    <button class="pp-tool-pill active" id="pt-metro" onclick="toggleLayer('metro',this);this.classList.toggle('active')">
+      <span style="width:7px;height:7px;border-radius:50%;background:#FF6B35;flex-shrink:0"></span>Metro
+    </button>
+    <button class="pp-tool-pill" id="pt-legend" onclick="togglePriceLegend(this)">
+      <span style="font-size:9px">⬛</span>Legend
+    </button>
+    <div style="flex:1"></div>
+    <span class="pp-tool-count" id="pp-mode-count"></span>
+  </div>
   <div class="pp-filters">
     <input type="text" class="pp-search" id="proj-search" placeholder="Search projects or developers..." oninput="filterProjects()">
     <div class="pp-filter-row">
@@ -3009,6 +3029,9 @@ function switchMainTab(tab) {
     document.body.classList.remove('areas-mode');
     document.getElementById('projects-panel').classList.add('visible');
     document.getElementById('price-legend').classList.add('visible');
+    // Sync legend toggle button
+    const ptLeg = document.getElementById('pt-legend');
+    if (ptLeg) ptLeg.classList.add('active');
     enableProjectsMap();
   } else {
     document.body.classList.add('areas-mode');
@@ -3018,6 +3041,12 @@ function switchMainTab(tab) {
     closeProjectDetail();
     disableProjectsMap();
   }
+}
+
+function togglePriceLegend(btn) {
+  const leg = document.getElementById('price-legend');
+  const visible = leg.classList.toggle('visible');
+  btn.classList.toggle('active', visible);
 }
 
 /* ══════════════════════════════════════════════
